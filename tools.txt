@@ -5,3 +5,25 @@ Layer	Purpose	Tools/Tech
 4. Frontend UI	Clean, fast, browser-based search interface	HTML/CSS, Vanilla JS or React
 5. Database (Metadata, Logs, Config)	Store crawl metadata, query logs, etc.	PostgreSQL or SQLite
 6. Infrastructure / Hosting	Run your search engine live	Docker, DigitalOcean, Hetzner, or AWS
+
+💻 1. Web Crawler
+
+You’ll need a custom crawler to crawl Swedish content.
+
+Tools:
+
+Scrapy (Python): Best for scalable, structured crawling.
+
+BeautifulSoup (Python): For light, flexible HTML parsing.
+
+Selenium: For JavaScript-heavy sites (only when needed).
+
+tldextract: To restrict crawling to .se domains.
+
+Output:
+
+Crawled pages (HTML)
+
+Extracted content: title, body text, metadata, language, URL, date
+
+Example workflow:
