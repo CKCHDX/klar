@@ -53,3 +53,5 @@ requests              # For HTTP requests
 pydantic              # For data validation
 python-dotenv         # Load env vars from .env
 lxml                  # Fast HTML/XML parsing
+spacy[sv]             # Swedish NLP
+nltk                  # Extra text processing tools
