@@ -41,3 +41,15 @@ klar/
 ├── LICENSE                        # License (e.g., MIT)
 ├── README.md                      # Project documentation
 └── requirements.txt               # Python dependencies
+
+packages
+
+fastapi               # Backend API
+uvicorn               # ASGI server for FastAPI
+scrapy                # Web crawler framework
+beautifulsoup4        # HTML parsing
+typesense             # Search engine client (or use Elasticsearch)
+requests              # For HTTP requests
+pydantic              # For data validation
+python-dotenv         # Load env vars from .env
+lxml                  # Fast HTML/XML parsing
