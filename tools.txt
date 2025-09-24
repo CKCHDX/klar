@@ -1,0 +1,7 @@
+Layer	Purpose	Tools/Tech
+1. Web Crawler	Crawl Swedish websites and collect data	Scrapy, Requests, BeautifulSoup, Selenium
+2. Indexer & Storage	Store crawled data in a searchable index	Elasticsearch or Typesense or Meilisearch
+3. Search Engine API (Backend)	Handle search queries and return results	Python + Flask or FastAPI
+4. Frontend UI	Clean, fast, browser-based search interface	HTML/CSS, Vanilla JS or React
+5. Database (Metadata, Logs, Config)	Store crawl metadata, query logs, etc.	PostgreSQL or SQLite
+6. Infrastructure / Hosting	Run your search engine live	Docker, DigitalOcean, Hetzner, or AWS
