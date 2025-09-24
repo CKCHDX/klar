@@ -1,0 +1,48 @@
+klar/
+├── api/                           # FastAPI backend
+│   ├── __init__.py
+│   ├── main.py                    # FastAPI entry point
+│   ├── models.py                  # Request/response models
+│   └── routes.py                  # API endpoints
+│
+├── crawler/                       # Web crawler
+│   ├── __init__.py
+│   ├── crawl.py                   # Crawler logic
+│   ├── parser.py                  # HTML/content parser
+│   └── utils.py                   # Helper functions
+│
+├── search_index/                 # Search engine integration
+│   ├── __init__.py
+│   ├── client.py                  # Connect to Typesense/Elasticsearch
+│   └── indexer.py                 # Indexing logic
+│
+├── frontend/                      # Static site for UI
+│   ├── index.html
+│   ├── results.html
+│   ├── style.css
+│   └── app.js
+│
+├── config/                        # Settings and domains
+│   ├── config.yaml
+│   └── domains.txt
+│
+├── data/                          # Collected and cleaned data
+│   ├── raw/
+│   └── cleaned/
+│
+├── logs/                          # Logs from crawler/API
+│   └── crawler.log
+│
+├── scripts/                       # Startup/testing scripts
+│   ├── start_local.sh
+│   └── test_query.py
+│
+├── docker/                        # Docker + deployment
+│   ├── Dockerfile.api
+│   ├── Dockerfile.crawler
+│   └── docker-compose.yml
+│
+├── .env                           # Environment variables (API keys, etc.)
+├── LICENSE                        # License file (e.g. MIT)
+├── README.md                      # Project documentation
+└── requirements.txt               # Python dependencies
