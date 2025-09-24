@@ -8,7 +8,7 @@ Layer	Purpose	Tools/Tech
 
 💻 1. Web Crawler
 
-You’ll need a custom crawler to crawl Swedish content.
+a custom crawler to crawl Swedish content.
 
 Tools:
 
@@ -27,3 +27,25 @@ Crawled pages (HTML)
 Extracted content: title, body text, metadata, language, URL, date
 
 Example workflow:
+
+Next Steps: Phase 1 Plan
+
+✅ Define Scope (done — Sweden only, Klar)
+
+🧱 Set up Crawler
+
+📦 Set up Index/Search Engine
+
+🧠 Add basic ranking
+
+🧪 Build API
+
+🎨 Build Frontend UI
+
+☁️ Host on test server
+
+🧪 MVP Testing with sample domains
+
+🔁 Improve based on real use
+
+📢 Launch beta
