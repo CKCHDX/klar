@@ -1,0 +1,148 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Dark Nordic base */
+body {
+  background: #0b0e11; /* deeper dark */
+  color: #eaeff4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+/* App shell */
+#app {
+  width: 100%;
+  max-width: 720px;
+  padding: 2.5rem;
+  border-radius: 16px;
+  background: linear-gradient(145deg, #11161c, #0d1218);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.65);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Header */
+header {
+  text-align: center;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fcd116; /* Swedish yellow */
+  letter-spacing: 1.5px;
+  margin-bottom: 0.5rem;
+}
+
+header .tagline {
+  font-size: 1rem;
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+/* Search bar */
+#search-bar {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+#search-input {
+  flex: 1;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  border: 2px solid #1e242b;
+  background: #0b0e11;
+  color: #eaeff4;
+  font-size: 1rem;
+  transition: all 0.25s;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+}
+
+#search-input:focus {
+  outline: none;
+  border-color: #006aa7; /* Swedish blue */
+  background: #11161c;
+  box-shadow: 0 0 6px rgba(0,106,167,0.6);
+}
+
+/* Search button */
+#search-button {
+  padding: 1rem 1.5rem;
+  background: #006aa7; /* Swedish blue */
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+}
+
+#search-button:hover {
+  background: #007bc7;
+  box-shadow: 0 0 10px rgba(0,106,167,0.7);
+}
+
+#search-button:active {
+  transform: scale(0.97);
+}
+
+/* Results */
+#results {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.result-item {
+  background: #0f1318;
+  padding: 1.2rem;
+  border-radius: 12px;
+  border: 1px solid #1f252c;
+  transition: border 0.25s, background 0.25s, transform 0.15s;
+}
+
+.result-item:hover {
+  background: #13191f;
+  border-color: #006aa7;
+  transform: translateY(-2px);
+}
+
+/* Result link */
+.result-item a {
+  display: inline-block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fcd116;
+  text-decoration: none;
+  margin-bottom: 0.4rem;
+  word-break: break-word;
+}
+
+.result-item a:hover {
+  text-decoration: underline;
+}
+
+/* Score */
+.result-item p {
+  font-size: 0.9rem;
+  color: #a0aab6;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #7d8590;
+  margin-top: 1rem;
+}

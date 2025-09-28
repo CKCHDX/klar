@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <title>Klar Search</title>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="qrc:///qtwebchannel/qwebchannel.js"></script>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Klar</h1>
+      <p>En ren, nordisk sökupplevelse</p>
+    </header>
+    <main>
+      <div id="search-bar">
+        <input type="text" id="search-input" placeholder="Sök med Klar..." />
+        <button id="search-button">Sök</button>
+      </div>
+      <div id="results"></div>
+    </main>
+    <footer>🇸🇪 Klar Search · Byggd för Sverige</footer>
+  </div>
+
+  <script>
+    let backend;
+
+    new QWebChannel(qt.webChannelTransport, function(channel) {
+      backend = channel.objects.backend;
+
+      backend.sendResults.connect(function(resultsJson) {
+        const results = JSON.parse(resultsJson);
+        const resultsDiv = document.getElementById("results");
+
+        if (!results || results.length === 0) {
+          resultsDiv.innerHTML = "<p>Inga resultat funna.</p>";
+          return;
+        }
+
+        resultsDiv.innerHTML = "";
+
+        results.forEach(item => {
+          const div = document.createElement("div");
+          div.className = "result-item";
+
+          let url = item.url.replace(/'/g, "\\'");
+          let title = item.title && item.title.trim() !== "" ? item.title : url;
+
+          div.innerHTML = `
+            <a href="#" onclick="openSite('${url}')">${title}</a>
+            <p>${item.snippet || ""}</p>
+            <p><small>Poäng: ${item.score.toFixed(2)}</small></p>
+          `;
+
+          resultsDiv.appendChild(div);
+        });
+      });
+    });
+
+    function openSite(url) {
+      backend.open_url(url);
+      document.getElementById("results").innerHTML = `<p>Öppnar sidan: ${url}</p>`;
+    }
+
+    document.getElementById("search-button").addEventListener("click", () => {
+      const query = document.getElementById("search-input").value.trim();
+      if (!query) return;
+
+      document.getElementById("results").innerHTML = "<p>Söker...</p>";
+
+      try {
+        backend.search(query);
+      } catch(e) {
+        document.getElementById("results").innerHTML = `<p>Fel vid sökning: ${e.message}</p>`;
+      }
+    });
+
+    document.getElementById("search-input").addEventListener("keyup", (event) => {
+      if (event.key === "Enter") {
+        document.getElementById("search-button").click();
+      }
+    });
+  </script>
+</body>
+</html>
