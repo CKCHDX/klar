@@ -27,6 +27,7 @@ python -m PyInstaller --onefile --windowed ^
   --hidden-import=PyQt5.QtWebEngineWidgets ^
   --hidden-import=PyQt5.QtWebChannel ^
   --exclude-module PySide6 ^
+  --icon "icon.ico" ^
   --add-data "domains.json;." ^
   --add-data "templates;templates" ^
   --add-data "static;static" ^

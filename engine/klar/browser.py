@@ -1,12 +1,13 @@
 import sys
 import os
 import json
-from PyQt5.QtWidgets import QApplication, QMainWindow
+import asyncio
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QToolBar, QAction
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtWebChannel import QWebChannel
 from PyQt5.QtCore import QObject, pyqtSignal, pyqtSlot, QUrl
 from qasync import QEventLoop, asyncSlot
-import asyncio
 
 from crawler import DynamicCrawler
 from parser import parse_html
@@ -33,45 +34,80 @@ class BackendBridge(QObject):
     def __init__(self, parent=None):
         super().__init__(parent)
         domain_metadata = load_domain_metadata()
+        self.domain_metadata = domain_metadata
         self.crawler = DynamicCrawler(domain_metadata)
-        self.index = BM25Indexer()
+        self.index = BM25Indexer(trusted_domains=set(domain_metadata.keys()))
+        self.search_lock = asyncio.Lock()
 
     @asyncSlot(str)
     async def search(self, query):
-        seeds = await self.crawler.find_seeds(query)
-        pages = await self.crawler.crawl(seeds)
-        for url, html in pages.items():
-            title, snippet, text = parse_html(html)
-            if text:
-                self.index.add_document(url, title, snippet, text)
-        results = self.index.search(query)
-        self.sendResults.emit(json.dumps(results))
+        async with self.search_lock:
+            # Reset index for fresh search session
+            self.index = BM25Indexer(trusted_domains=set(self.domain_metadata.keys()))
+
+            seeds = await self.crawler.find_seeds(query)
+            pages = await self.crawler.crawl(seeds)
+
+            # Index pages
+            for url, html in pages.items():
+                title, snippet, text = parse_html(html)
+                if text:
+                    self.index.add_document(url, title, snippet, text)
+
+            # Search indexed docs
+            results = self.index.search(query)
+
+            # Send JSON string to JS frontend
+            self.sendResults.emit(json.dumps(results))
 
     @pyqtSlot(str)
     def open_url(self, url):
-        # Loads the URL inside the web view
         if self.parent():
             self.parent().load_url(url)
 
 
 class KlarBrowser(QMainWindow):
-
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Klar Search Engine")
         self.resize(1280, 900)
 
         self.browser = QWebEngineView()
+        page = self.browser.page()
+        # Enable JavaScript (should be on by default, but confirm)
+        page.settings().setAttribute(page.settings().JavascriptEnabled, True)
+        page.settings().setAttribute(page.settings().AutoLoadImages, True)
+        page.settings().setAttribute(page.settings().PlaybackRequiresUserGesture, False)
+        
+        page.settings().setAttribute(page.settings().FullScreenSupportEnabled, True)
+
         self.channel = QWebChannel()
         self.bridge = BackendBridge(self)
         self.channel.registerObject("backend", self.bridge)
-        self.browser.page().setWebChannel(self.channel)
-        self.browser.page().profile().setHttpCacheType(self.browser.page().profile().MemoryHttpCache)
+        page.setWebChannel(self.channel)
+        page.profile().setHttpCacheType(page.profile().MemoryHttpCache)
 
-        index_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "templates", "index.html"))
+        index_path = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "templates", "index.html")
+        )
         self.browser.load(QUrl.fromLocalFile(index_path))
-
         self.setCentralWidget(self.browser)
+
+        # Navigation toolbar
+        navtb = QToolBar()
+        self.addToolBar(navtb)
+
+        back_btn = QAction("Back", self)
+        back_btn.triggered.connect(self.browser.back)
+        navtb.addAction(back_btn)
+
+        forward_btn = QAction("Forward", self)
+        forward_btn.triggered.connect(self.browser.forward)
+        navtb.addAction(forward_btn)
+
+        reload_btn = QAction("Reload", self)
+        reload_btn.triggered.connect(self.browser.reload)
+        navtb.addAction(reload_btn)
 
     def load_url(self, url):
         self.browser.load(QUrl(url))

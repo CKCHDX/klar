@@ -7,5 +7,5 @@ document.getElementById("search-button").addEventListener("click", () => {
   // Placeholder: simulate a fetch
   setTimeout(() => {
     resultsDiv.innerHTML = `<p>Resultat för "${query}" skulle visas här.</p>`;
-  }, 1000);
+  }, 500);
 });
