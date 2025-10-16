@@ -1,0 +1,241 @@
+{
+  "revolutionary_swedish_domains": {
+    "government_tier1": {
+      "authorities": {
+        "regeringen.se": {
+          "keywords": ["regering", "politik", "minister", "statsråd", "riksdag", "propositioner"],
+          "authority_score": 1.0,
+          "content_types": ["government", "policy", "legislation"],
+          "trust_level": "absolute",
+          "swedish_priority": 1.0
+        },
+        "skatteverket.se": {
+          "keywords": ["skatt", "deklaration", "moms", "avgift", "skatteåterbäring", "beskattning", "preliminärskatt"],
+          "authority_score": 1.0,
+          "content_types": ["government", "tax", "finance"],
+          "trust_level": "absolute",
+          "contact": "0771-567 567"
+        },
+        "polisen.se": {
+          "keywords": ["polis", "brott", "säkerhet", "pass", "körkort", "våld", "stöld"],
+          "authority_score": 1.0,
+          "content_types": ["government", "safety", "security"],
+          "emergency_contact": "112",
+          "non_emergency": "114 14"
+        },
+        "forsakringskassan.se": {
+          "keywords": ["försäkringskassan", "sjukpenning", "föräldrapenning", "pension", "bidrag", "stöd"],
+          "authority_score": 1.0,
+          "content_types": ["government", "welfare", "benefits"],
+          "contact": "0771-524 524"
+        },
+        "arbetsformedlingen.se": {
+          "keywords": ["arbetsförmedlingen", "jobb", "arbetslöshet", "a-kassa", "utbildning", "omställning"],
+          "authority_score": 1.0,
+          "content_types": ["government", "employment", "education"]
+        },
+        "1177.se": {
+          "keywords": ["hälsa", "sjukvård", "symptom", "medicin", "vårdcentral", "sjuk"],
+          "authority_score": 1.0,
+          "content_types": ["healthcare", "medical"],
+          "contact": "1177"
+        }
+      }
+    },
+    
+    "municipal_tier2": {
+      "major_cities": {
+        "stockholm.se": {
+          "keywords": ["stockholm", "huvudstad", "kommun", "stadshus", "kommunfullmäktige", "invånare"],
+          "authority_score": 0.95,
+          "population": 975000,
+          "services": ["förskola", "grundskola", "äldreomsorg", "kultur", "fritid"],
+          "regional_context": "stockholm"
+        },
+        "goteborg.se": {
+          "keywords": ["göteborg", "gbg", "västkusten", "hamn", "industri", "spårvagn"],
+          "authority_score": 0.95,
+          "population": 580000,
+          "services": ["kollektivtrafik", "hamn", "industri", "kultur"],
+          "regional_context": "west_sweden"
+        },
+        "malmo.se": {
+          "keywords": ["malmö", "skåne", "öresund", "integration", "mångfald"],
+          "authority_score": 0.95,
+          "population": 350000,
+          "services": ["integration", "näringsliv", "miljö"],
+          "regional_context": "south_sweden"
+        }
+      }
+    },
+    
+    "education_tier3": {
+      "universities": {
+        "kth.se": {
+          "keywords": ["kth", "teknisk", "högskola", "ingenjör", "forskning", "teknik", "innovation"],
+          "authority_score": 0.9,
+          "type": "technical_university",
+          "location": "stockholm",
+          "specialization": ["engineering", "technology", "architecture"]
+        },
+        "uu.se": {
+          "keywords": ["uppsala", "universitet", "forskning", "medicin", "naturvetenskap"],
+          "authority_score": 0.9,
+          "type": "comprehensive_university", 
+          "location": "uppsala"
+        },
+        "lu.se": {
+          "keywords": ["lund", "universitet", "forskning", "medicin", "teknik"],
+          "authority_score": 0.9,
+          "type": "comprehensive_university",
+          "location": "lund"
+        }
+      }
+    },
+    
+    "news_media_tier4": {
+      "public_service": {
+        "svt.se": {
+          "keywords": ["svt", "nyheter", "tv", "public service", "aktuellt", "rapport"],
+          "authority_score": 0.88,
+          "content_types": ["news", "current_affairs", "documentary"],
+          "trust_level": "high"
+        },
+        "sr.se": {
+          "keywords": ["sveriges radio", "radio", "nyheter", "program", "podcast"],
+          "authority_score": 0.88,
+          "content_types": ["news", "radio", "audio"]
+        }
+      },
+      "commercial_news": {
+        "dn.se": {
+          "keywords": ["dagens nyheter", "dn", "ekonomi", "affärer", "politik", "kultur"],
+          "authority_score": 0.82,
+          "content_types": ["news", "business", "analysis"]
+        },
+        "aftonbladet.se": {
+          "keywords": ["aftonbladet", "nyheter", "sport", "nöje", "kändisar"],
+          "authority_score": 0.75,
+          "content_types": ["news", "entertainment", "sports"]
+        },
+        "expressen.se": {
+          "keywords": ["expressen", "nyheter", "sport", "ekonomi", "debatt"],
+          "authority_score": 0.75,
+          "content_types": ["news", "sports", "opinion"]
+        }
+      }
+    },
+    
+    "commerce_tier5": {
+      "marketplaces": {
+        "blocket.se": {
+          "keywords": ["blocket", "köp", "sälj", "bil", "bostad", "möbler", "elektronik"],
+          "authority_score": 0.7,
+          "content_types": ["commerce", "marketplace", "classified"]
+        },
+        "tradera.com": {
+          "keywords": ["tradera", "auktion", "sälj", "samlarobjekt", "vintage"],
+          "authority_score": 0.65,
+          "content_types": ["commerce", "auction"]
+        }
+      },
+      "retail": {
+        "ica.se": {
+          "keywords": ["ica", "mat", "recept", "butik", "erbjudande", "livsmedel"],
+          "authority_score": 0.65,
+          "content_types": ["retail", "food", "recipes"]
+        },
+        "coop.se": {
+          "keywords": ["coop", "mat", "ekologisk", "närproducerat", "butik"],
+          "authority_score": 0.6,
+          "content_types": ["retail", "food", "organic"]
+        },
+        "systembolaget.se": {
+          "keywords": ["systembolaget", "alkohol", "vin", "öl", "sprit"],
+          "authority_score": 0.8,
+          "content_types": ["retail", "alcohol"],
+          "monopoly": true
+        }
+      }
+    },
+    
+    "cultural_tier6": {
+      "institutions": {
+        "riksantikvarieambetet.se": {
+          "keywords": ["kulturarv", "arkeologi", "monument", "historia"],
+          "authority_score": 0.85,
+          "content_types": ["culture", "heritage", "history"]
+        },
+        "kulturstyrelsen.se": {
+          "keywords": ["kultur", "konst", "stöd", "bidrag"],
+          "authority_score": 0.85,
+          "content_types": ["culture", "arts", "funding"]
+        }
+      },
+      "tourism": {
+        "visitsweden.com": {
+          "keywords": ["turism", "resa", "sevärdheter", "hotell", "aktiviteter"],
+          "authority_score": 0.75,
+          "content_types": ["tourism", "travel", "attractions"]
+        },
+        "visitstockholm.com": {
+          "keywords": ["stockholm", "turism", "museum", "restaurang", "evenemang"],
+          "authority_score": 0.7,
+          "content_types": ["tourism", "local_events"]
+        }
+      }
+    }
+  },
+  
+  "revolutionary_features": {
+    "sven_language_ai": {
+      "swedish_cultural_concepts": ["allemansrätt", "fika", "jantelagen", "lagom", "midsommar", "lucia", "valborg"],
+      "compound_word_patterns": ["myndighetsutövning", "sjukvårdsrådgivning", "skatteåterbäring"],
+      "regional_dialects": ["stockholmska", "göteborgska", "skånska", "norrländska"],
+      "semantic_understanding": true
+    },
+    
+    "thor_trust_system": {
+      "authority_tiers": {
+        "government": 1.0,
+        "municipal": 0.95, 
+        "education": 0.9,
+        "public_media": 0.85,
+        "commercial_media": 0.75,
+        "commerce": 0.65
+      },
+      "trust_indicators": ["myndighet", "offentlig", "säkerhet", "kvalitet"]
+    },
+    
+    "loki_knowledge_base": {
+      "instant_answers": true,
+      "government_contacts": true,
+      "cultural_knowledge": true,
+      "emergency_information": true,
+      "offline_capability": true
+    },
+    
+    "performance_targets": {
+      "search_response_time": "sub_100ms",
+      "swedish_accuracy": ">95%",
+      "authority_recognition": ">98%",
+      "cultural_understanding": ">90%"
+    }
+  },
+  
+  "crawling_strategies": {
+    "government_sites": {
+      "priority_paths": ["/", "/privat", "/foretag", "/tjanster", "/kontakt"],
+      "respect_robots": true,
+      "crawl_frequency": "daily"
+    },
+    "news_sites": {
+      "priority_paths": ["/nyheter", "/senaste", "/aktuellt", "/sport", "/ekonomi"],
+      "crawl_frequency": "hourly"
+    },
+    "commerce_sites": {
+      "priority_paths": ["/", "/kategorier", "/produkter", "/erbjudanden"],
+      "crawl_frequency": "daily"
+    }
+  }
+}
