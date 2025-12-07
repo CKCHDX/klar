@@ -1,0 +1,498 @@
+{
+  "version": "2.0",
+  "last_updated": "2025-11-20",
+  "description": "Comprehensive Swedish keyword database with multi-word phrase support and subpage targeting",
+  
+  "mappings": {
+    "news_keywords": {
+      "keywords": [
+        "nyheter", "news", "aktuellt", "senaste", "idag", "igår", 
+        "gårdagens", "dagens", "breaking", "rapporter", "händelser",
+        "nytt", "uppdatering", "information", "breaking news",
+        "senaste nytt", "nyheter idag", "nyheter sverige",
+        "lokala nyheter", "världsnyheter", "ekonominyheter",
+        "sportnyheter", "vädernyheter", "nyhetsflöde"
+      ],
+      "category": "news",
+      "priority_domains": ["svt.se", "dn.se", "aftonbladet.se", "expressen.se", "omni.se"]
+    },
+    
+    "health_general": {
+      "keywords": [
+        "sjukdom", "hälsa", "sjuk", "medicin", "läkare", "vård",
+        "sjukhus", "doktor", "patient", "behandling", "diagnos",
+        "symtom", "sjukvård", "apotek", "recept", "vaccination",
+        "corona", "covid", "influensa", "förkylning", "feber",
+        "hälsovård", "primärvård", "vårdcentral", "akuten",
+        "ring 1177", "kontakta vården", "boka tid"
+      ],
+      "category": "health",
+      "priority_domains": ["1177.se", "folkhalsomyndigheten.se", "socialstyrelsen.se"]
+    },
+    
+    "pain_symptoms": {
+      "keywords": [
+        "ont", "ont i", "värk", "värk i", "smärta", "smärta i",
+        "ont i huvudet", "huvudvärk", "migrän", "spänningshuvudvärk",
+        "ont i halsen", "halsont", "ont när jag sväljer",
+        "ont i magen", "magont", "magsmärtor", "illamående",
+        "ont i ryggen", "ryggont", "ryggvärk", "ländrygg",
+        "ont i nacken", "nacksmärta", "nackont", "stel nacke",
+        "ont i bröstet", "bröstsmärta", "tryck över bröstet",
+        "ont i knät", "knäsmärta", "knävärk",
+        "ont i axeln", "axelsmärta", "axelvärk",
+        "ont när jag andas", "svårt att andas", "andnöd"
+      ],
+      "category": "health",
+      "priority_domains": ["1177.se"]
+    },
+    
+    "weather_keywords": {
+      "keywords": [
+        "väder", "vädret", "väderprognos", "väderleksrapport",
+        "temperatur", "grader", "hur varmt", "hur kallt",
+        "regn", "regnar det", "kommer det regna",
+        "snö", "snöar det", "snöväder",
+        "sol", "soligt", "solsken",
+        "moln", "molnigt", "mulet",
+        "vind", "blåsigt", "storm", "stormar det",
+        "dimma", "dimmigt", "dis",
+        "väder stockholm", "väder göteborg", "väder malmö",
+        "väder idag", "väder imorgon", "väder veckan",
+        "väderkarta", "smhi väder", "temperaturkarta"
+      ],
+      "category": "weather",
+      "priority_domains": ["smhi.se"]
+    },
+    
+    "government_services": {
+      "keywords": [
+        "skatt", "deklaration", "deklarera", "skatteåterbäring",
+        "myndighet", "stat", "regering", "regeringen", "statsminister",
+        "minister", "riksdag", "riksdagen", "politiker", "politik",
+        "lag", "lagar", "regler", "förordning",
+        "ansökan", "ansök", "ansöka om", "tillstånd",
+        "bidrag", "ekonomiskt stöd", "stöd", "hjälp", "ekonomisk hjälp",
+        "kontakt", "kontakta", "telefon", "telefonnummer", "ring",
+        "öppettider", "öppet", "stängt", "öppnar",
+        "myndigheten", "statlig myndighet", "offentlig service"
+      ],
+      "category": "government",
+      "priority_domains": ["skatteverket.se", "regeringen.se", "riksdagen.se", "polisen.se"]
+    },
+    
+    "police_emergency": {
+      "keywords": [
+        "polis", "polisen", "polisanmälan", "anmäla brott",
+        "stöld", "inbrott", "rån", "misshandel", "hot",
+        "brottsanmälan", "polisrapport", "anmälan",
+        "pass", "id-kort", "legitimation", "körkort",
+        "förlorat pass", "stulet pass", "nytt pass",
+        "polisstation", "poliskontor", "polishus",
+        "nödnummer", "112", "114 14", "polis telefon"
+      ],
+      "category": "government",
+      "priority_domains": ["polisen.se", "krisinformation.se"]
+    },
+    
+    "tax_services": {
+      "keywords": [
+        "skatteverket", "deklaration", "deklarera", "e-deklaration",
+        "skatteåterbäring", "återbäring", "skattepengar",
+        "f-skatt", "fa-skatt", "moms", "arbetsgivaravgift",
+        "preliminär skatt", "slutlig skatt", "restskatt",
+        "skattetabell", "skattesats", "skatteskuld",
+        "personnummer", "samordningsnummer", "skattekonto",
+        "deklarera online", "deklarationstid", "deklarationsdatum"
+      ],
+      "category": "government",
+      "priority_domains": ["skatteverket.se"]
+    },
+    
+    "shopping_general": {
+      "keywords": [
+        "köpa", "köp", "köper", "inköp", "shopping",
+        "sälj", "säljer", "sälja", "försäljning",
+        "pris", "priser", "prisjämförelse", "billigast",
+        "billig", "billigt", "billigare", "lågpris",
+        "rabatt", "rea", "realisationer", "erbjudande", "kampanj",
+        "butik", "butiker", "affär", "varuhus",
+        "webshop", "webbutik", "nätbutik", "online shopping",
+        "beställ", "beställa", "order", "orderbekräftelse",
+        "leverans", "frakt", "fraktkostnad", "gratis frakt",
+        "produkter", "varor", "artiklar", "sortiment",
+        "öppettider butik", "butik öppet", "stänger"
+      ],
+      "category": "shopping",
+      "priority_domains": ["prisjakt.nu", "pricerunner.se", "blocket.se", "tradera.com"]
+    },
+    
+    "food_cooking": {
+      "keywords": [
+        "mat", "matlagning", "laga mat", "tillaga",
+        "recept", "receptsök", "matrecept", "kokbok",
+        "ingredienser", "råvaror", "ingredienslista",
+        "middag", "middagsrecept", "middagstips",
+        "lunch", "lunchrecept", "snabb lunch",
+        "frukost", "frukostrecept", "frukosttips",
+        "kvällsmat", "kvällsmål", "aftonmat",
+        "fika", "fikabröd", "bakning", "baka",
+        "bakverk", "tårta", "kakor", "bullar",
+        "kött", "kyckling", "nötkött", "fläsk",
+        "fisk", "lax", "torsk", "räkor",
+        "vegetarisk", "vegetariskt", "veganskt", "vegan",
+        "grönsaker", "rotfrukter", "sallad",
+        "snabb mat", "enkel mat", "15 minuter",
+        "barnmat", "barnvänligt", "familjerecept"
+      ],
+      "category": "food",
+      "priority_domains": ["ica.se", "coop.se", "hemkop.se", "willys.se"]
+    },
+    
+    "grocery_shopping": {
+      "keywords": [
+        "mataffär", "matbutik", "stormarknad", "livsmedelsbutik",
+        "handla mat", "storhandla", "veckans erbjudanden",
+        "matkasse", "matkassar", "färdig matkasse",
+        "ica", "coop", "willys", "hemköp", "city gross",
+        "butik öppettider", "öppet idag", "öppet nu",
+        "kampanjer", "veckans varor", "extrapris",
+        "handla online", "hemleverans", "mathem"
+      ],
+      "category": "food",
+      "priority_domains": ["ica.se", "coop.se", "hemkop.se", "willys.se"]
+    },
+    
+    "alcohol_systembolaget": {
+      "keywords": [
+        "systembolaget", "systemet", "bolaget", "spritan",
+        "öl", "öl systembolaget", "öl pris",
+        "vin", "rött vin", "vitt vin", "rosé", "rosévin",
+        "sprit", "starksprit", "alkohol", "spritdrycker",
+        "whisky", "whiskey", "bourbon", "scotch",
+        "vodka", "absolut vodka", "finlandsvodka",
+        "rom", "mörk rom", "ljus rom", "kryddat rom",
+        "gin", "gin tonic", "dry gin",
+        "champagne", "bubbel", "prosecco", "cava",
+        "öppettider systembolaget", "systembolaget öppet",
+        "beställ systembolaget", "beställning systembolaget",
+        "alkoholfritt", "alkoholfri öl", "alkoholfritt vin"
+      ],
+      "category": "alcohol",
+      "priority_domains": ["systembolaget.se"]
+    },
+    
+    "education_university": {
+      "keywords": [
+        "utbildning", "studera", "studier", "kurser",
+        "skola", "högskola", "universitet", "folkhögskola",
+        "kurs", "program", "utbildningsprogram", "linje",
+        "examen", "kandidatexamen", "magisterexamen", "masterexamen",
+        "student", "studentliv", "studentbostäder",
+        "antagning", "antagningspoäng", "behörighet",
+        "studiemedel", "csn", "studiestöd", "studielån",
+        "lärare", "undervisning", "lektion", "föreläsning",
+        "kth", "uppsala universitet", "lunds universitet",
+        "söka till universitet", "ansökan högskola",
+        "distansstudier", "campus", "heltidsstudier"
+      ],
+      "category": "education",
+      "priority_domains": ["kth.se", "uu.se", "lu.se", "su.se", "chalmers.se", "csn.se"]
+    },
+    
+    "sports_general": {
+      "keywords": [
+        "fotboll", "fotbollsmatch", "fotbollsresultat",
+        "allsvenskan", "allsvenskan tabell", "matcher allsvenskan",
+        "hockey", "ishockey", "hockeymatch",
+        "shl", "shl tabell", "shl resultat",
+        "sport", "idrott", "tävling", "mästerskap",
+        "match", "matcher", "matcher idag", "livescore",
+        "resultat", "matchresultat", "slutresultat",
+        "tabell", "tabellställning", "serietabell",
+        "liga", "division", "serie",
+        "landslag", "svenska landslaget", "damlandslaget", "herrlandslaget",
+        "vm", "vm fotboll", "världsmästerskap",
+        "em", "europamästerskap", "fotbolls em",
+        "os", "olympiska spelen", "sommar os", "vinter os",
+        "träning", "träningsschema", "träningspass",
+        "gym", "gymträning", "styrketräning", "kondition"
+      ],
+      "category": "sports",
+      "priority_domains": ["svenskfotboll.se", "hockeysverige.se", "shl.se", "allsvenskan.se"]
+    },
+    
+    "travel_transport": {
+      "keywords": [
+        "resa", "resor", "resplanering", "reseplanering",
+        "tåg", "tågresor", "tågbiljett", "tågtider",
+        "flyg", "flygbiljett", "flygresor", "flygtider",
+        "buss", "bussbiljett", "bussresor", "busstider",
+        "biljett", "biljetter", "köp biljett", "boka biljett",
+        "tur och retur", "enkelresa", "returbiljett",
+        "bokning", "boka resa", "boka tåg", "boka flyg",
+        "hotell", "hotellrum", "hotellbokning", "övernattning",
+        "logi", "boende", "vandrarhem", "camping",
+        "semester", "sommarresa", "vinterresa", "charterresa",
+        "turistinformation", "turistbyrå", "reseguide",
+        "sevärdhet", "sevärdheter", "turistattraktioner",
+        "turism", "turistmål", "resmål",
+        "avgång", "avgångar", "avgångstider", "avgångar tåg",
+        "ankomst", "ankomsttider", "ankommer",
+        "tågtider", "tågtabell", "tidtabell", "turtabell",
+        "sj", "vy tåg", "mtrx", "tågoperatör",
+        "stockholm göteborg", "malmö köpenhamn", "sverige norge"
+      ],
+      "category": "travel",
+      "priority_domains": ["sj.se", "swebus.se", "flixbus.se", "swedavia.se", "visitsweden.com"]
+    },
+    
+    "entertainment_music": {
+      "keywords": [
+        "musik", "lyssna musik", "streama musik",
+        "låt", "låtar", "musikspår", "singel",
+        "artist", "musiker", "band", "grupp",
+        "album", "skiva", "ep", "singel",
+        "playlist", "spellista", "spellistor",
+        "spotify", "spotify premium", "spotify pris",
+        "stream", "streama", "streaming", "lyssna online",
+        "lyssna", "spela musik", "spela låt",
+        "podcast", "podd", "poddcast", "lyssna podd",
+        "radio", "radiokanal", "lyssna radio",
+        "konsert", "konsertbiljett", "livemusik",
+        "festival", "musikfestival", "sommarturnér"
+      ],
+      "category": "entertainment",
+      "priority_domains": ["spotify.com", "sverigesradio.se"]
+    },
+    
+    "entertainment_movies": {
+      "keywords": [
+        "film", "filmer", "biofilm", "nya filmer",
+        "bio", "biograf", "biobiljett", "biljettpriser",
+        "streaming", "streama film", "streamtjänst",
+        "netflix", "hbo", "disney+", "amazon prime",
+        "serie", "serier", "tv-serie", "miniserie",
+        "tv", "tv-program", "tv-tablå", "tv guide",
+        "underhållning", "nöje", "kultur",
+        "filmrecension", "betyg", "filmkritik",
+        "premiär", "biopremiär", "bioaktuellt"
+      ],
+      "category": "entertainment",
+      "priority_domains": ["sverigesbiografer.se"]
+    },
+    
+    "work_employment": {
+      "keywords": [
+        "jobb", "jobba", "arbete", "arbeta",
+        "anställning", "anställa", "tjänst", "befattning",
+        "ledig", "lediga", "ledig tjänst", "lediga jobb",
+        "karriär", "karriärmöjligheter", "karriärväg",
+        "cv", "curriculum vitae", "meritförteckning",
+        "ansökan", "jobbansökan", "ansök jobb",
+        "arbetssökande", "söka jobb", "jobbsökning",
+        "platsannons", "jobbannonser", "lediga platser",
+        "lön", "löneförhandling", "timlön", "månadslön",
+        "intervju", "jobbintervju", "anställningsintervju",
+        "arbetsgivare", "företag", "bolag",
+        "arbetsförmedlingen", "af", "a-kassa",
+        "deltid", "heltid", "visstid", "tillsvidare",
+        "praktik", "trainee", "sommarjobb", "extrajobb"
+      ],
+      "category": "employment",
+      "priority_domains": ["arbetsformedlingen.se", "allabolag.se"]
+    },
+    
+    "housing_real_estate": {
+      "keywords": [
+        "bostad", "bostäder", "boende", "hem",
+        "lägenhet", "lägenheter", "tvåa", "trea", "fyra",
+        "hus", "villa", "radhus", "kedjehus", "parhus",
+        "hyra", "hyra lägenhet", "hyresrätt", "hyresgäst",
+        "köpa", "köpa bostad", "bostadsköp", "bostadsrätt",
+        "sälja", "sälja bostad", "bostadsförsäljning",
+        "bostadsrätt", "bostadsrättsförening",
+        "hyresrätt", "hyresavtal", "hyreskontrakt",
+        "hem", "boende", "nybygge", "nyproduktion",
+        "flyttning", "flytta", "flytt", "flytta hemifrån",
+        "bostadsannons", "bostadsannonser", "lägenhetsannons",
+        "mäklare", "fastighetsmäklare", "mäklarfirma",
+        "hemnet", "blocket bostad", "bostadsjakt",
+        "första hand", "andra hand", "andrahandsuthyrning",
+        "bostadskö", "bostadskön", "köpoäng"
+      ],
+      "category": "housing",
+      "priority_domains": ["blocket.se", "hemnet.se"]
+    },
+    
+    "finance_banking": {
+      "keywords": [
+        "bank", "banker", "banktjänster",
+        "bankkonto", "konto", "sparkonto", "lönekonto",
+        "pengar", "kontanter", "betalning", "transaktion",
+        "lån", "låna", "lånekalkyl", "låneränta",
+        "kredit", "kreditkort", "kreditvärdighet",
+        "sparande", "spara pengar", "sparplan",
+        "ränta", "räntesats", "bostadsränta",
+        "bolån", "bolåneränta", "amortering",
+        "privatlån", "snabblån", "smslån",
+        "försäkring", "försäkringar", "hemförsäkring",
+        "pension", "pensionssparande", "tjänstepension",
+        "ekonomi", "privatekonomi", "budget",
+        "finansiering", "finansiera", "låneförmedling",
+        "investering", "investera", "placering",
+        "aktier", "aktiehandel", "börsen",
+        "fonder", "fondsparande", "indexfond"
+      ],
+      "category": "finance",
+      "priority_domains": ["allabolag.se"]
+    },
+    
+    "tech_electronics": {
+      "keywords": [
+        "dator", "datorer", "pc", "stationär", "desktop",
+        "laptop", "bärbar dator", "notebook", "ultrabook",
+        "mobil", "mobiltelefon", "smartphone", "telefon",
+        "iphone", "iphone 15", "apple iphone",
+        "android", "android telefon", "samsung galaxy",
+        "samsung", "samsung telefon", "galaxy",
+        "apple", "apple produkter", "macbook",
+        "teknik", "elektronik", "gadgets", "prylar",
+        "gaming", "gaming dator", "gaming laptop",
+        "pc", "speldator", "gaming setup",
+        "surfplatta", "ipad", "android platta",
+        "headset", "gaming headset", "hörlurar",
+        "hörlurar", "trådlösa hörlurar", "earbuds",
+        "tv", "teve", "smart tv", "oled", "qled",
+        "skärm", "bildskärm", "monitor", "gaming skärm",
+        "tangentbord", "keyboard", "gaming tangentbord",
+        "mus", "gaming mus", "trådlös mus",
+        "pris", "billigast", "erbjudande", "köpguide"
+      ],
+      "category": "tech",
+      "priority_domains": ["webhallen.com", "elgiganten.se", "inet.se", "komplett.se", "prisjakt.nu"]
+    },
+    
+    "furniture_home": {
+      "keywords": [
+        "möbler", "möbel", "inredning", "heminredning",
+        "soffa", "soffor", "3-sits", "2-sits", "soffgrupp",
+        "säng", "sängar", "dubbelsäng", "enkelsäng", "våningssäng",
+        "bord", "matbord", "soffbord", "skrivbord",
+        "stol", "stolar", "matstol", "kontorstol",
+        "skåp", "garderob", "bokhylla", "vitrinskåp",
+        "förvaring", "förvaringslösningar", "garderob",
+        "hem", "hemma", "inreda", "inredning",
+        "design", "inredningsdesign", "skandinavisk design",
+        "vardagsrum", "vardagsrumsmöbler",
+        "sovrum", "sovrumsm öbler",
+        "kök", "köksmöbler", "köksinredning",
+        "matsal", "matplats", "matsalsmöbler",
+        "ikea", "ikea möbler", "ikea katalog",
+        "billig möbler", "prisvärt", "budget"
+      ],
+      "category": "furniture",
+      "priority_domains": ["ikea.com"]
+    },
+    
+    "emergency_urgent": {
+      "keywords": [
+        "nödnummer", "nöd", "akut", "brådskande",
+        "112", "ring 112", "nödsamtal",
+        "114 14", "polisen 114 14",
+        "hjälp", "snabb hjälp", "behöver hjälp",
+        "olycka", "trafikolycka", "olycksfall",
+        "brand", "brandfara", "det brinner",
+        "ambulans", "akutsjukvård", "ambulanstransport",
+        "polis", "polisen", "polishjälp",
+        "räddningstjänst", "brandkår", "räddning",
+        "första hjälpen", "hj ärt lungräddning", "hjr",
+        "gift", "förgiftning", "förgiftningscentral",
+        "kris", "krishjälp", "krissituation"
+      ],
+      "category": "emergency",
+      "priority_domains": ["112.se", "polisen.se", "krisinformation.se", "1177.se"]
+    },
+    
+    "municipality_services": {
+      "keywords": [
+        "kommun", "kommunal", "kommunen", "kommunservice",
+        "stadshus", "kommunhus", "kommunkontor",
+        "medborgarkontor", "medborgarservice",
+        "pass", "passansökan", "nytt pass", "förnya pass",
+        "id-kort", "id kort", "nationellt id-kort",
+        "personnummer", "samordningsnummer",
+        "folkbokföring", "folkbokförd", "adressändring",
+        "register", "register utdrag", "bevis",
+        "skola", "skolval", "grundskola", "förskoleklass",
+        "barnomsorg", "förskola", "familjedaghem",
+        "äldreomsorg", "hemtjänst", "äldrevård",
+        "bygglov", "bygglovsansökan", "ansöka bygglov",
+        "parkering", "parkeringstillstånd", "boendeparkering",
+        "stockholm", "göteborg", "malmö", "uppsala"
+      ],
+      "category": "municipality",
+      "priority_domains": ["stockholm.se", "goteborg.se", "malmo.se", "uppsala.se"]
+    },
+    
+    "social_benefits": {
+      "keywords": [
+        "försäkringskassan", "fk", "försäkringskassa",
+        "föräldrapenning", "föräldraledighet", "pappamånader",
+        "barnbidrag", "flerbarnstillägg", "studiebidrag",
+        "sjukpenning", "sjukskrivning", "sjukfrånvaro",
+        "bostadsbidrag", "bostadstillägg", "hyresbidrag",
+        "underhållsstöd", "bidrag", "ekonomiskt stöd",
+        "graviditetspenning", "tillfällig föräldrapenning",
+        "aktivitetsersättning", "sjukersättning",
+        "vårdbidrag", "merkostnadsersättning",
+        "assistansersättning", "personlig assistans"
+      ],
+      "category": "social_services",
+      "priority_domains": ["forsakringskassan.se", "csn.se"]
+    }
+  },
+  
+  "direct_domain_mappings": {
+    "ikea": ["ikea.com"],
+    "spotify": ["spotify.com"],
+    "blocket": ["blocket.se"],
+    "tradera": ["tradera.com"],
+    "prisjakt": ["prisjakt.nu"],
+    "pricerunner": ["pricerunner.se"],
+    "systembolaget": ["systembolaget.se"],
+    "systemet": ["systembolaget.se"],
+    "bolaget": ["systembolaget.se"],
+    "sj": ["sj.se"],
+    "tåg": ["sj.se"],
+    "ica": ["ica.se"],
+    "coop": ["coop.se"],
+    "willys": ["willys.se"],
+    "hemköp": ["hemkop.se"],
+    "elgiganten": ["elgiganten.se"],
+    "webhallen": ["webhallen.com"],
+    "inet": ["inet.se"],
+    "komplett": ["komplett.se"],
+    "svt": ["svt.se"],
+    "aftonbladet": ["aftonbladet.se"],
+    "expressen": ["expressen.se"],
+    "dn": ["dn.se"],
+    "dagens nyheter": ["dn.se"],
+    "smhi": ["smhi.se"],
+    "skatteverket": ["skatteverket.se"],
+    "polisen": ["polisen.se"],
+    "regeringen": ["regeringen.se"],
+    "riksdagen": ["riksdagen.se"],
+    "csn": ["csn.se"],
+    "försäkringskassan": ["forsakringskassan.se"],
+    "arbetsförmedlingen": ["arbetsformedlingen.se"],
+    "1177": ["1177.se"],
+    "ring 1177": ["1177.se"],
+    "kth": ["kth.se"],
+    "uppsala universitet": ["uu.se"],
+    "lunds universitet": ["lu.se"],
+    "chalmers": ["chalmers.se"],
+    "allsvenskan": ["allsvenskan.se"],
+    "shl": ["shl.se"]
+  }
+}
