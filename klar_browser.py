@@ -1,9 +1,10 @@
-""" Klar 3.0 - Standalone Swedish Browser
-Complete browser application with integrated search engine
+"""Klar 3.0 - Standalone Swedish Browser with LOKI & URL Validation
+Features: LOKI setup wizard, trusted domain validation, enhanced search
 """
 
 import sys
 import os
+import json
 import webbrowser
 from pathlib import Path
 
@@ -11,7 +12,7 @@ from PyQt6.QtCore import QUrl, Qt, QTimer, pyqtSignal, QThread
 from PyQt6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLineEdit, QPushButton, QTabWidget, QStatusBar, QProgressBar,
-    QLabel, QStackedWidget
+    QLabel, QStackedWidget, QDialog, QCheckBox, QFileDialog, QMessageBox
 )
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QIcon, QKeySequence, QShortcut, QFont
@@ -21,19 +22,151 @@ from engine.search_engine import SearchEngine
 from engine.results_page import ResultsPage
 
 
+class LOKISetupDialog(QDialog):
+    """LOKI Setup Dialog - First run initialization"""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("KLAR 3.0 - First Run Setup")
+        self.setGeometry(100, 100, 600, 400)
+        self.setMinimumWidth(500)
+        self.loki_enabled = False
+        self.klar_data_path = None
+        self.init_ui()
+    
+    def init_ui(self):
+        layout = QVBoxLayout()
+        layout.setSpacing(15)
+        layout.setContentsMargins(20, 20, 20, 20)
+        
+        # Title
+        title = QLabel("🔍 Welcome to KLAR 3.0 - Swedish Search Engine")
+        title_font = QFont()
+        title_font.setPointSize(14)
+        title_font.setBold(True)
+        title.setFont(title_font)
+        layout.addWidget(title)
+        
+        # Description
+        desc_text = (
+            "LOKI is our local knowledge database for instant answers.\n\n"
+            "Benefits:\n"
+            "  ✓ Instant answers without internet\n"
+            "  ✓ Faster search results\n"
+            "  ✓ Private local search\n\n"
+            "Size: ~500MB (can be disabled anytime)\n"
+            "Location: You choose where to store it"
+        )
+        desc = QLabel(desc_text)
+        desc.setWordWrap(True)
+        layout.addWidget(desc)
+        
+        layout.addSpacing(10)
+        
+        # LOKI Checkbox
+        self.loki_checkbox = QCheckBox("Install LOKI for local search")
+        self.loki_checkbox.setChecked(True)
+        self.loki_checkbox.toggled.connect(self.toggle_path_selection)
+        layout.addWidget(self.loki_checkbox)
+        
+        # Path selection
+        path_layout = QHBoxLayout()
+        self.path_label = QLabel("📁 LOKI Data Location: Not selected")
+        self.path_button = QPushButton("Browse...")
+        self.path_button.clicked.connect(self.select_path)
+        self.path_button.setEnabled(False)
+        self.path_button.setMaximumWidth(120)
+        path_layout.addWidget(self.path_label)
+        path_layout.addWidget(self.path_button)
+        layout.addLayout(path_layout)
+        
+        layout.addSpacing(20)
+        
+        # Buttons
+        button_layout = QHBoxLayout()
+        skip_btn = QPushButton("Skip (Web Search Only)")
+        skip_btn.clicked.connect(self.skip_loki)
+        skip_btn.setMinimumWidth(150)
+        
+        next_btn = QPushButton("Continue with LOKI")
+        next_btn.clicked.connect(self.confirm_setup)
+        next_btn.setMinimumWidth(150)
+        next_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                font-weight: bold;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+        """)
+        
+        button_layout.addStretch()
+        button_layout.addWidget(skip_btn)
+        button_layout.addWidget(next_btn)
+        layout.addLayout(button_layout)
+        
+        self.setLayout(layout)
+    
+    def toggle_path_selection(self, checked):
+        self.path_button.setEnabled(checked)
+        if not checked:
+            self.path_label.setText("📁 LOKI Data Location: Not selected")
+    
+    def select_path(self):
+        path = QFileDialog.getExistingDirectory(
+            self,
+            "Select LOKI Data Folder Location",
+            str(Path.home())
+        )
+        if path:
+            self.klar_data_path = Path(path) / "klar_data"
+            self.path_label.setText(f"📁 LOKI Data Location: {self.klar_data_path}")
+    
+    def skip_loki(self):
+        self.loki_enabled = False
+        self.accept()
+    
+    def confirm_setup(self):
+        if self.loki_checkbox.isChecked():
+            if not self.klar_data_path:
+                QMessageBox.warning(
+                    self,
+                    "Path Required",
+                    "Please select a location for LOKI data or click Skip"
+                )
+                return
+            self.loki_enabled = True
+            # Create directory
+            try:
+                self.klar_data_path.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"Failed to create LOKI directory: {e}")
+                return
+        self.accept()
+
+
 class SearchWorker(QThread):
-    """Background thread for searching"""
+    """Background thread for searching with URL validation"""
     finished = pyqtSignal(dict)
     error = pyqtSignal(str)
 
-    def __init__(self, search_engine, query):
+    def __init__(self, search_engine, query, is_url=False):
         super().__init__()
         self.search_engine = search_engine
         self.query = query
+        self.is_url = is_url
 
     def run(self):
         try:
-            results = self.search_engine.search(self.query)
+            results = self.search_engine.search(
+                self.query,
+                direct_url=self.is_url
+            )
             self.finished.emit(results)
         except Exception as e:
             self.error.emit(str(e))
@@ -43,8 +176,11 @@ class KlarBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         
-        self.setWindowTitle("Klar 3.0")
+        self.setWindowTitle("Klar 3.0 - Swedish Search Engine")
         self.setGeometry(100, 100, 1400, 900)
+
+        # Check first run and show LOKI setup
+        self.check_first_run()
 
         # Initialize search engine
         self.search_engine = SearchEngine()
@@ -59,6 +195,24 @@ class KlarBrowser(QMainWindow):
 
         # Show home
         self.show_home_page()
+
+    def check_first_run(self):
+        """Check if first run and show LOKI setup"""
+        config_path = Path("klar_config.json")
+        
+        if not config_path.exists():
+            dialog = LOKISetupDialog(self)
+            dialog.exec()
+            
+            # Save configuration
+            config = {
+                'first_run_done': True,
+                'loki_enabled': dialog.loki_enabled,
+                'loki_path': str(dialog.klar_data_path) if dialog.klar_data_path else None
+            }
+            
+            with open(config_path, 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=2)
 
     def setup_ui(self):
         """Setup browser UI with centered search"""
@@ -105,7 +259,7 @@ class KlarBrowser(QMainWindow):
         self.setStatusBar(self.status)
 
         # Add first tab
-        self.add_new_tab(None, "Ny flik")
+        self.add_new_tab(None, "New Tab")
         self.open_videos_externally = True
 
         # Shortcuts
@@ -128,7 +282,7 @@ class KlarBrowser(QMainWindow):
         back_btn.setObjectName("navButton")
         back_btn.setFixedSize(36, 36)
         back_btn.clicked.connect(self.navigate_back)
-        back_btn.setToolTip("Bakåt (Alt+←)")
+        back_btn.setToolTip("Back (Alt+←)")
         nav_layout.addWidget(back_btn)
 
         # Forward button
@@ -136,7 +290,7 @@ class KlarBrowser(QMainWindow):
         forward_btn.setObjectName("navButton")
         forward_btn.setFixedSize(36, 36)
         forward_btn.clicked.connect(self.navigate_forward)
-        forward_btn.setToolTip("Framåt (Alt+→)")
+        forward_btn.setToolTip("Forward (Alt+→)")
         nav_layout.addWidget(forward_btn)
 
         # Reload button
@@ -144,7 +298,7 @@ class KlarBrowser(QMainWindow):
         reload_btn.setObjectName("navButton")
         reload_btn.setFixedSize(36, 36)
         reload_btn.clicked.connect(self.reload_page)
-        reload_btn.setToolTip("Uppdatera (F5)")
+        reload_btn.setToolTip("Reload (F5)")
         nav_layout.addWidget(reload_btn)
 
         # Home button
@@ -152,18 +306,18 @@ class KlarBrowser(QMainWindow):
         home_btn.setObjectName("navButton")
         home_btn.setFixedSize(36, 36)
         home_btn.clicked.connect(self.show_home_page)
-        home_btn.setToolTip("Hem (Ctrl+H)")
+        home_btn.setToolTip("Home (Ctrl+H)")
         nav_layout.addWidget(home_btn)
 
         # Main search/URL bar
         self.main_search_bar = QLineEdit()
         self.main_search_bar.setObjectName("mainSearchBar")
-        self.main_search_bar.setPlaceholderText("Sök eller ange webbadress...")
+        self.main_search_bar.setPlaceholderText("Search or paste URL (trusted domains only)...")
         self.main_search_bar.returnPressed.connect(self.navigate_to_url)
         nav_layout.addWidget(self.main_search_bar)
 
         # Search button
-        search_btn = QPushButton("Sök")
+        search_btn = QPushButton("Search")
         search_btn.setObjectName("primaryButton")
         search_btn.setFixedWidth(80)
         search_btn.clicked.connect(self.navigate_to_url)
@@ -206,14 +360,14 @@ class KlarBrowser(QMainWindow):
         # Search bar
         self.home_search_bar = QLineEdit()
         self.home_search_bar.setObjectName("homeSearchBar")
-        self.home_search_bar.setPlaceholderText("Sök eller ange webbadress...")
+        self.home_search_bar.setPlaceholderText("Search keywords or paste URL (trusted domains only)...")
         self.home_search_bar.setMinimumWidth(600)
         self.home_search_bar.setMaximumWidth(800)
         self.home_search_bar.returnPressed.connect(self.home_search)
         search_layout.addWidget(self.home_search_bar)
 
         # Search button
-        home_search_btn = QPushButton("Sök")
+        home_search_btn = QPushButton("Search")
         home_search_btn.setObjectName("primaryButton")
         home_search_btn.clicked.connect(self.home_search)
         search_layout.addWidget(home_search_btn)
@@ -232,12 +386,12 @@ class KlarBrowser(QMainWindow):
         features_layout.addStretch()
 
         features = [
-            ("🇸🇪", "111 Svenska domäner"),
-            ("⚡", "Snabb och effektiv sökning"),
-            ("🔒", "Integritet i fokus"),
-            ("🌐", "Utforska webben smidigt"),
-            ("🖼️", "Inbyggd bildvisare"),
-            ("🎥", "Spela upp videor direkt")
+            ("🇸🇪", "111 Swedish domains"),
+            ("⚡", "Fast & efficient search"),
+            ("🔒", "Privacy focused"),
+            ("🌐", "Browse securely"),
+            ("🖼️", "Image viewer"),
+            ("🎥", "Direct video playback")
         ]
 
         for icon, text in features:
@@ -278,7 +432,7 @@ class KlarBrowser(QMainWindow):
             self.main_search_bar.setText(query)
             self.navigate_to_url()
 
-    def add_new_tab(self, qurl=None, label="Ny flik"):
+    def add_new_tab(self, qurl=None, label="New Tab"):
         """Add new tab"""
         browser = QWebEngineView()
         browser.urlChanged.connect(lambda url: self.check_video_url(url))
@@ -327,13 +481,27 @@ class KlarBrowser(QMainWindow):
         self.tabs.removeTab(i)
 
     def navigate_to_url(self):
-        """Navigate to URL or perform search"""
+        """Navigate to URL or perform search with validation"""
         query = self.main_search_bar.text().strip()
         if not query:
             return
 
         # Check if it's a URL
-        if self.is_url(query):
+        is_url = False
+        if query.startswith('http://') or query.startswith('https://'):
+            is_url = True
+        elif '.' in query and ' ' not in query:
+            is_url = True
+        
+        if is_url:
+            # Validate domain
+            is_valid, domain, error_msg = self.search_engine.is_valid_domain(query)
+            if not is_valid:
+                # Show error message
+                QMessageBox.warning(self, "❌ Domain Not Trusted", error_msg)
+                return
+            
+            # Load URL directly
             url = query if query.startswith('http') else 'https://' + query
             self.current_browser().setUrl(QUrl(url))
             self.stacked_widget.setCurrentIndex(1)
@@ -341,30 +509,21 @@ class KlarBrowser(QMainWindow):
             # It's a search query
             self.perform_search(query)
 
-    def is_url(self, text):
-        """Check if text is a URL"""
-        # More lenient URL detection
-        if text.startswith('http://') or text.startswith('https://'):
-            return True
-        if '.' in text and ' ' not in text and len(text.split('.')) >= 2:
-            return True
-        return False
-
     def perform_search(self, query):
         """Perform search using background thread"""
         if self.is_searching:
-            self.status.showMessage("Sökning pågår redan...", 2000)
+            self.status.showMessage("Search already in progress...", 2000)
             return
 
         self.is_searching = True
-        self.status.showMessage(f"Söker efter: {query}...")
+        self.status.showMessage(f"Searching for: {query}...")
 
         # Show loading in browser
         self.show_loading_page(query)
         self.stacked_widget.setCurrentIndex(1)
 
         # Start background search
-        self.search_worker = SearchWorker(self.search_engine, query)
+        self.search_worker = SearchWorker(self.search_engine, query, is_url=False)
         self.search_worker.finished.connect(self.on_search_finished)
         self.search_worker.error.connect(self.on_search_error)
         self.search_worker.start()
@@ -375,8 +534,8 @@ class KlarBrowser(QMainWindow):
         <html>
             <body style="font-family: Arial; display: flex; align-items: center; justify-content: center; height: 100vh; background: #f5f5f5;">
                 <div style="text-align: center;">
-                    <h2>Söker...</h2>
-                    <p>Söker efter: <b>{query}</b></p>
+                    <h2>Searching...</h2>
+                    <p>Query: <b>{query}</b></p>
                     <div style="font-size: 24px;">⏳</div>
                 </div>
             </body>
@@ -388,13 +547,20 @@ class KlarBrowser(QMainWindow):
         """Handle search completion"""
         self.is_searching = False
 
+        # Check for errors
+        if results.get('error'):
+            QMessageBox.warning(self, "Search Error", results['error'])
+            self.show_home_page()
+            return
+
         # Generate results HTML
         results_page = ResultsPage(results)
         html = results_page.generate()
 
         # Display results
         self.current_browser().setHtml(html)
-        self.status.showMessage(f"Sökning slutförd. Hittade {len(results.get('results', []))} resultat", 3000)
+        total = results.get('total_results', 0)
+        self.status.showMessage(f"✓ Found {total} results", 3000)
 
     def on_search_error(self, error_msg):
         """Handle search error"""
@@ -402,13 +568,13 @@ class KlarBrowser(QMainWindow):
         error_html = f"""
         <html>
             <body style="font-family: Arial; padding: 20px;">
-                <h2>Sökning misslyckades</h2>
+                <h2>Search Failed</h2>
                 <p style="color: red;">{error_msg}</p>
             </body>
         </html>
         """
         self.current_browser().setHtml(error_html)
-        self.status.showMessage(f"Fel: {error_msg}", 3000)
+        self.status.showMessage(f"Error: {error_msg}", 3000)
 
     def current_browser(self):
         """Get current browser tab"""
@@ -422,9 +588,9 @@ class KlarBrowser(QMainWindow):
     def update_status(self, progress):
         """Update loading progress"""
         if progress < 100:
-            self.status.showMessage(f"Läser in... {progress}%")
+            self.status.showMessage(f"Loading... {progress}%")
         else:
-            self.status.showMessage("Klar")
+            self.status.showMessage("Ready")
 
     def navigate_back(self):
         """Navigate back"""
