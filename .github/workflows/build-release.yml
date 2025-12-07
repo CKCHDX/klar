@@ -3,8 +3,13 @@ name: Build Klar Release
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+      - 'lab/**'
+      - '.github/workflows/build-android.yml'
   pull_request:
     branches: [ main ]
+    paths-ignore:
+      - 'lab/**'
   workflow_dispatch:  # Allows manual trigger from Actions tab
 
 jobs:
