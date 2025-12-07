@@ -35,38 +35,54 @@ jobs:
       run: |
         pyinstaller --onefile --windowed --name Klar --icon klar.ico --add-data "keywords_db.json;." --add-data "domains.json;." --add-data "engine;engine" --hidden-import PyQt6.QtCore --hidden-import PyQt6.QtGui --hidden-import PyQt6.QtWidgets --hidden-import PyQt6.QtWebEngineWidgets --hidden-import PyQt6.QtWebEngineCore --hidden-import requests --hidden-import bs4 --hidden-import lxml klar_browser.py
     
-    - name: Create release structure
+    - name: Create release structure and README
+      shell: pwsh
       run: |
-        mkdir release
-        mkdir release\windows
-        copy dist\Klar.exe release\windows\Klar.exe
-        echo ============================================ > release\windows\README.txt
-        echo   Klar 3.0 - Swedish Browser >> release\windows\README.txt
-        echo ============================================ >> release\windows\README.txt
-        echo. >> release\windows\README.txt
-        echo STANDALONE SINGLE-FILE EXECUTABLE >> release\windows\README.txt
-        echo No installation required! >> release\windows\README.txt
-        echo. >> release\windows\README.txt
-        echo Installation: >> release\windows\README.txt
-        echo   1. Just run Klar.exe >> release\windows\README.txt
-        echo   2. That's it! >> release\windows\README.txt
-        echo. >> release\windows\README.txt
-        echo System Requirements: >> release\windows\README.txt
-        echo   - Windows 10 or Windows 11 >> release\windows\README.txt
-        echo   - 4GB RAM minimum >> release\windows\README.txt
-        echo   - Internet connection for searches >> release\windows\README.txt
-        echo. >> release\windows\README.txt
-        echo Features: >> release\windows\README.txt
-        echo   - 111 Swedish domains >> release\windows\README.txt
-        echo   - 700+ keywords >> release\windows\README.txt
-        echo   - No tracking or ads >> release\windows\README.txt
-        echo   - Fast search engine >> release\windows\README.txt
-        echo   - Dark mode interface >> release\windows\README.txt
-        echo. >> release\windows\README.txt
-        echo Support: >> release\windows\README.txt
-        echo   https://github.com/CKCHDX/klar >> release\windows\README.txt
+        New-Item -ItemType Directory -Force -Path release/windows
+        Copy-Item dist/Klar.exe release/windows/Klar.exe
+        
+        $readme = @"
+        ============================================
+          Klar 3.0 - Swedish Browser
+        ============================================
+        
+        STANDALONE SINGLE-FILE EXECUTABLE
+        No installation required!
+        
+        Installation:
+          1. Just run Klar.exe
+          2. That's it!
+        
+        System Requirements:
+          - Windows 10 or Windows 11
+          - 4GB RAM minimum
+          - Internet connection for searches
+        
+        Features:
+          - 111 Swedish domains
+          - 700+ keywords
+          - No tracking or ads
+          - Fast search engine
+          - Dark mode interface
+          - Completely standalone
+          - No external files needed
+        
+        First Run:
+          - May take 5-10 seconds to start (unpacking)
+          - After first run, starts instantly
+        
+        Support:
+          https://github.com/CKCHDX/klar
+        
+        Version: 3.0.0
+        Build Date: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+        Build Type: Single-File Executable
+        "@
+        
+        Set-Content -Path release/windows/README.txt -Value $readme
     
     - name: Generate checksum
+      shell: cmd
       run: |
         cd release\windows
         certutil -hashfile Klar.exe SHA256 > Klar.SHA256.txt
@@ -82,8 +98,9 @@ jobs:
         retention-days: 90
     
     - name: Create Release ZIP
+      shell: pwsh
       run: |
-        Compress-Archive -Path release\windows\* -DestinationPath Klar-Windows-Standalone.zip
+        Compress-Archive -Path release/windows/* -DestinationPath Klar-Windows-Standalone.zip
     
     - name: Upload Release ZIP
       uses: actions/upload-artifact@v4
