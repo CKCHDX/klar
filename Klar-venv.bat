@@ -13,6 +13,7 @@ if errorlevel 1 (
 
 echo Python detected: 
 python --version
+echo.
 
 echo Checking for virtual environment...
 if not exist "venv\Scripts\activate" (
@@ -25,9 +26,26 @@ if not exist "venv\Scripts\activate" (
         exit /b 1
     )
     echo Virtual environment created successfully.
+    echo.
+    
+    echo Installing requirements from requirements.txt...
+    if exist "requirements.txt" (
+        call venv\Scripts\activate.bat
+        pip install -r requirements.txt
+        if errorlevel 1 (
+            echo [WARNING] Some packages may have failed to install.
+            echo Please check the output above for errors.
+        ) else (
+            echo All packages installed successfully.
+        )
+        call deactivate
+    ) else (
+        echo [WARNING] requirements.txt not found. Skipping package installation.
+    )
 ) else (
     echo Virtual environment found.
 )
 
+echo.
 echo Activating virtual environment...
 start cmd /k "venv\Scripts\activate"
