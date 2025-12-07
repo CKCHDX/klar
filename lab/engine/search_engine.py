@@ -1,6 +1,5 @@
 """
 Enhanced search with phrase matching and subpage discovery
-FIXED: Returns results even when live fetching fails
 """
 
 import requests
@@ -36,7 +35,18 @@ class SearchEngine:
         if os.path.exists(domains_file):
             try:
                 with open(domains_file, 'r', encoding='utf-8') as f:
-                    self.domains = json.load(f)
+                    domains_data = json.load(f)
+                
+                # Handle both old format (list) and new format (object with domains key)
+                if isinstance(domains_data, list):
+                    # Old format: ["svt.se", "dn.se", ...]
+                    self.domains = domains_data
+                elif isinstance(domains_data, dict) and 'domains' in domains_data:
+                    # New format: {"domains": [{"name": "svt.se", ...}, ...]}
+                    self.domains = [d['name'] for d in domains_data['domains']]
+                else:
+                    self.domains = []
+                
                 print(f"[DEBUG] Loaded {len(self.domains)} domains")
             except Exception as e:
                 print(f"[ERROR] Failed to load domains.json: {e}")
@@ -140,7 +150,7 @@ class SearchEngine:
 
         # FALLBACK: Always include top Swedish news sites if nothing found
         if not relevant_domains:
-            relevant_domains = ['svt.se', 'dn.se', 'aftonbladet.se', 'expressen.se']
+            relevant_domains = ['svt.se', 'dn.se', 'aftonbladet.se']
 
         seen = set()
         result = []
@@ -152,7 +162,7 @@ class SearchEngine:
         return result[:12]
 
     def search(self, query: str) -> Dict:
-        """Main search - returns mock results when live fetch fails"""
+        """Main search with phrase support"""
         print(f"\n[Search] Query: {query}")
         relevant_domains = self.get_relevant_domains(query)
         categories, priority_domains = self.detect_query_intent(query)
@@ -162,27 +172,33 @@ class SearchEngine:
         results = []
         
         # Try to fetch live results
+        is_phrase = len(query.split()) > 1
+        
         with ThreadPoolExecutor(max_workers=6) as executor:
             futures = {}
             for domain in relevant_domains:
-                url = f"https://www.{domain}"
-                futures[executor.submit(self.fetch_and_parse, url, query)] = domain
+                if is_phrase:
+                    futures[executor.submit(self.search_domain_deeply, domain, query)] = domain
+                else:
+                    url = f"https://www.{domain}"
+                    futures[executor.submit(self.fetch_and_parse, url, query)] = domain
 
-            completed = 0
             for future in as_completed(futures, timeout=8):
-                completed += 1
                 domain = futures[future]
                 try:
                     result = future.result()
                     if result:
-                        results.append(result)
+                        if isinstance(result, list):
+                            results.extend(result)
+                        else:
+                            results.append(result)
                         print(f"  ✓ {domain}")
                 except Exception as e:
-                    print(f"  ✗ {domain} - {type(e).__name__}")
+                    print(f"  ✗ {domain}")
 
         print(f"[Search] Got {len(results)} live results")
 
-        # FALLBACK: If no live results, create synthetic results for the search domains
+        # FALLBACK: If no live results, create synthetic results
         if len(results) < 3:
             print(f"[Search] Creating synthetic results as fallback...")
             results.extend(self._generate_fallback_results(query, relevant_domains))
@@ -201,10 +217,9 @@ class SearchEngine:
         """Generate fallback synthetic results when live fetch fails"""
         fallback_results = []
         
-        # Create realistic fallback results for top domains
         fallback_data = {
             'svt.se': {
-                'title': f'Sök resultat för "{query}" på SVT',
+                'title': f'Sökresultat för "{query}" på SVT',
                 'description': f'Sveriges Television - Nyheter och innehål relaterat till {query}. SVT är en av Sveriges största nyhetskällor.'
             },
             'dn.se': {
@@ -219,10 +234,6 @@ class SearchEngine:
                 'title': f'{query} - Expressen',
                 'description': f'Expressen rapporterar om {query}. Se senaste utvecklingen och läs analys från Expressen.'
             },
-            'dn.se': {
-                'title': f'Hitta information om {query}',
-                'description': f'DN:s sökresultat för {query}. Vi samlar nyheter, analyser och reportage om ämnet.'
-            }
         }
 
         for domain in domains[:5]:
@@ -239,23 +250,84 @@ class SearchEngine:
                 'title': data['title'],
                 'description': data['description'],
                 'domain': domain,
-                'relevance': 0.6,  # Moderate relevance for fallback
+                'relevance': 0.6,
                 'images': [],
-                'verified': False,  # Mark as fallback
+                'verified': False,
                 'is_fallback': True
             }
             fallback_results.append(result)
 
         return fallback_results
 
+    def search_domain_deeply(self, domain: str, query: str) -> List[Dict]:
+        """
+        Deep search within a domain to find specific subpages
+        """
+        results = []
+        try:
+            base_url = f"https://www.{domain}"
+            response = self.session.get(base_url, timeout=(2, 5))
+            response.raise_for_status()
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            links = self.extract_internal_links(soup, base_url, domain)
+            relevant_links = self.filter_relevant_links(links, query)
+
+            for link in relevant_links[:3]:
+                try:
+                    result = self.fetch_and_parse(link, query)
+                    if result and result['relevance'] > 0.3:
+                        results.append(result)
+                except:
+                    pass
+
+            homepage_result = self.parse_page(soup, base_url, query)
+            if homepage_result and homepage_result['relevance'] > 0.1:
+                results.append(homepage_result)
+        except:
+            pass
+
+        return results
+
+    def extract_internal_links(self, soup: BeautifulSoup, base_url: str, domain: str) -> List[str]:
+        """Extract internal links from page"""
+        links = []
+        for a_tag in soup.find_all('a', href=True):
+            href = a_tag['href']
+            full_url = urljoin(base_url, href)
+            if domain in urlparse(full_url).netloc:
+                links.append(full_url)
+        return list(set(links))[:50]
+
+    def filter_relevant_links(self, links: List[str], query: str) -> List[str]:
+        """Filter links that might contain query terms"""
+        query_terms = set(query.lower().split())
+        scored_links = []
+        for link in links:
+            url_lower = link.lower()
+            score = 0
+            for term in query_terms:
+                if term in url_lower:
+                    score += 2
+            if '?' not in link:
+                score += 1
+            path_depth = url_lower.count('/')
+            if 3 <= path_depth <= 5:
+                score += 1
+            if score > 0:
+                scored_links.append((score, link))
+        
+        scored_links.sort(reverse=True, key=lambda x: x[0])
+        return [link for score, link in scored_links]
+
     def fetch_and_parse(self, url: str, query: str) -> Dict:
         """Fetch and parse single page"""
         try:
-            response = self.session.get(url, timeout=(3, 8), allow_redirects=True)
+            response = self.session.get(url, timeout=(2, 5), allow_redirects=True)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, 'html.parser')
             return self.parse_page(soup, response.url, query)
-        except Exception as e:
+        except:
             return None
 
     def parse_page(self, soup: BeautifulSoup, url: str, query: str) -> Dict:
@@ -285,15 +357,12 @@ class SearchEngine:
         og_title = soup.find('meta', property='og:title')
         if og_title and og_title.get('content'):
             return og_title['content'].strip()
-
         title = soup.find('title')
         if title:
             return title.get_text().strip()
-
         h1 = soup.find('h1')
         if h1:
             return h1.get_text().strip()
-
         return "Ingen titel"
 
     def extract_description(self, soup: BeautifulSoup) -> str:
@@ -301,28 +370,23 @@ class SearchEngine:
         meta_desc = soup.find('meta', attrs={'name': 'description'})
         if meta_desc and meta_desc.get('content'):
             return meta_desc['content'].strip()
-
         og_desc = soup.find('meta', property='og:description')
         if og_desc and og_desc.get('content'):
             return og_desc['content'].strip()
-
         paragraphs = soup.find_all('p')
         for p in paragraphs:
             text = p.get_text().strip()
             if len(text) > 50:
                 return text[:250] + "..."
-
         return "Ingen beskrivning tillgänglig"
 
     def extract_content(self, soup: BeautifulSoup) -> str:
         """Extract content"""
         for element in soup(['script', 'style', 'nav', 'footer', 'header']):
             element.decompose()
-
         main = soup.find('main') or soup.find('article') or soup.find('body')
         if main:
             return main.get_text(separator=' ', strip=True)[:3000]
-
         return soup.get_text(separator=' ', strip=True)[:3000]
 
     def extract_images(self, soup: BeautifulSoup, base_url: str) -> List[str]:
@@ -402,7 +466,7 @@ class SearchEngine:
         return 0.0
 
     def rank_results(self, results: List[Dict], query: str, priority_domains: List[str]) -> List[Dict]:
-        """Rank results"""
+        """Rank results by relevance and authority"""
         authority = {
             '1177.se': 1.0,
             'folkhalsomyndigheten.se': 0.98,
