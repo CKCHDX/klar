@@ -20,11 +20,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
     - name: Copy project files to lab directory
       run: |
         # Copy core files to lab
@@ -53,115 +48,35 @@ jobs:
         echo "Lab directory contents:"
         ls -la lab/
     
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          python3-pip \
-          build-essential \
-          git \
-          ffmpeg \
-          libsdl2-dev \
-          libsdl2-image-dev \
-          libsdl2-mixer-dev \
-          libsdl2-ttf-dev \
-          libportmidi-dev \
-          libswscale-dev \
-          libavformat-dev \
-          libavcodec-dev \
-          zlib1g-dev \
-          libgstreamer1.0 \
-          gstreamer1.0-plugins-base \
-          gstreamer1.0-plugins-good
-    
-    - name: Setup Java 17
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'temurin'
-        java-version: '17'
-    
-    - name: Setup Android SDK
-      run: |
-        # Download Android command line tools
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O android-tools.zip
-        unzip -q android-tools.zip -d $HOME/android-sdk
-        
-        # Setup environment
-        export ANDROID_HOME=$HOME/android-sdk
-        export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
-        
-        # Create directory structure
-        mkdir -p $ANDROID_HOME/cmdline-tools/latest
-        mv $ANDROID_HOME/cmdline-tools/bin $ANDROID_HOME/cmdline-tools/latest/
-        mv $ANDROID_HOME/cmdline-tools/lib $ANDROID_HOME/cmdline-tools/latest/
-        
-        # Accept licenses
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        
-        # Install required SDK components
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install \
-          "platform-tools" \
-          "platforms;android-33" \
-          "build-tools;33.0.2" \
-          "ndk;25.2.9519653" \
-          "cmdline-tools;latest"
-        
-        # Save to env for next steps
-        echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
-        echo "ANDROID_NDK_HOME=$HOME/android-sdk/ndk/25.2.9519653" >> $GITHUB_ENV
-        echo "PATH=$PATH:$HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools" >> $GITHUB_ENV
-    
-    - name: Install Buildozer and dependencies
-      run: |
-        pip install --upgrade pip
-        pip install buildozer cython==0.29.36
-        pip install kivy kivymd
-    
-    - name: Cache Buildozer packages
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.buildozer
-          lab/.buildozer
-        key: ${{ runner.os }}-buildozer-${{ hashFiles('lab/buildozer.spec') }}
-        restore-keys: |
-          ${{ runner.os }}-buildozer-
-    
     - name: Build APK with Buildozer
-      working-directory: ./lab
-      run: |
-        # Build APK (this will take 20-40 minutes on first build)
-        buildozer -v android debug
-      env:
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
-        ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
-        ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
+      uses: ArtemSBulgakov/buildozer-action@v1
+      id: buildozer
+      with:
+        workdir: lab
+        buildozer_version: stable
     
-    - name: Find and rename APK
-      working-directory: ./lab
+    - name: Find and organize APK
       run: |
+        # Create output directory
+        mkdir -p release/android
+        
         # Find the built APK
-        APK_FILE=$(find .buildozer -name "*.apk" -type f | head -n 1)
+        APK_FILE=$(find lab/.buildozer -name "*.apk" -type f | head -n 1)
         
         if [ -z "$APK_FILE" ]; then
           echo "Error: No APK file found!"
-          echo "Searching in lab/.buildozer:"
-          find .buildozer -name "*.apk" -type f || echo "No APK files found"
-          ls -la .buildozer/android/platform/build-*/outputs/apk/ || echo "Build output directory not found"
+          echo "Searching for APK files:"
+          find lab -name "*.apk" -type f || echo "No APK files found anywhere"
           exit 1
         fi
         
         echo "Found APK: $APK_FILE"
         
-        # Create output directory
-        mkdir -p ../release/android
-        
         # Copy and rename APK
-        cp "$APK_FILE" ../release/android/Klar-3.0-debug.apk
+        cp "$APK_FILE" release/android/Klar-3.0-debug.apk
         
         echo "APK copied to release/android/"
-        ls -la ../release/android/
+        ls -lh release/android/
     
     - name: Create Android README
       run: |
@@ -171,36 +86,49 @@ jobs:
         ## Installation
 
         1. Download `Klar-3.0-debug.apk`
-        2. Enable "Install from Unknown Sources" in Android settings
-        3. Open the APK file and install
+        2. Enable "Install from Unknown Sources" in Android settings:
+           - Settings → Security → Unknown Sources (enable)
+           - OR Settings → Apps → Special Access → Install Unknown Apps
+        3. Open the downloaded APK file and tap Install
         4. Launch Klar from your app drawer
 
         ## Features
 
-        - Native Android app (Python-based)
-        - 111 Swedish domains
-        - 700+ Swedish keywords
-        - Dark mode interface
-        - Optimized for mobile
-        - No tracking or ads
+        - Native Android app (Python-powered with Kivy)
+        - 111 Swedish domains built-in
+        - 700+ Swedish keywords database
+        - Dark mode Material Design interface
+        - Touch-optimized for mobile
+        - No tracking, no ads, no bloat
+        - Works completely offline (database embedded)
 
         ## System Requirements
 
         - Android 5.0 (Lollipop) or higher
-        - 100MB storage space
-        - Internet connection
+        - ~100MB storage space
+        - Internet connection for web searches
 
         ## First Launch
 
-        The app may take 10-15 seconds to start on first launch.
-        Subsequent launches will be faster.
+        The app may take 10-20 seconds to start on first launch while
+        it extracts and initializes the Python runtime. Subsequent 
+        launches will be much faster (2-3 seconds).
+
+        ## Technical Details
+
+        - Built with: Python 3.11 + Kivy + KivyMD
+        - Package: se.oscyra.klar
+        - Version: 3.0.0
+        - Architecture: ARM64-v8a + ARMv7a (universal)
+        - Min SDK: 21 (Android 5.0)
+        - Target SDK: 33 (Android 13)
 
         ## Note
 
-        This is a DEBUG build for testing. For production use,
-        a release build with proper signing would be needed.
+        This is a DEBUG build for testing purposes. It is not signed 
+        for production distribution via Google Play Store.
 
-        ## Support
+        ## Support & Source Code
 
         https://github.com/CKCHDX/klar
         EOF
@@ -209,6 +137,8 @@ jobs:
       working-directory: ./release/android
       run: |
         sha256sum Klar-3.0-debug.apk > Klar-3.0-debug.apk.sha256
+        echo "SHA256:"
+        cat Klar-3.0-debug.apk.sha256
     
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
@@ -222,14 +152,26 @@ jobs:
     
     - name: Build summary
       run: |
-        echo "## Android Build Complete! 🎉" >> $GITHUB_STEP_SUMMARY
+        APK_SIZE=$(du -h release/android/Klar-3.0-debug.apk | cut -f1)
+        echo "## 🎉 Android Build Complete!" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### APK Details" >> $GITHUB_STEP_SUMMARY
-        echo "- **File**: Klar-3.0-debug.apk" >> $GITHUB_STEP_SUMMARY
-        echo "- **Size**: $(du -h release/android/Klar-3.0-debug.apk | cut -f1)" >> $GITHUB_STEP_SUMMARY
-        echo "- **Architecture**: ARM64 + ARMv7a" >> $GITHUB_STEP_SUMMARY
-        echo "- **Min Android**: 5.0 (API 21)" >> $GITHUB_STEP_SUMMARY
-        echo "- **Target Android**: 13 (API 33)" >> $GITHUB_STEP_SUMMARY
+        echo "### 📱 APK Details" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Download" >> $GITHUB_STEP_SUMMARY
-        echo "Download the APK from the **Artifacts** section below." >> $GITHUB_STEP_SUMMARY
+        echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
+        echo "| -------- | ----- |" >> $GITHUB_STEP_SUMMARY
+        echo "| **File** | Klar-3.0-debug.apk |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Size** | $APK_SIZE |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Architecture** | ARM64-v8a + ARMv7a |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Min Android** | 5.0 (API 21) |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Target Android** | 13 (API 33) |" >> $GITHUB_STEP_SUMMARY
+        echo "| **Package** | se.oscyra.klar |" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📥 Download" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Download the APK from the **Artifacts** section at the bottom of this page." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 🔐 SHA256 Checksum" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        cat release/android/Klar-3.0-debug.apk.sha256 >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
