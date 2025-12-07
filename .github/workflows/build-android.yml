@@ -1,0 +1,190 @@
+name: Build Klar Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'lab/**'
+      - '.github/workflows/build-android.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'lab/**'
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Copy project files to lab directory
+      run: |
+        # Copy core files to lab
+        cp keywords_db.json lab/ || echo "keywords_db.json not found"
+        cp domains.json lab/ || echo "domains.json not found"
+        cp klar.ico lab/ || echo "klar.ico not found"
+        
+        # Copy engine directory
+        if [ -d "engine" ]; then
+          cp -r engine lab/
+        else
+          echo "Warning: engine directory not found"
+        fi
+        
+        # Copy algorithms if exists
+        if [ -d "algorithms" ]; then
+          cp -r algorithms lab/
+        fi
+        
+        # Copy core if exists  
+        if [ -d "core" ]; then
+          cp -r core lab/
+        fi
+        
+        # List lab contents
+        echo "Lab directory contents:"
+        ls -la lab/
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          python3-pip \
+          build-essential \
+          git \
+          ffmpeg \
+          libsdl2-dev \
+          libsdl2-image-dev \
+          libsdl2-mixer-dev \
+          libsdl2-ttf-dev \
+          libportmidi-dev \
+          libswscale-dev \
+          libavformat-dev \
+          libavcodec-dev \
+          zlib1g-dev \
+          libgstreamer1.0 \
+          gstreamer1.0-plugins-base \
+          gstreamer1.0-plugins-good \
+          openjdk-17-jdk \
+          unzip
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    
+    - name: Install Buildozer and dependencies
+      run: |
+        pip install --upgrade pip
+        pip install buildozer cython==0.29.36
+        pip install kivy kivymd
+    
+    - name: Build APK with Buildozer
+      working-directory: ./lab
+      run: |
+        # Accept Android licenses
+        yes | sdkmanager --licenses || true
+        
+        # Build APK (this will take 20-40 minutes on first build)
+        buildozer android debug
+    
+    - name: Find and rename APK
+      working-directory: ./lab
+      run: |
+        # Find the built APK
+        APK_FILE=$(find bin -name "*.apk" -type f | head -n 1)
+        
+        if [ -z "$APK_FILE" ]; then
+          echo "Error: No APK file found!"
+          echo "Searching in lab/bin:"
+          ls -la bin/ || echo "bin directory not found"
+          exit 1
+        fi
+        
+        echo "Found APK: $APK_FILE"
+        
+        # Create output directory
+        mkdir -p ../release/android
+        
+        # Copy and rename APK
+        cp "$APK_FILE" ../release/android/Klar-3.0-debug.apk
+        
+        echo "APK copied to release/android/"
+        ls -la ../release/android/
+    
+    - name: Create Android README
+      run: |
+        cat > release/android/README.md << 'EOF'
+        # Klar 3.0 - Android APK
+
+        ## Installation
+
+        1. Download `Klar-3.0-debug.apk`
+        2. Enable "Install from Unknown Sources" in Android settings
+        3. Open the APK file and install
+        4. Launch Klar from your app drawer
+
+        ## Features
+
+        - Native Android app (Python-based)
+        - 111 Swedish domains
+        - 700+ Swedish keywords
+        - Dark mode interface
+        - Optimized for mobile
+        - No tracking or ads
+
+        ## System Requirements
+
+        - Android 5.0 (Lollipop) or higher
+        - 100MB storage space
+        - Internet connection
+
+        ## First Launch
+
+        The app may take 10-15 seconds to start on first launch.
+        Subsequent launches will be faster.
+
+        ## Note
+
+        This is a DEBUG build for testing. For production use,
+        a release build with proper signing would be needed.
+
+        ## Support
+
+        https://github.com/CKCHDX/klar
+        EOF
+    
+    - name: Generate APK checksum
+      working-directory: ./release/android
+      run: |
+        sha256sum Klar-3.0-debug.apk > Klar-3.0-debug.apk.sha256
+    
+    - name: Upload APK artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Klar-Android-APK
+        path: |
+          release/android/Klar-3.0-debug.apk
+          release/android/README.md
+          release/android/Klar-3.0-debug.apk.sha256
+        retention-days: 90
+    
+    - name: Build summary
+      run: |
+        echo "## Android Build Complete! 🎉" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### APK Details" >> $GITHUB_STEP_SUMMARY
+        echo "- **File**: Klar-3.0-debug.apk" >> $GITHUB_STEP_SUMMARY
+        echo "- **Size**: $(du -h release/android/Klar-3.0-debug.apk | cut -f1)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Architecture**: ARM64 + ARMv7a" >> $GITHUB_STEP_SUMMARY
+        echo "- **Min Android**: 5.0 (API 21)" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target Android**: 13 (API 33)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Download" >> $GITHUB_STEP_SUMMARY
+        echo "Download the APK from the **Artifacts** section below." >> $GITHUB_STEP_SUMMARY
