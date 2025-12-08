@@ -52,6 +52,43 @@ jobs:
             cmake \
             gettext \
             ccache
+          echo "System dependencies installed successfully"
+
+      - name: Upgrade pip and setuptools
+        run: |
+          python3 -m pip install --upgrade pip setuptools wheel --no-cache-dir
+          echo "pip version:"
+          python3 -m pip --version
+          echo "setuptools version:"
+          python3 -m pip show setuptools | grep Version
+
+      - name: Install Cython
+        run: |
+          echo "Installing Cython 0.29.37..."
+          python3 -m pip install cython==0.29.37 --no-cache-dir
+          python3 -c "import Cython; print(f'Cython installed: {Cython.__version__}')"
+          if [ $? -ne 0 ]; then
+            echo "Cython installation failed"
+            exit 1
+          fi
+
+      - name: Install Buildozer
+        run: |
+          echo "Installing Buildozer 1.4.6..."
+          python3 -m pip install buildozer==1.4.6 --no-cache-dir
+          
+          # Verify installation
+          buildozer --version
+          if [ $? -ne 0 ]; then
+            echo "Buildozer installation failed"
+            exit 1
+          fi
+          echo "Buildozer installed successfully"
+
+      - name: Install Additional Python Packages
+        run: |
+          python3 -m pip install pycryptodome --no-cache-dir
+          echo "All Python packages installed"
 
       - name: Prepare Workspace
         run: |
@@ -59,18 +96,35 @@ jobs:
           cd ~/klar_build
           
           # Copy all necessary files
-          cp -r $GITHUB_WORKSPACE/lab . || { echo "lab directory not found"; exit 1; }
-          cp $GITHUB_WORKSPACE/keywords_db.json . || echo "keywords_db.json not found"
-          cp $GITHUB_WORKSPACE/domains.json . || echo "domains.json not found"
-          cp -r $GITHUB_WORKSPACE/engine . || echo "engine not found"
+          echo "Copying lab directory..."
+          cp -r $GITHUB_WORKSPACE/lab . || { echo "ERROR: lab directory not found"; exit 1; }
+          
+          echo "Copying data files..."
+          cp $GITHUB_WORKSPACE/keywords_db.json . 2>/dev/null || echo "keywords_db.json not found (optional)"
+          cp $GITHUB_WORKSPACE/domains.json . 2>/dev/null || echo "domains.json not found (optional)"
+          
+          echo "Copying engine module..."
+          cp -r $GITHUB_WORKSPACE/engine . 2>/dev/null || echo "engine module not found (optional)"
           
           echo "Build workspace ready:"
           ls -la ~/klar_build/
+          echo ""
+          echo "Lab directory contents:"
+          ls -la ~/klar_build/lab/
 
-      - name: Install Python Buildtools
+      - name: Verify Python Environment
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install cython==0.29.37 buildozer==1.4.6 pycryptodome
+          echo "Python version:"
+          python3 --version
+          echo ""
+          echo "Installed packages:"
+          python3 -m pip list | grep -E "buildozer|cython|setuptools|pip"
+          echo ""
+          echo "Buildozer location:"
+          which buildozer
+          echo ""
+          echo "Buildozer version:"
+          buildozer --version
 
       - name: Create Android Build Directory
         run: |
@@ -78,9 +132,10 @@ jobs:
           mkdir -p ~/.buildozer/android/platform/ndk-bundle
           export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
           export PATH=$JAVA_HOME/bin:$PATH
+          java -version
 
-      - name: Build APK
-        working-directory: ~/klar_build
+      - name: Build APK with Buildozer
+        working-directory: ~/klar_build/lab
         run: |
           set -e
           export PATH=$PATH:~/.local/bin
@@ -91,22 +146,25 @@ jobs:
           echo "Working Directory: $(pwd)"
           echo "Java Version:"
           java -version
-          
-          echo "=== Files in build directory ==="
+          echo ""
+          echo "=== Files in directory ==="
           ls -la
+          echo ""
           
-          echo "=== Starting Buildozer ==="
+          echo "=== Starting Buildozer Build ==="
           buildozer android debug 2>&1 | tee build.log
           
           BUILD_RESULT=${PIPESTATUS[0]}
           
           if [ $BUILD_RESULT -eq 0 ]; then
+            echo ""
             echo "✓ Build successful"
           else
+            echo ""
             echo "✗ Build failed with code $BUILD_RESULT"
             echo ""
-            echo "=== Last 100 lines of build log ==="
-            tail -n 100 build.log || true
+            echo "=== Last 150 lines of build log ==="
+            tail -n 150 build.log || true
           fi
           
           exit $BUILD_RESULT
@@ -114,35 +172,38 @@ jobs:
           USER: runner
           HOME: /home/runner
 
-      - name: Locate and Upload APK
+      - name: Check APK Output
         if: always()
         run: |
           echo "=== Searching for APK files ==="
           find ~/klar_build -name "*.apk" -type f
           
-          if [ -f ~/klar_build/bin/klar-3.0.0-debug.apk ]; then
-            echo "✓ APK found!"
-            ls -lh ~/klar_build/bin/*.apk
+          echo ""
+          echo "=== Checking bin directory ==="
+          if [ -d ~/klar_build/lab/bin ]; then
+            ls -lh ~/klar_build/lab/bin/
           else
-            echo "✗ APK not found in expected location"
-            echo "Checking .buildozer directory:"
-            find ~/klar_build/.buildozer -name "*.apk" -type f 2>/dev/null || echo "No APK in .buildozer"
+            echo "bin directory not found"
           fi
+          
+          echo ""
+          echo "=== Checking .buildozer ==="
+          find ~/klar_build/lab/.buildozer -name "*.apk" -type f 2>/dev/null | head -5 || echo "No APK in .buildozer"
 
       - name: Upload APK Artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: klar-android-apk
-          path: ~/klar_build/bin/*.apk
+          path: ~/klar_build/lab/bin/*.apk
           retention-days: 30
 
       - name: Upload Build Logs on Failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: build-logs
+          name: build-logs-failure
           path: |
-            ~/klar_build/build.log
-            ~/klar_build/.buildozer/android/platform/build-*/dists/*/build.log
+            ~/klar_build/lab/build.log
+            ~/klar_build/lab/.buildozer/android/platform/build-*/dists/*/build.log
           retention-days: 7
