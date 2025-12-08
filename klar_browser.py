@@ -7,6 +7,7 @@ import sys
 import os
 import webbrowser 
 from pathlib import Path
+from urllib.parse import urlparse, unquote
 
 from PyQt6.QtCore import QUrl, Qt, QTimer, pyqtSignal, QThread
 from PyQt6.QtWidgets import (
@@ -81,6 +82,7 @@ class KlarBrowser(QMainWindow):
         
         # Track state
         self.is_searching = False
+        self.pending_bypass_url = None  # Track URL waiting for bypass confirmation
         
         # Setup UI
         self.setup_ui()
@@ -316,7 +318,7 @@ class KlarBrowser(QMainWindow):
     def add_new_tab(self, qurl=None, label="Ny flik"):
         """Add new tab"""
         browser = QWebEngineView()
-        browser.urlChanged.connect(lambda url: self.check_video_url(url))
+        browser.urlChanged.connect(lambda url: self.on_url_changed(url, browser))
         if qurl:
             browser.setUrl(qurl)
         
@@ -334,6 +336,50 @@ class KlarBrowser(QMainWindow):
         self.stacked_widget.setCurrentIndex(1)
         
         return browser
+    
+    def on_url_changed(self, qurl: QUrl, browser):
+        """Handle URL changes - check for bypass protocol and video URLs"""
+        url_string = qurl.toString()
+        
+        # Handle bypass protocol
+        if url_string.startswith('klar-bypass://'):
+            self.handle_bypass_redirect(url_string, browser)
+            return
+        
+        # Check for videos
+        self.check_video_url(qurl)
+    
+    def handle_bypass_redirect(self, protocol_url: str, browser):
+        """Handle klar-bypass:// protocol redirect"""
+        try:
+            # Parse: klar-bypass://TOKEN/URL
+            parts = protocol_url.replace('klar-bypass://', '').split('/', 1)
+            if len(parts) != 2:
+                self.status.showMessage("Bypass avbruten: Ogiltig format", 5000)
+                return
+            
+            token, encoded_url = parts
+            bypass_url = unquote(encoded_url)
+            
+            # Verify token
+            if not self.whitelist.verify_bypass_acknowledgment(token):
+                self.status.showMessage("Bypass avbruten: Ogiltig token", 5000)
+                print(f"[Security] Bypass rejected: Invalid token")
+                return
+            
+            # Token valid - proceed with URL
+            print(f"[Security] Bypass approved for: {bypass_url}")
+            self.status.showMessage(f"✓ Säkerhetskontroll åsidosatt. Laddar...", 3000)
+            
+            # Load the bypassed URL
+            if not bypass_url.startswith('http'):
+                bypass_url = 'https://' + bypass_url
+            
+            browser.setUrl(QUrl(bypass_url))
+        
+        except Exception as e:
+            print(f"[Security] Bypass error: {str(e)}")
+            self.status.showMessage(f"Bypass fel: {str(e)}", 5000)
     
     def check_video_url(self, qurl: QUrl):
         """Check if URL is a video and open externally"""
@@ -533,8 +579,8 @@ class KlarBrowser(QMainWindow):
         
         url_string = qurl.toString()
         
-        # Don't show data: URLs
-        if not url_string.startswith('data:'):
+        # Don't show data: URLs or bypass URLs
+        if not url_string.startswith('data:') and not url_string.startswith('klar-bypass://'):
             self.main_search_bar.setText(url_string)
     
     def update_status(self, progress):

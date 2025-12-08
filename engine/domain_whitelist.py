@@ -107,7 +107,11 @@ class DomainWhitelist:
         Returns:
             True if token is valid and acknowledged
         """
-        return token in self.bypass_tokens
+        if token in self.bypass_tokens:
+            self.bypass_tokens.remove(token)  # One-time use
+            self.bypass_count += 1
+            return True
+        return False
     
     def get_blocked_html(self, url: str, reason: str) -> str:
         """
@@ -115,6 +119,9 @@ class DomainWhitelist:
         Shows user-friendly security message in Swedish with bypass option.
         """
         bypass_token = self.generate_bypass_token()
+        
+        # Escape URL for display
+        display_url = url.replace('"', '&quot;').replace("'", '&#39;')
         
         return f"""
         <!DOCTYPE html>
@@ -248,6 +255,14 @@ class DomainWhitelist:
                     color: #fca5a5;
                 }}
                 
+                .disclaimer-text ul {{
+                    margin: 12px 0 0 20px;
+                }}
+                
+                .disclaimer-text li {{
+                    margin: 6px 0;
+                }}
+                
                 .checkbox-container {{
                     display: flex;
                     align-items: flex-start;
@@ -340,11 +355,6 @@ class DomainWhitelist:
                     color: #86efac;
                     display: block;
                 }}
-                .status-message.error {{
-                    background: rgba(239, 68, 68, 0.2);
-                    color: #fca5a5;
-                    display: block;
-                }}
             </style>
         </head>
         <body>
@@ -355,7 +365,7 @@ class DomainWhitelist:
                 
                 <p>Du försökte komma åt en webbplats som inte finns på vår säkra domänlista.</p>
                 
-                <div class="url">{url}</div>
+                <div class="url">{display_url}</div>
                 
                 <div class="reason">
                     <strong>Varför är denna webbplats blockerad?</strong><br>
@@ -384,8 +394,8 @@ class DomainWhitelist:
                             <p style="margin-top: 12px;">
                                 Detta inkluderar men är inte begränsat till:
                             </p>
-                            <ul style="margin: 12px 0 0 20px;">
-                                <li>Nätfiske, bedrägerier eller identitetsstöld</li>
+                            <ul>
+                                <li>Nätfiske, bedrägeri eller identitetsstöld</li>
                                 <li>Malvara, virus eller andra skadliga program</li>
                                 <li>Datainsamling eller integritetsintrång</li>
                                 <li>Olämpligt eller illegalt innehål</li>
@@ -408,7 +418,7 @@ class DomainWhitelist:
                     <div id="statusMessage" class="status-message"></div>
                     
                     <div class="actions">
-                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity()" disabled>
+                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity('{bypass_token}', '{display_url}')" disabled>
                             Åsidosätt säkerhet och besök webbplatsen
                         </button>
                     </div>
@@ -425,28 +435,18 @@ class DomainWhitelist:
             </div>
             
             <script>
-                const bypassToken = '{bypass_token}';
-                
                 function updateBypassButton() {{
                     const checkbox = document.getElementById('acknowledgement');
                     const button = document.getElementById('bypassBtn');
                     button.disabled = !checkbox.checked;
                 }}
                 
-                function bypassSecurity() {{
+                function bypassSecurity(token, url) {{
                     const checkbox = document.getElementById('acknowledgement');
                     if (checkbox.checked) {{
-                        // Send bypass token back to application
-                        localStorage.setItem('klar_bypass_' + '{url}'.replace(/[^a-zA-Z0-9]/g, '_'), bypassToken);
-                        
-                        const statusMsg = document.getElementById('statusMessage');
-                        statusMsg.className = 'status-message success';
-                        statusMsg.textContent = '✓ Säkerhetskontroll åsidosatt. Omdirigerar...';
-                        
-                        // Redirect after brief delay
-                        setTimeout(function() {{
-                            window.location.href = '{url}';
-                        }}, 800);
+                        // Notify the application via window title change
+                        // This is how PyQt6 WebEngineView can intercept the bypass
+                        window.location.href = 'klar-bypass://" + token + "/" + encodeURIComponent(url);
                     }}
                 }}
             </script>

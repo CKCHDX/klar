@@ -1,5 +1,6 @@
 """
-Enhanced search with phrase matching, subpage discovery, and demographic optimization
+Enhanced search with phrase matching, subpage discovery, demographic optimization
+and SVEN (Swedish Enhanced Vocabulary and Entity Normalization)
 """
 import requests
 from bs4 import BeautifulSoup
@@ -13,6 +14,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import re
 import sys
 import os
+
+# Import SVEN for enhanced search precision
+from engine.sven import SVEN
 
 def get_resource_path(relative_path):
     """Get absolute path to resource - works for dev and PyInstaller"""
@@ -28,6 +32,10 @@ class SearchEngine:
     def __init__(self):
         self.data_path = Path("klar_data")
         self.data_path.mkdir(exist_ok=True)
+        
+        # Initialize SVEN for enhanced search
+        self.sven = SVEN()
+        print("[Klar] SVEN initialized - Swedish Enhanced Vocabulary active")
         
         # Load domains using resource path for PyInstaller
         domains_file = get_resource_path("domains.json")
@@ -106,38 +114,46 @@ class SearchEngine:
         return categories
     
     def detect_query_intent(self, query: str) -> Tuple[List[str], List[str]]:
-        """Detect query intent - now supports phrases"""
+        """Detect query intent - now with SVEN enhancement"""
         query_lower = query.lower()
         detected_categories = []
         priority_domains = []
         
-        # Check direct domain mappings
-        direct_mappings = self.keyword_db.get('direct_domain_mappings', {})
-        for keyword, domains in direct_mappings.items():
-            if keyword in query_lower:
-                priority_domains.extend(domains)
+        # NEW: Use SVEN to expand query with semantic understanding
+        sven_hints = self.sven.generate_search_hints(query)
+        expanded_terms = sven_hints['expanded_terms']
         
-        # Check keyword mappings (now matches phrases)
-        for mapping_name, mapping_data in self.keyword_db['mappings'].items():
-            keywords = mapping_data.get('keywords', [])
-            category = mapping_data.get('category', 'general')
-            domains = mapping_data.get('priority_domains', [])
+        print(f"[SVEN] Expanded '{query}' to {len(expanded_terms)} terms")
+        
+        # Check expanded terms against keyword database
+        for expanded_term in expanded_terms:
+            expanded_lower = expanded_term.lower()
             
-            # Check if any keyword matches
-            for keyword in keywords:
-                # Support partial word matching for phrases
-                if keyword in query_lower or any(word in query_lower for word in keyword.split()):
-                    if category not in detected_categories:
-                        detected_categories.append(category)
+            # Check direct domain mappings
+            direct_mappings = self.keyword_db.get('direct_domain_mappings', {})
+            for keyword, domains in direct_mappings.items():
+                if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
                     priority_domains.extend(domains)
-                    break
+            
+            # Check keyword mappings
+            for mapping_name, mapping_data in self.keyword_db['mappings'].items():
+                keywords = mapping_data.get('keywords', [])
+                category = mapping_data.get('category', 'general')
+                domains = mapping_data.get('priority_domains', [])
+                
+                for keyword in keywords:
+                    if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
+                        if category not in detected_categories:
+                            detected_categories.append(category)
+                        priority_domains.extend(domains)
+                        break
         
         priority_domains = list(dict.fromkeys(priority_domains))
         
         return detected_categories, priority_domains
     
     def get_relevant_domains(self, query: str, demographic: str = "general") -> List[str]:
-        """Get relevant domains with demographic optimization"""
+        """Get relevant domains with demographic optimization and SVEN enhancement"""
         if '.' in query and ' ' not in query:
             domain = query.lower().replace('www.', '')
             if domain in self.domains:
@@ -222,9 +238,16 @@ class SearchEngine:
         return hints.get(demographic, hints['general'])
     
     def search(self, query: str, demographic: str = "general") -> Dict:
-        """Main search with phrase support, subpage discovery, and demographic optimization"""
+        """Main search with SVEN enhancement, phrase support, and demographic optimization"""
         print(f"\n[Search] Query: {query}")
         print(f"[Search] Demographic: {demographic}")
+        
+        # Get SVEN hints for enhanced searching
+        sven_hints = self.sven.generate_search_hints(query)
+        print(f"[SVEN] Normalized: {sven_hints['normalized_query']}")
+        print(f"[SVEN] Expanded terms: {len(sven_hints['expanded_terms'])}")
+        if sven_hints['entities']:
+            print(f"[SVEN] Entities: {sven_hints['entities']}")
         
         relevant_domains = self.get_relevant_domains(query, demographic)
         categories, priority_domains = self.detect_query_intent(query)
@@ -243,10 +266,10 @@ class SearchEngine:
             for domain in relevant_domains:
                 # For phrases, try to find specific subpages
                 if is_phrase:
-                    future = executor.submit(self.search_domain_deeply, domain, query)
+                    future = executor.submit(self.search_domain_deeply, domain, query, sven_hints)
                 else:
                     url = f"https://www.{domain}"
-                    future = executor.submit(self.fetch_and_parse, url, query)
+                    future = executor.submit(self.fetch_and_parse, url, query, sven_hints)
                 
                 future_to_domain[future] = domain
             
@@ -277,15 +300,17 @@ class SearchEngine:
             'categories_used': categories,
             'is_phrase_search': is_phrase,
             'demographic': demographic,
-            'demographic_hints': hints
+            'demographic_hints': hints,
+            'sven_expanded': len(sven_hints['expanded_terms'])
         }
     
-    def search_domain_deeply(self, domain: str, query: str) -> List[Dict]:
+    def search_domain_deeply(self, domain: str, query: str, sven_hints: Dict) -> List[Dict]:
         """
         Deep search within a domain to find specific subpages
-        This is especially useful for phrases like "smärta i nacken"
+        Uses SVEN expanded terms for improved matching
         """
         results = []
+        expanded_terms = sven_hints.get('expanded_terms', [])
         
         try:
             # Start with homepage
@@ -298,20 +323,20 @@ class SearchEngine:
             # Extract internal links
             links = self.extract_internal_links(soup, base_url, domain)
             
-            # Filter links that might be relevant to query
-            relevant_links = self.filter_relevant_links(links, query)
+            # Filter links that might be relevant to query or expanded terms
+            relevant_links = self.filter_relevant_links(links, query, expanded_terms)
             
             # Fetch top 3 most relevant subpages
             for link in relevant_links[:3]:
                 try:
-                    result = self.fetch_and_parse(link, query)
+                    result = self.fetch_and_parse(link, query, sven_hints)
                     if result and result['relevance'] > 0.3:
                         results.append(result)
                 except:
                     pass
             
             # Also include homepage if relevant
-            homepage_result = self.parse_page(soup, base_url, query)
+            homepage_result = self.parse_page(soup, base_url, query, sven_hints)
             if homepage_result and homepage_result['relevance'] > 0.1:
                 results.append(homepage_result)
         
@@ -334,17 +359,17 @@ class SearchEngine:
         
         return list(set(links))[:50]  # Limit to 50 links
     
-    def filter_relevant_links(self, links: List[str], query: str) -> List[str]:
-        """Filter links that might contain query terms"""
-        query_terms = set(query.lower().split())
+    def filter_relevant_links(self, links: List[str], query: str, expanded_terms: List[str]) -> List[str]:
+        """Filter links using both original query and SVEN expanded terms"""
+        all_terms = set([query.lower()] + [t.lower() for t in expanded_terms])
         scored_links = []
         
         for link in links:
             url_lower = link.lower()
             score = 0
             
-            # Check if query terms appear in URL
-            for term in query_terms:
+            # Check if any term appears in URL
+            for term in all_terms:
                 if term in url_lower:
                     score += 2
             
@@ -365,26 +390,26 @@ class SearchEngine:
         
         return [link for score, link in scored_links]
     
-    def fetch_and_parse(self, url: str, query: str) -> Dict:
+    def fetch_and_parse(self, url: str, query: str, sven_hints: Dict = None) -> Dict:
         """Fetch and parse single page"""
         try:
             response = self.session.get(url, timeout=(2, 5), allow_redirects=True)
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
-            return self.parse_page(soup, response.url, query)
+            return self.parse_page(soup, response.url, query, sven_hints)
             
         except:
             return None
     
-    def parse_page(self, soup: BeautifulSoup, url: str, query: str) -> Dict:
-        """Parse page content"""
+    def parse_page(self, soup: BeautifulSoup, url: str, query: str, sven_hints: Dict = None) -> Dict:
+        """Parse page content with SVEN enhancement"""
         title = self.extract_title(soup)
         description = self.extract_description(soup)
         content = self.extract_content(soup)
         images = self.extract_images(soup, url)
         
-        relevance = self.calculate_relevance(query, title, description, content, url)
+        relevance = self.calculate_relevance(query, title, description, content, url, sven_hints)
         
         if relevance > 0.05:
             return {
@@ -456,10 +481,17 @@ class SearchEngine:
         return images
     
     def calculate_relevance(self, query: str, title: str, description: str,
-                           content: str, url: str) -> float:
-        """Calculate relevance with phrase matching"""
+                           content: str, url: str, sven_hints: Dict = None) -> float:
+        """Calculate relevance with SVEN expansion and phrase matching"""
         query_lower = query.lower()
         query_terms = set(query_lower.split())
+        
+        # Use SVEN expanded terms for better matching
+        if sven_hints:
+            expanded_terms = sven_hints.get('expanded_terms', [])
+            all_match_terms = query_terms | set(t.lower() for t in expanded_terms)
+        else:
+            all_match_terms = query_terms
         
         score = 0.0
         
@@ -471,26 +503,34 @@ class SearchEngine:
         if query_lower in content.lower()[:1000]:
             score += 1.5
         
+        # Check expanded terms
+        for expanded_term in (sven_hints.get('expanded_terms', []) if sven_hints else []):
+            expanded_lower = expanded_term.lower()
+            if expanded_lower in title.lower():
+                score += 1.5
+            if expanded_lower in description.lower():
+                score += 0.8
+        
         # URL contains query terms
         url_lower = url.lower()
-        for term in query_terms:
+        for term in all_match_terms:
             if term in url_lower:
                 score += 0.8
         
         # Individual term matching
         title_terms = set(title.lower().split())
         if query_terms:
-            title_overlap = len(query_terms & title_terms)
-            score += (title_overlap / len(query_terms)) * 1.5
+            title_overlap = len(all_match_terms & title_terms)
+            score += (title_overlap / max(1, len(all_match_terms))) * 1.5
         
         desc_terms = set(description.lower().split())
         if query_terms:
-            desc_overlap = len(query_terms & desc_terms)
-            score += (desc_overlap / len(query_terms)) * 0.8
+            desc_overlap = len(all_match_terms & desc_terms)
+            score += (desc_overlap / max(1, len(all_match_terms))) * 0.8
         
         # Proximity bonus (terms close together in content)
         if len(query_terms) > 1:
-            proximity_score = self.calculate_proximity(query_terms, content)
+            proximity_score = self.calculate_proximity(all_match_terms, content)
             score += proximity_score
         
         return min(score, 5.0)
@@ -549,7 +589,7 @@ class SearchEngine:
             
             priority_boost = 0.5 if domain in priority_domains else 0.0
             
-            # NEW: Demographic-aware weighting
+            # Demographic-aware weighting
             demographic_boost = 0.0
             if demographic == 'seniors_65plus' and domain in ['1177.se', 'folkhalsomyndigheten.se', 'svt.se']:
                 demographic_boost = 0.3
