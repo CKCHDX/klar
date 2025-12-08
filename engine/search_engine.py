@@ -15,8 +15,8 @@ import re
 import sys
 import os
 
-# Import SVEN for enhanced search precision
-from engine.sven import SVEN
+# Import SVEN from algorithms folder
+from algorithms.sven import SVEN
 
 def get_resource_path(relative_path):
     """Get absolute path to resource - works for dev and PyInstaller"""
