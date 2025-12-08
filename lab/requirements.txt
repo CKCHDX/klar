@@ -1,0 +1,7 @@
+kivy==2.3.0
+kivymd==1.1.1
+requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==4.9.3
+pillow==10.1.0
+pycryptodome==3.18.0
