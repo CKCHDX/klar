@@ -439,7 +439,7 @@ class DomainWhitelist:
                     <div id="statusMessage" class="status-message"></div>
                     
                     <div class="actions">
-                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity('{bypass_token}', '{display_url}')" disabled>
+                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity('{bypass_token}', {display_url_json})" disabled>
                             Åsidosätt blockering och besök webbplatsen
                         </button>
                     </div>
@@ -465,15 +465,13 @@ class DomainWhitelist:
                 function bypassSecurity(token, url) {{
                     const checkbox = document.getElementById('acknowledgement');
                     if (checkbox.checked) {{
-                        // Notify the application via window title change
-                        // This is how PyQt6 WebEngineView can intercept the bypass
-                        window.location.href = 'klar-bypass://" + token + "/" + encodeURIComponent(url);
+                        window.location.href = 'klar-bypass://' + token + '/' + encodeURIComponent(url);
                     }}
                 }}
             </script>
         </body>
         </html>
-        """
+        """.format(display_url_json=json.dumps(display_url))
     
     def get_statistics(self) -> dict:
         """Get blacklist statistics"""
