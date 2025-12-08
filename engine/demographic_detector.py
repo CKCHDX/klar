@@ -11,8 +11,7 @@ Supported Demographics:
 - general: Default/unidentified demographic
 """
 
-import json
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Set
 from dataclasses import dataclass
 
 
@@ -59,7 +58,7 @@ class DemographicDetector:
                     'menstur', 'p-piller', 'graviditet', 'bröstcancer',
                     'mammografi', 'gynekolog', 'skönhet', 'spa', 'massage',
                     'wellness', 'yoga', 'träning dam', 'fitnessdamer',
-                    'familj', 'barn', 'barnomsorg', 'mödrahälsa',
+                    'familj', 'barn', 'barnomsorg', 'mödrähälsa',
                     'dam', 'kvinnor', 'för tjejer', 'tjejkväll'
                 ],
                 language_style='normal'
@@ -101,13 +100,13 @@ class DemographicDetector:
             'young_adults_20to40': DemographicProfile(
                 name='Young Adults 20-40',
                 keywords=[
-                    'jobbsökning', 'cv', 'intervju', 'karriär',
-                    'löneförhandling', 'chef', 'ledare', 'projekt',
+                    'jobsökning', 'cv', 'intervju', 'karriär',
+                    'lönförhandling', 'chef', 'ledare', 'projekt',
                     'startup', 'företag', 'eget företag', 'boss',
                     'bostad', 'lägenhet', 'köpa', 'bolån', 'hyra',
                     'familj', 'äktenskap', 'barn', 'förälder',
-                    'bröllopsp', 'äktenskapsförord', 'skilsmässa',
-                    'románti', 'relation', 'träffa', 'dating',
+                    'bröllop', 'äktenskapsförord', 'skilsmässa',
+                    'romantik', 'relation', 'träffa', 'dating',
                     'ekonomi', 'investera', 'spara', 'pension',
                     'försäkring', 'sparande', 'aktier', 'fonder'
                 ],
@@ -152,7 +151,7 @@ class DemographicDetector:
             'all_scores': scores,
             'query_length': len(query.split()),
             'query_complexity': self._assess_complexity(query),
-            'language_style': self.profiles[best_demographic].language_style if best_demographic != 'general' else 'normal'
+            'language_style': self.profiles.get(best_demographic, DemographicProfile('general', [])).language_style if best_demographic != 'general' else 'normal'
         }
         
         # Store in history
