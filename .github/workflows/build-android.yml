@@ -1,4 +1,4 @@
-name: Build Klar Android APK
+name: Build Klar Android APK (Manual)
 
 on:
   push:
@@ -13,81 +13,103 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build APK with Buildozer
+  build-android-manual:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: 1. Checkout Code
         uses: actions/checkout@v4
 
-      - name: Prepare build environment
+      - name: 2. Prepare Build Workspace
         run: |
-          mkdir build_env
+          echo "Creating isolated build directory..."
+          mkdir build_workspace
           
-          # Copy lab contents (including buildozer.spec and main.py)
+          # Copy source code from lab
+          echo "Copying lab files..."
           if [ -d "lab" ]; then
-            cp -r lab/* build_env/
+             cp -v lab/* build_workspace/
           else
-            echo "ERROR: lab directory not found!"
-            exit 1
+             echo "ERROR: 'lab' directory not found."
+             exit 1
           fi
           
-          # Copy resources if they exist
-          [ -f keywords_db.json ] && cp keywords_db.json build_env/
-          [ -f domains.json ] && cp domains.json build_env/
-          [ -f klar.ico ] && cp klar.ico build_env/
+          # Copy assets from root
+          echo "Copying assets..."
+          [ -f keywords_db.json ] && cp -v keywords_db.json build_workspace/
+          [ -f domains.json ] && cp -v domains.json build_workspace/
+          [ -f klar.ico ] && cp -v klar.ico build_workspace/
           
-          # Copy engine directory
+          # Copy engine package
           if [ -d "engine" ]; then
-            cp -r engine build_env/
+            echo "Copying engine module..."
+            cp -r engine build_workspace/
           fi
-          
-          # Verify crucial files
-          if [ ! -f "build_env/buildozer.spec" ]; then
-            echo "ERROR: buildozer.spec missing in build_env!"
-            ls -la build_env/
-            exit 1
-          fi
-          
-          if [ ! -f "build_env/main.py" ]; then
-            echo "ERROR: main.py missing in build_env!"
-            ls -la build_env/
-            exit 1
-          fi
-          
-          echo "Build environment prepared successfully."
-          ls -la build_env/
 
-      - name: Install dependencies
+          echo "Workspace contents:"
+          ls -R build_workspace/
+
+      - name: 3. Setup Python 3.9
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: 4. Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
+            build-essential \
+            git \
             python3-pip \
             python3-setuptools \
             libffi-dev \
             libssl-dev \
-            automake \
             autoconf \
             libtool \
             pkg-config \
             zlib1g-dev \
-            openjfx \
+            openjdk-17-jdk \
+            unzip \
+            zip \
             libncurses5-dev \
             libncursesw5-dev \
-            libtinfo5 \
-            cmake \
-            libltdl-dev || true
+            cmake gettext
 
-      - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
-        id: buildozer
-        with:
-          workdir: build_env
-          buildozer_version: stable
+      - name: 5. Install Buildozer & Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install --upgrade setuptools wheel
+          # Using specific versions known to be stable
+          pip install "buildozer==1.5.0" "cython==0.29.36"
+          
+          echo "Buildozer version:"
+          buildozer --version
 
-      - name: Upload APK
+      - name: 6. Build APK (Step-by-Step)
+        working-directory: build_workspace
+        run: |
+          # Add local bin to path to find buildozer
+          export PATH=$PATH:$HOME/.local/bin
+          
+          echo "Starting Buildozer..."
+          # The 'yes' command automatically accepts the SDK license agreement prompts
+          yes | buildozer -v android debug
+        env:
+          # Explicitly set USER to fix permission issues seen in previous runs
+          USER: runner
+          HOME: /home/runner
+
+      - name: 7. Upload APK Artifact
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: Klar-Android-APK
-          path: ${{ steps.buildozer.outputs.filename }}
+          path: build_workspace/bin/*.apk
+
+      - name: 8. Upload Build Logs (On Failure)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-failure-logs
+          path: |
+            build_workspace/.buildozer/android/platform/build-*/dists/*/build.log
