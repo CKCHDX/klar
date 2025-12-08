@@ -11,6 +11,9 @@ jobs:
   build-android:
     runs-on: ubuntu-latest
     timeout-minutes: 180
+    container:
+      image: kivy/buildozer:latest
+      options: --user root
 
     steps:
       - name: Checkout Code
@@ -18,192 +21,89 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-
-      - name: Install System Dependencies
+      - name: Setup Build Environment
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            git \
-            curl \
-            wget \
-            unzip \
-            openjdk-17-jdk \
-            python3-pip \
-            python3-dev \
-            libffi-dev \
-            libssl-dev \
-            autoconf \
-            libtool \
-            pkg-config \
-            zlib1g-dev \
-            libncurses5-dev \
-            libncursesw5-dev \
-            cmake \
-            gettext \
-            ccache
-          echo "System dependencies installed successfully"
-
-      - name: Upgrade pip and setuptools
-        run: |
-          python3 -m pip install --upgrade pip setuptools wheel --no-cache-dir
-          echo "pip version:"
-          python3 -m pip --version
-          echo "setuptools version:"
-          python3 -m pip show setuptools | grep Version
-
-      - name: Install Cython
-        run: |
-          echo "Installing Cython 0.29.37..."
-          python3 -m pip install cython==0.29.37 --no-cache-dir
-          python3 -c "import Cython; print(f'Cython installed: {Cython.__version__}')"
-          if [ $? -ne 0 ]; then
-            echo "Cython installation failed"
-            exit 1
-          fi
-
-      - name: Install Buildozer
-        run: |
-          echo "Installing Buildozer 1.4.6..."
-          python3 -m pip install buildozer==1.4.6 --no-cache-dir
-          
-          # Verify installation
+          echo "=== Build Environment ==="
+          python --version
           buildozer --version
-          if [ $? -ne 0 ]; then
-            echo "Buildozer installation failed"
-            exit 1
-          fi
-          echo "Buildozer installed successfully"
-
-      - name: Install Additional Python Packages
-        run: |
-          python3 -m pip install pycryptodome --no-cache-dir
-          echo "All Python packages installed"
-
-      - name: Prepare Workspace
-        run: |
-          mkdir -p ~/klar_build
-          cd ~/klar_build
-          
-          # Copy all necessary files
-          echo "Copying lab directory..."
-          cp -r $GITHUB_WORKSPACE/lab . || { echo "ERROR: lab directory not found"; exit 1; }
-          
-          echo "Copying data files..."
-          cp $GITHUB_WORKSPACE/keywords_db.json . 2>/dev/null || echo "keywords_db.json not found (optional)"
-          cp $GITHUB_WORKSPACE/domains.json . 2>/dev/null || echo "domains.json not found (optional)"
-          
-          echo "Copying engine module..."
-          cp -r $GITHUB_WORKSPACE/engine . 2>/dev/null || echo "engine module not found (optional)"
-          
-          echo "Build workspace ready:"
-          ls -la ~/klar_build/
-          echo ""
-          echo "Lab directory contents:"
-          ls -la ~/klar_build/lab/
-
-      - name: Verify Python Environment
-        run: |
-          echo "Python version:"
-          python3 --version
-          echo ""
-          echo "Installed packages:"
-          python3 -m pip list | grep -E "buildozer|cython|setuptools|pip"
-          echo ""
-          echo "Buildozer location:"
-          which buildozer
-          echo ""
-          echo "Buildozer version:"
-          buildozer --version
-
-      - name: Create Android Build Directory
-        run: |
-          mkdir -p ~/.buildozer/android/platform/build-tools
-          mkdir -p ~/.buildozer/android/platform/ndk-bundle
-          export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
-          export PATH=$JAVA_HOME/bin:$PATH
           java -version
+          echo ""
+          echo "=== Preparing workspace ==="
+          mkdir -p /tmp/klar_build
+          cd /tmp/klar_build
+          cp -r $GITHUB_WORKSPACE/lab .
+          cp $GITHUB_WORKSPACE/keywords_db.json . 2>/dev/null || echo "keywords_db.json not found"
+          cp $GITHUB_WORKSPACE/domains.json . 2>/dev/null || echo "domains.json not found"
+          cp -r $GITHUB_WORKSPACE/engine . 2>/dev/null || echo "engine not found"
+          echo "Workspace ready:"
+          ls -la /tmp/klar_build/
+          echo ""
+          echo "Lab contents:"
+          ls -la /tmp/klar_build/lab/
 
-      - name: Build APK with Buildozer
-        working-directory: ~/klar_build/lab
+      - name: Build APK
+        working-directory: /tmp/klar_build/lab
         run: |
           set -e
-          export PATH=$PATH:~/.local/bin
-          export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
-          export PATH=$JAVA_HOME/bin:$PATH
-          
-          echo "=== Build Configuration ==="
-          echo "Working Directory: $(pwd)"
-          echo "Java Version:"
-          java -version
-          echo ""
-          echo "=== Files in directory ==="
+          echo "=== Starting Buildozer ==="
+          echo "Current directory: $(pwd)"
+          echo "Files:"
           ls -la
           echo ""
           
-          echo "=== Starting Buildozer Build ==="
-          buildozer android debug 2>&1 | tee build.log
+          # Run buildozer with verbose output
+          buildozer -v android debug 2>&1 | tee build.log
           
-          BUILD_RESULT=${PIPESTATUS[0]}
+          BUILD_STATUS=${PIPESTATUS[0]}
           
-          if [ $BUILD_RESULT -eq 0 ]; then
+          if [ $BUILD_STATUS -eq 0 ]; then
             echo ""
-            echo "✓ Build successful"
+            echo "✓ Build completed"
           else
             echo ""
-            echo "✗ Build failed with code $BUILD_RESULT"
+            echo "✗ Build failed with code $BUILD_STATUS"
             echo ""
-            echo "=== Last 150 lines of build log ==="
-            tail -n 150 build.log || true
+            echo "=== Last 200 lines of build log ==="
+            tail -n 200 build.log
           fi
           
-          exit $BUILD_RESULT
+          exit $BUILD_STATUS
         env:
-          USER: runner
-          HOME: /home/runner
+          USER: root
+          HOME: /root
 
-      - name: Check APK Output
+      - name: Check For APK
         if: always()
+        working-directory: /tmp/klar_build/lab
         run: |
           echo "=== Searching for APK files ==="
-          find ~/klar_build -name "*.apk" -type f
+          find . -name "*.apk" -type f
           
           echo ""
           echo "=== Checking bin directory ==="
-          if [ -d ~/klar_build/lab/bin ]; then
-            ls -lh ~/klar_build/lab/bin/
+          if [ -d bin ]; then
+            echo "bin directory contents:"
+            ls -lh bin/
           else
-            echo "bin directory not found"
+            echo "bin directory does not exist"
           fi
           
           echo ""
-          echo "=== Checking .buildozer ==="
-          find ~/klar_build/lab/.buildozer -name "*.apk" -type f 2>/dev/null | head -5 || echo "No APK in .buildozer"
+          echo "=== Full directory structure ==="
+          find . -maxdepth 3 -type d | head -20
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: klar-android-apk
-          path: ~/klar_build/lab/bin/*.apk
+          path: /tmp/klar_build/lab/bin/*.apk
           retention-days: 30
 
-      - name: Upload Build Logs on Failure
+      - name: Upload Logs
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: build-logs-failure
-          path: |
-            ~/klar_build/lab/build.log
-            ~/klar_build/lab/.buildozer/android/platform/build-*/dists/*/build.log
+          name: build-logs
+          path: /tmp/klar_build/lab/build.log
           retention-days: 7
