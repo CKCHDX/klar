@@ -1,7 +1,7 @@
 """
 Klar 3.0 - Standalone Swedish Browser
 Complete browser application with integrated search engine
-Features: Domain whitelisting, demographic-aware search, multi-user safety
+Features: Domain blacklisting, demographic-aware search, multi-user safety
 """
 import sys
 import os
@@ -77,7 +77,7 @@ class KlarBrowser(QMainWindow):
         self.search_worker = None
         
         # NEW: Initialize security and demographic modules
-        self.whitelist = DomainWhitelist("domains.json")
+        self.blacklist = DomainWhitelist("domains.json")  # Renamed for clarity
         self.demographic_detector = DemographicDetector()
         
         # Track state
@@ -362,7 +362,7 @@ class KlarBrowser(QMainWindow):
             bypass_url = unquote(encoded_url)
             
             # Verify token
-            if not self.whitelist.verify_bypass_acknowledgment(token):
+            if not self.blacklist.verify_bypass_acknowledgment(token):
                 self.status.showMessage("Bypass avbruten: Ogiltig token", 5000)
                 print(f"[Security] Bypass rejected: Invalid token")
                 return
@@ -418,18 +418,18 @@ class KlarBrowser(QMainWindow):
         
         # Check if it's a URL
         if self.is_url(query):
-            # NEW: Check whitelist first for security
-            is_safe, reason = self.whitelist.is_whitelisted(query)
+            # FIXED: Check blacklist - is_whitelisted now returns True if domain is ALLOWED
+            is_allowed, reason = self.blacklist.is_whitelisted(query)
             
-            if not is_safe:
-                # Show security warning page
-                blocked_html = self.whitelist.get_blocked_html(query, reason)
+            if not is_allowed:
+                # Show security warning page - domain is BLOCKED (in blacklist)
+                blocked_html = self.blacklist.get_blocked_html(query, reason)
                 self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
                 self.stacked_widget.setCurrentIndex(1)
                 self.status.showMessage(f"⚠️ Domän blockerad för säkerhet", 5000)
                 print(f"[Security] Blocked: {query} - {reason}")
             else:
-                # Domain is whitelisted, load it
+                # Domain is ALLOWED, load it
                 url = query if query.startswith('http') else 'https://' + query
                 self.current_browser().setUrl(QUrl(url))
                 self.stacked_widget.setCurrentIndex(1)
