@@ -1,6 +1,7 @@
 """
 Enhanced search with phrase matching, subpage discovery, demographic optimization
 and SVEN (Swedish Enhanced Vocabulary and Entity Normalization)
+Wikipedia is prioritized for factual/encyclopedia queries
 """
 import requests
 from bs4 import BeautifulSoup
@@ -82,6 +83,7 @@ class SearchEngine:
         print(f"[Klar] Domains: {len(self.domains)}")
         print(f"[Klar] Keywords: {total_keywords}")
         print(f"[Klar] Categories: {len(self.domain_categories)}")
+        print(f"[Klar] Wikipedia prioritization: ENABLED")
 
     
     def _load_keyword_database(self) -> Dict:
@@ -113,11 +115,76 @@ class SearchEngine:
         
         return categories
     
+    def _is_factual_query(self, query: str) -> bool:
+        """
+        Detect if query is asking for facts/definitions
+        Examples: 'vem är', 'what is', 'vad är', 'hur många'
+        """
+        factual_patterns = [
+            r'^(vem|who)\s+(är|is)',           # Who is
+            r'^(vad|what)\s+(är|is)',          # What is
+            r'^(hur|how)\s+(många|much|old)', # How many/much/old
+            r'^(var|where)\s+(är|is)',         # Where is
+            r'^(när|when)',                     # When
+            r'definition',
+            r'förklara',                        # Explain
+            r'biography',
+            r'biografi',
+            r'meaning',
+            r'betydelse',
+        ]
+        
+        query_lower = query.lower().strip()
+        for pattern in factual_patterns:
+            if re.search(pattern, query_lower):
+                print(f"[Wikipedia] Factual query detected: '{query}'")
+                return True
+        
+        return False
+    
+    def _is_encyclopedia_topic(self, query: str) -> bool:
+        """
+        Detect if query is about a person, place, concept, or event
+        that would have a Wikipedia article
+        """
+        encyclopedia_patterns = [
+            r'\b(Stockholm|Sverige|Sverige|Göteborg|Malmö)\b',
+            r'\b(Einstein|Darwin|Newton|Marie Curie)\b',
+            r'\b(Elon Musk|Greta Thunberg|Zlatan|Tesla|SpaceX)\b',
+            r'\b(World War|Cold War|French Revolution)\b',
+            r'\b(Climate|Evolution|Quantum|DNA)\b',
+            r'\b(Python|JavaScript|Computer|Internet)\b',
+        ]
+        
+        query_lower = query.lower()
+        for pattern in encyclopedia_patterns:
+            if re.search(pattern, query_lower, re.IGNORECASE):
+                return True
+        
+        # Check if it's a single word or proper noun (likely encyclopedia topic)
+        words = query.strip().split()
+        if len(words) <= 3:
+            # Check if first word is capitalized (proper noun)
+            if words[0][0].isupper():
+                return True
+        
+        return False
+    
     def detect_query_intent(self, query: str) -> Tuple[List[str], List[str]]:
-        """Detect query intent - now with SVEN enhancement"""
+        """Detect query intent - now with SVEN enhancement and Wikipedia prioritization"""
         query_lower = query.lower()
         detected_categories = []
         priority_domains = []
+        
+        # NEW: Check if this is a factual/encyclopedia query
+        is_factual = self._is_factual_query(query)
+        is_encyclopedia = self._is_encyclopedia_topic(query)
+        
+        if is_factual or is_encyclopedia:
+            # PRIORITIZE WIKIPEDIA for factual queries
+            priority_domains.append('sv.wikipedia.org')
+            priority_domains.append('wikipedia.org')
+            print(f"[Wikipedia] Priority: sv.wikipedia.org, wikipedia.org")
         
         # NEW: Use SVEN to expand query with semantic understanding
         sven_hints = self.sven.generate_search_hints(query)
@@ -153,7 +220,7 @@ class SearchEngine:
         return detected_categories, priority_domains
     
     def get_relevant_domains(self, query: str, demographic: str = "general") -> List[str]:
-        """Get relevant domains with demographic optimization and SVEN enhancement"""
+        """Get relevant domains with Wikipedia prioritization"""
         if '.' in query and ' ' not in query:
             domain = query.lower().replace('www.', '')
             if domain in self.domains:
@@ -161,6 +228,16 @@ class SearchEngine:
         
         categories, priority_domains = self.detect_query_intent(query)
         relevant_domains = []
+        
+        # Wikipedia first if it's in priority domains
+        if 'sv.wikipedia.org' in priority_domains:
+            relevant_domains.append('sv.wikipedia.org')
+            priority_domains.remove('sv.wikipedia.org')
+        if 'wikipedia.org' in priority_domains:
+            relevant_domains.append('wikipedia.org')
+            priority_domains.remove('wikipedia.org')
+        
+        # Then other priority domains
         relevant_domains.extend(priority_domains)
         
         for category in categories:
@@ -170,12 +247,12 @@ class SearchEngine:
         if not relevant_domains:
             # NEW: Default domains based on demographic
             defaults = {
-                'seniors_65plus': ['1177.se', 'svt.se', 'folkhalsomyndigheten.se'],
-                'women_general': ['hemnet.se', 'ica.se', 'svt.se'],
-                'men_general': ['webhallen.com', 'inet.se', 'svt.se'],
-                'teens_10to20': ['1177.se', 'svt.se', 'dn.se'],
-                'young_adults_20to40': ['dn.se', 'aftonbladet.se', 'arbetsformedlingen.se'],
-                'general': ['svt.se', 'dn.se', 'aftonbladet.se']
+                'seniors_65plus': ['sv.wikipedia.org', '1177.se', 'svt.se', 'folkhalsomyndigheten.se'],
+                'women_general': ['sv.wikipedia.org', 'hemnet.se', 'ica.se', 'svt.se'],
+                'men_general': ['sv.wikipedia.org', 'webhallen.com', 'inet.se', 'svt.se'],
+                'teens_10to20': ['sv.wikipedia.org', '1177.se', 'svt.se', 'dn.se'],
+                'young_adults_20to40': ['sv.wikipedia.org', 'dn.se', 'aftonbladet.se', 'arbetsformedlingen.se'],
+                'general': ['sv.wikipedia.org', 'svt.se', 'dn.se', 'aftonbladet.se']
             }
             relevant_domains = defaults.get(demographic, defaults['general'])
         
@@ -238,7 +315,7 @@ class SearchEngine:
         return hints.get(demographic, hints['general'])
     
     def search(self, query: str, demographic: str = "general") -> Dict:
-        """Main search with SVEN enhancement, phrase support, and demographic optimization"""
+        """Main search with SVEN enhancement, phrase support, demographic optimization, and Wikipedia priority"""
         print(f"\n[Search] Query: {query}")
         print(f"[Search] Demographic: {demographic}")
         
@@ -268,7 +345,7 @@ class SearchEngine:
                 if is_phrase:
                     future = executor.submit(self.search_domain_deeply, domain, query, sven_hints)
                 else:
-                    url = f"https://www.{domain}"
+                    url = f"https://www.{domain}" if not domain.startswith('sv.wikipedia') else f"https://{domain}"
                     future = executor.submit(self.fetch_and_parse, url, query, sven_hints)
                 
                 future_to_domain[future] = domain
@@ -301,7 +378,8 @@ class SearchEngine:
             'is_phrase_search': is_phrase,
             'demographic': demographic,
             'demographic_hints': hints,
-            'sven_expanded': len(sven_hints['expanded_terms'])
+            'sven_expanded': len(sven_hints['expanded_terms']),
+            'wikipedia_prioritized': any('wikipedia' in d.lower() for d in priority_domains)
         }
     
     def search_domain_deeply(self, domain: str, query: str, sven_hints: Dict) -> List[Dict]:
@@ -314,7 +392,11 @@ class SearchEngine:
         
         try:
             # Start with homepage
-            base_url = f"https://www.{domain}"
+            if domain.startswith('sv.wikipedia') or domain.startswith('wikipedia'):
+                base_url = f"https://{domain}"
+            else:
+                base_url = f"https://www.{domain}"
+            
             response = self.session.get(base_url, timeout=(2, 5))
             response.raise_for_status()
             
@@ -567,8 +649,10 @@ class SearchEngine:
         return 0.0
     
     def rank_results(self, results: List[Dict], query: str, priority_domains: List[str], demographic: str = "general", sven_hints: Dict = None) -> List[Dict]:
-        """Rank results with demographic and contextual optimization (SVEN-enhanced)"""
+        """Rank results with Wikipedia boost, demographic and contextual optimization (SVEN-enhanced)"""
         authority = {
+            'sv.wikipedia.org': 1.0,
+            'wikipedia.org': 1.0,
             '1177.se': 1.0,
             'folkhalsomyndigheten.se': 0.98,
             'spotify.com': 1.0,
@@ -587,6 +671,14 @@ class SearchEngine:
                     auth_score = value
                     break
             
+            # MASSIVE BOOST for Wikipedia on factual queries
+            wikipedia_boost = 0.0
+            if 'wikipedia' in domain.lower() and self._is_factual_query(query):
+                wikipedia_boost = 0.4  # 40% boost for Wikipedia on factual queries
+                print(f"[Wikipedia] +0.4 boost for {domain}")
+            elif 'wikipedia' in domain.lower():
+                wikipedia_boost = 0.2  # 20% boost for Wikipedia on any query
+            
             priority_boost = 0.5 if domain in priority_domains else 0.0
             
             # NEW: Use SVEN contextual weight for improved ranking
@@ -604,13 +696,14 @@ class SearchEngine:
             elif demographic == 'young_adults_20to40' and domain in ['arbetsformedlingen.se', 'hemnet.se']:
                 demographic_boost = 0.2
             
-            # Heavily favor relevance with contextual enhancement
+            # Heavily favor relevance with contextual enhancement AND Wikipedia boost
             result['final_score'] = (
-                (result['relevance'] * 0.70) + 
+                (result['relevance'] * 0.60) +  # Reduced from 0.70
                 (auth_score * 0.12) + 
                 (priority_boost * 0.08) +
                 (demographic_boost * 0.07) +
-                (contextual_boost * 0.03)
+                (contextual_boost * 0.03) +
+                (wikipedia_boost * 0.10)  # NEW: 10% Wikipedia boost slot
             )
         
         return sorted(results, key=lambda x: x['final_score'], reverse=True)
