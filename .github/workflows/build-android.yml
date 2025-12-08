@@ -21,24 +21,63 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare build files
+      - name: Prepare build environment
         run: |
-          # Copy lab content to a new 'build' directory to avoid conflicts
           mkdir build_env
-          cp lab/* build_env/
+          
+          # Copy lab contents (including buildozer.spec and main.py)
+          if [ -d "lab" ]; then
+            cp -r lab/* build_env/
+          else
+            echo "ERROR: lab directory not found!"
+            exit 1
+          fi
           
           # Copy resources if they exist
           [ -f keywords_db.json ] && cp keywords_db.json build_env/
           [ -f domains.json ] && cp domains.json build_env/
           [ -f klar.ico ] && cp klar.ico build_env/
           
-          # Copy engine directory properly
+          # Copy engine directory
           if [ -d "engine" ]; then
             cp -r engine build_env/
           fi
           
-          echo "Files in build environment:"
+          # Verify crucial files
+          if [ ! -f "build_env/buildozer.spec" ]; then
+            echo "ERROR: buildozer.spec missing in build_env!"
+            ls -la build_env/
+            exit 1
+          fi
+          
+          if [ ! -f "build_env/main.py" ]; then
+            echo "ERROR: main.py missing in build_env!"
+            ls -la build_env/
+            exit 1
+          fi
+          
+          echo "Build environment prepared successfully."
           ls -la build_env/
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            python3-pip \
+            python3-setuptools \
+            libffi-dev \
+            libssl-dev \
+            automake \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            openjfx \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libtinfo5 \
+            cmake \
+            libltdl-dev || true
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
