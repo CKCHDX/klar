@@ -19,18 +19,7 @@ source.include_exts = py,png,jpg,kv,atlas,json,txt,ico
 version = 3.0.0
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy,kivymd,requests,beautifulsoup4,lxml,pillow
-
-# (str) Custom source folders for requirements
-# Sets custom source for any requirements with recipes
-# requirements.source.kivy = ../../kivy
-
-# (str) Presplash of the application
-#presplash.filename = %(source.dir)s/data/presplash.png
-
-# (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
 
 # (str) Supported orientation (landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -41,14 +30,14 @@ fullscreen = 0
 # (list) Permissions
 android.permissions = INTERNET,ACCESS_NETWORK_STATE
 
-# (int) Target Android API, should be as high as possible.
+# (int) Target Android API
 android.api = 33
 
-# (int) Minimum API your APK will support.
+# (int) Minimum API your APK will support
 android.minapi = 21
 
-# (str) Android NDK version to use
-android.ndk = 25b
+# REMOVED SPECIFIC NDK VERSION - Let Buildozer choose the correct one
+# android.ndk = 25b
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
 android.private_storage = True
@@ -59,7 +48,7 @@ android.logcat_filters = *:S python:D
 # (bool) Copy library instead of making a libpymodules.so
 android.copy_libs = 1
 
-# (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
+# (str) The Android arch to build for
 android.archs = arm64-v8a,armeabi-v7a
 
 [buildozer]
