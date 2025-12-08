@@ -287,7 +287,7 @@ class SearchEngine:
                     print(f"  ✗ {domain}")
         
         # Rank results
-        ranked_results = self.rank_results(results, query, priority_domains, demographic)
+        ranked_results = self.rank_results(results, query, priority_domains, demographic, sven_hints)
         
         # Get demographic hints for result limiting
         hints = self.get_demographic_hints(demographic)
@@ -566,8 +566,8 @@ class SearchEngine:
         
         return 0.0
     
-    def rank_results(self, results: List[Dict], query: str, priority_domains: List[str], demographic: str = "general") -> List[Dict]:
-        """Rank results with demographic optimization"""
+    def rank_results(self, results: List[Dict], query: str, priority_domains: List[str], demographic: str = "general", sven_hints: Dict = None) -> List[Dict]:
+        """Rank results with demographic and contextual optimization (SVEN-enhanced)"""
         authority = {
             '1177.se': 1.0,
             'folkhalsomyndigheten.se': 0.98,
@@ -589,6 +589,12 @@ class SearchEngine:
             
             priority_boost = 0.5 if domain in priority_domains else 0.0
             
+            # NEW: Use SVEN contextual weight for improved ranking
+            contextual_boost = 0.0
+            if sven_hints:
+                contextual_weight = self.sven.get_contextual_weight(query, domain)
+                contextual_boost = (contextual_weight - 0.5) * 0.2  # Normalized impact
+            
             # Demographic-aware weighting
             demographic_boost = 0.0
             if demographic == 'seniors_65plus' and domain in ['1177.se', 'folkhalsomyndigheten.se', 'svt.se']:
@@ -598,12 +604,13 @@ class SearchEngine:
             elif demographic == 'young_adults_20to40' and domain in ['arbetsformedlingen.se', 'hemnet.se']:
                 demographic_boost = 0.2
             
-            # Heavily favor relevance
+            # Heavily favor relevance with contextual enhancement
             result['final_score'] = (
                 (result['relevance'] * 0.70) + 
                 (auth_score * 0.12) + 
-                (priority_boost * 0.10) +
-                (demographic_boost * 0.08)
+                (priority_boost * 0.08) +
+                (demographic_boost * 0.07) +
+                (contextual_boost * 0.03)
             )
         
         return sorted(results, key=lambda x: x['final_score'], reverse=True)
