@@ -54,6 +54,8 @@ jobs:
       with:
         workdir: lab
         buildozer_version: stable
+      env:
+        USER: runner
     
     - name: Find and organize APK
       run: |
@@ -61,12 +63,16 @@ jobs:
         mkdir -p release/android
         
         # Find the built APK
-        APK_FILE=$(find lab/.buildozer -name "*.apk" -type f | head -n 1)
+        APK_FILE=$(find lab/.buildozer -name "*.apk" -type f 2>/dev/null | head -n 1)
         
         if [ -z "$APK_FILE" ]; then
-          echo "Error: No APK file found!"
-          echo "Searching for APK files:"
-          find lab -name "*.apk" -type f || echo "No APK files found anywhere"
+          echo "Error: No APK file found in .buildozer!"
+          echo "Searching for APK files everywhere:"
+          find lab -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
+          echo "Lab directory structure:"
+          ls -la lab/ || true
+          echo "Buildozer directory:"
+          ls -la lab/.buildozer/ 2>/dev/null || echo ".buildozer not found"
           exit 1
         fi
         
