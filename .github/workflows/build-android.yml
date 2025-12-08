@@ -81,6 +81,10 @@ jobs:
         pip3 install --upgrade setuptools wheel
         pip3 install buildozer==1.5.0
         pip3 install cython==0.29.36
+        
+        # Verify installation
+        which buildozer
+        buildozer --version
     
     - name: Cache Buildozer directories
       uses: actions/cache@v4
@@ -92,27 +96,57 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildozer-
     
-    - name: Update buildozer.spec with correct SDK paths
+    - name: Update buildozer.spec
       working-directory: ./lab
       run: |
-        # Update buildozer.spec to use our SDK location
-        cat >> buildozer.spec << 'EOF'
+        # Show current spec
+        echo "Current buildozer.spec:"
+        cat buildozer.spec
         
-        # Android SDK/NDK paths
-        android.sdk_path = /home/runner/.buildozer/android/platform/android-sdk
-        android.ndk_path = /home/runner/.buildozer/android/platform/android-ndk
-        android.accept_sdk_license = True
-        EOF
+        # Add SDK configuration
+        echo "" >> buildozer.spec
+        echo "# Android SDK/NDK configuration" >> buildozer.spec
+        echo "android.accept_sdk_license = True" >> buildozer.spec
+        
+        echo "" 
+        echo "Updated buildozer.spec:"
+        cat buildozer.spec
+    
+    - name: Initialize Buildozer
+      working-directory: ./lab
+      run: |
+        # Clean any previous builds
+        rm -rf .buildozer bin __pycache__
+        
+        # Show environment
+        echo "Python version:"
+        python3 --version
+        
+        echo "Buildozer version:"
+        buildozer --version
+        
+        echo "Java version:"
+        java -version
     
     - name: Build APK with Buildozer
       working-directory: ./lab
       run: |
-        # Let buildozer handle the SDK/NDK installation automatically
-        export PATH=$PATH:$HOME/.local/bin
-        buildozer -v android debug
-      env:
-        ANDROID_HOME: ${{ env.ANDROID_HOME }}
-        ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+        set -e
+        
+        # Run buildozer with verbose output
+        echo "Starting Buildozer build..."
+        buildozer -v android debug 2>&1 | tee build.log
+        
+        echo "Build completed!"
+      continue-on-error: false
+    
+    - name: Upload build log on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: buildozer-build-log
+        path: lab/build.log
+        retention-days: 7
     
     - name: Find and organize APK
       run: |
