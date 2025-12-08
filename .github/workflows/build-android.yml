@@ -13,94 +13,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-android:
+  build:
+    name: Build APK with Buildozer
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
-    
-    - name: Copy project files to lab directory
-      run: |
-        cp keywords_db.json lab/ 2>/dev/null || echo "keywords_db.json not found"
-        cp domains.json lab/ 2>/dev/null || echo "domains.json not found"
-        
-        if [ -d "engine" ]; then
-          cp -r engine lab/
-        fi
-        
-        echo "Lab directory contents:"
-        ls -la lab/
-    
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          build-essential \
-          git \
-          python3-pip \
-          libffi-dev \
-          libssl-dev \
-          zip \
-          unzip \
-          openjdk-17-jdk \
-          zlib1g-dev \
-          cmake
-    
-    - name: Install Buildozer
-      run: |
-        pip3 install --upgrade pip setuptools wheel
-        pip3 install buildozer==1.5.0 cython==0.29.36
-        buildozer --version
-    
-    - name: Cache Buildozer
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.buildozer
-          lab/.buildozer
-        key: buildozer-${{ hashFiles('lab/buildozer.spec') }}
-        restore-keys: buildozer-
-    
-    - name: Build APK
-      working-directory: ./lab
-      run: |
-        echo "========== BUILD START =========="
-        buildozer -v android debug || {
-          echo "========== BUILD FAILED =========="
-          echo "Checking for logs..."
-          find .buildozer -name "*.log" -exec echo "{}:" \; -exec cat {} \; 2>/dev/null || true
-          exit 1
-        }
-        echo "========== BUILD SUCCESS =========="
-    
-    - name: Find APK
-      run: |
-        mkdir -p release/android
-        
-        echo "Searching for APK..."
-        find lab -name "*.apk" -type f
-        
-        APK=$(find lab -name "*.apk" -type f | head -n 1)
-        
-        if [ -z "$APK" ]; then
-          echo "ERROR: No APK found!"
-          echo "Build output structure:"
-          ls -la lab/.buildozer/android/platform/build-* 2>/dev/null || true
-          exit 1
-        fi
-        
-        cp "$APK" release/android/Klar-3.0-debug.apk
-        ls -lh release/android/
-    
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: Klar-Android-APK
-        path: release/android/Klar-3.0-debug.apk
-        retention-days: 90
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: master
+
+      - name: Copy project files to lab
+        run: |
+          cd master
+          cp keywords_db.json lab/ 2>/dev/null || true
+          cp domains.json lab/ 2>/dev/null || true
+          
+          if [ -d "engine" ]; then
+            cp -r engine lab/
+          fi
+
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          repository_root: master/lab
+          workdir: .
+          buildozer_version: stable
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Klar-Android-APK
+          path: ${{ steps.buildozer.outputs.filename }}
