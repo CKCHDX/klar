@@ -1,7 +1,8 @@
 """
-KLAR - Domain Blacklist Security System
-Blocks specific harmful domains while allowing all others
-Advanced users can still access blocked domains with explicit disclaimer acknowledgment
+KLAR - Domain Whitelist Security System
+Only allows access to whitelisted domains
+All other URLs are blocked with security warning
+Advanced users can bypass with explicit disclaimer acknowledgment
 """
 
 import json
@@ -11,32 +12,33 @@ from urllib.parse import urlparse
 
 class DomainWhitelist:
     """
-    Security layer: Enforce blacklist-based domain access.
-    Blocks specific harmful domains while allowing legitimate access to all other domains.
+    Security layer: Enforce whitelist-only domain access.
+    Protects users from phishing, malware, and unwanted content.
+    Only domains in the JSON file are allowed.
     Advanced users can bypass with explicit acknowledgment.
     """
     
     def __init__(self, domains_file: str = "domains.json"):
-        self.blacklist: Set[str] = set()  # Renamed from whitelist to blacklist
+        self.whitelist: Set[str] = set()  # Only whitelisted domains allowed
         self.bypass_tokens: Set[str] = set()  # Track users who acknowledged bypass
-        self.load_blacklist(domains_file)
+        self.load_whitelist(domains_file)
         self.blocked_count = 0
         self.allowed_count = 0
         self.bypass_count = 0
     
-    def load_blacklist(self, domains_file: str):
-        """Load blacklisted domains from JSON file"""
+    def load_whitelist(self, domains_file: str):
+        """Load whitelisted domains from JSON file"""
         try:
             with open(domains_file, 'r', encoding='utf-8') as f:
                 domains = json.load(f)
-                self.blacklist = set(domain.lower() for domain in domains)
-                print(f"[Security] ✓ Loaded {len(self.blacklist)} blacklisted domains")
+                self.whitelist = set(domain.lower() for domain in domains)
+                print(f"[Security] ✓ Loaded {len(self.whitelist)} whitelisted domains")
         except FileNotFoundError:
             print(f"[Security] ⚠ Warning: {domains_file} not found")
-            self.blacklist = set()
+            self.whitelist = set()
         except json.JSONDecodeError:
             print(f"[Security] ✗ Error: Invalid JSON in {domains_file}")
-            self.blacklist = set()
+            self.whitelist = set()
     
     def _extract_domain(self, url: str) -> str:
         """
@@ -68,7 +70,7 @@ class DomainWhitelist:
     
     def is_whitelisted(self, url: str) -> Tuple[bool, str]:
         """
-        Check if URL domain is allowed (NOT blacklisted).
+        Check if URL domain is whitelisted (ALLOWED).
         
         Args:
             url: Full URL to check
@@ -81,9 +83,9 @@ class DomainWhitelist:
             domain = self._extract_domain(url)
             
             if not domain:
-                # If we can't extract a domain, allow it (not our responsibility)
-                self.allowed_count += 1
-                return True, f"✓ {url} - No domain found, allowing"
+                # If we can't extract a domain, block it for safety
+                self.blocked_count += 1
+                return False, f"Invalid URL: no domain found"
             
             domain_lower = domain.lower()
             
@@ -96,28 +98,28 @@ class DomainWhitelist:
             else:
                 main_domain = '.'.join(parts[-2:]) if len(parts) > 1 else domain_lower
             
-            # Check if domain is in blacklist (INVERTED LOGIC)
-            if domain_lower in self.blacklist:
-                self.blocked_count += 1
-                return False, f"✓ {domain_lower} is on the blocked domains list"
+            # Check if domain is in WHITELIST (original logic)
+            if domain_lower in self.whitelist:
+                self.allowed_count += 1
+                return True, f"✓ {domain_lower} is whitelisted"
             
-            if main_domain in self.blacklist:
-                self.blocked_count += 1
-                return False, f"✓ {main_domain} is on the blocked domains list"
+            if main_domain in self.whitelist:
+                self.allowed_count += 1
+                return True, f"✓ {main_domain} is whitelisted"
             
-            # Check if it's a subdomain of blacklisted domain
-            for blacklisted in self.blacklist:
-                if domain_lower.endswith('.' + blacklisted):
-                    self.blocked_count += 1
-                    return False, f"✓ Subdomain of {blacklisted} is on the blocked list"
+            # Check if it's a subdomain of whitelisted domain
+            for whitelisted in self.whitelist:
+                if domain_lower.endswith('.' + whitelisted):
+                    self.allowed_count += 1
+                    return True, f"✓ Subdomain of {whitelisted} is whitelisted"
             
-            # Not in blacklist = ALLOWED (inverted logic)
-            self.allowed_count += 1
-            return True, f"✓ {domain_lower} is allowed"
+            # Not in whitelist = BLOCKED (original logic)
+            self.blocked_count += 1
+            return False, f"Domain '{domain_lower}' is NOT on the whitelisted domains list"
         
         except Exception as e:
-            self.allowed_count += 1
-            return True, f"✓ Allowing due to parse error: {str(e)}"
+            self.blocked_count += 1
+            return False, f"Invalid URL format: {str(e)}"
     
     def generate_bypass_token(self) -> str:
         """
@@ -154,6 +156,8 @@ class DomainWhitelist:
         
         # Escape URL for display
         display_url = url.replace('"', '&quot;').replace("'", '&#39;')
+        # JSON encode URL for JavaScript
+        display_url_json = json.dumps(display_url)
         
         return f"""
         <!DOCTYPE html>
@@ -368,6 +372,13 @@ class DomainWhitelist:
                     font-size: 12px;
                     color: #6b7390;
                 }}
+                .whitelisted-count {{
+                    display: inline-block;
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    margin: 15px 0;
+                }}
                 .status-message {{
                     font-size: 13px;
                     padding: 10px;
@@ -385,10 +396,10 @@ class DomainWhitelist:
         <body>
             <div class="container">
                 <div class="warning-icon">🔒</div>
-                <h1>Webbplats blockerad</h1>
-                <h2>Denna domän är på blockeringslistan</h2>
+                <h1>Webbplats blockerad för säkerhet</h1>
+                <h2>Denna domän är inte godkänd för din säkerhet</h2>
                 
-                <p>Du försökte komma åt en webbplats som är blockeringslistad.</p>
+                <p>Du försökte komma åt en webbplats som inte finns på vår säkra domänlista.</p>
                 
                 <div class="url">{display_url}</div>
                 
@@ -399,18 +410,22 @@ class DomainWhitelist:
                 
                 <div class="info">
                     <strong>ℹ️ Om Klar-säkerhet:</strong><br>
-                    Klar kan blockera specifika domäner för säkerhet. De flesta webbplatser är tillåtna. Denna domän är på blockeringslistan för skyddssyfte.
+                    Klar är designad för att skydda dig och din familj. Vi tillåter endast godkända svenska webbplatser för att undvika nätfiske, malvara och olämpligt innehål. Det är en viktig del av din digitala säkerhet.
+                </div>
+                
+                <div class="whitelisted-count">
+                    ✓ 111 godkända svenska domäner tillgängliga
                 </div>
                 
                 <!-- BYPASS SECTION -->
                 <div class="bypass-section">
-                    <div class="bypass-title">⚠️ Avancerad användare? Åsidosätt blockering</div>
+                    <div class="bypass-title">⚠️ Avancerad användare? Åsidosätt säkerhet</div>
                     
                     <div class="disclaimer">
                         <div class="disclaimer-title">⚠️ VIKTIGT ANSVARSBEFRIELSE</div>
                         <div class="disclaimer-text">
                             <p>
-                                <strong>Oscyra.solutions är INTE ansvarig</strong> för något som helst som sker när du besöker blockerade webbplatser.
+                                <strong>Oscyra.solutions är INTE ansvarig</strong> för något som helst som sker när du besöker webbplatser utanför vår säkra domänlista.
                             </p>
                             <p style="margin-top: 12px;">
                                 Detta inkluderar men är inte begränsat till:
@@ -432,15 +447,15 @@ class DomainWhitelist:
                     <div class="checkbox-container">
                         <input type="checkbox" id="acknowledgement" onchange="updateBypassButton()">
                         <label for="acknowledgement" class="checkbox-label">
-                            Jag förstår och accepterar all risk. Jag vet att Oscyra.solutions inte är ansvarig för något som helst på blockerade webbplatser.
+                            Jag förstår och accepterar all risk. Jag vet att Oscyra.solutions inte är ansvarig för något som helst utanför den säkra domänlistan.
                         </label>
                     </div>
                     
                     <div id="statusMessage" class="status-message"></div>
                     
                     <div class="actions">
-                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity('{bypass_token}', '{display_url}')" disabled>
-                            Åsidosätt blockering och besök webbplatsen
+                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity('{bypass_token}', {display_url_json})" disabled>
+                            Åsidosätt säkerhet och besök webbplatsen
                         </button>
                     </div>
                 </div>
@@ -465,9 +480,7 @@ class DomainWhitelist:
                 function bypassSecurity(token, url) {{
                     const checkbox = document.getElementById('acknowledgement');
                     if (checkbox.checked) {{
-                        // Notify the application via window title change
-                        // This is how PyQt6 WebEngineView can intercept the bypass
-                        window.location.href = 'klar-bypass://" + token + "/" + encodeURIComponent(url);
+                        window.location.href = 'klar-bypass://' + token + '/' + encodeURIComponent(url);
                     }}
                 }}
             </script>
@@ -476,9 +489,9 @@ class DomainWhitelist:
         """
     
     def get_statistics(self) -> dict:
-        """Get blacklist statistics"""
+        """Get whitelist statistics"""
         return {
-            "total_blacklisted": len(self.blacklist),
+            "total_whitelisted": len(self.whitelist),
             "allowed_count": self.allowed_count,
             "blocked_count": self.blocked_count,
             "bypass_count": self.bypass_count,

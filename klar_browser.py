@@ -1,13 +1,15 @@
 """
 Klar 3.0 - Standalone Swedish Browser
 Complete browser application with integrated search engine
-Features: Domain blacklisting, demographic-aware search, multi-user safety
+Features: LOKI offline search, Wikipedia direct search, Setup wizard
 """
 import sys
 import os
+import json
 import webbrowser 
 from pathlib import Path
 from urllib.parse import urlparse, unquote
+from datetime import datetime
 
 from PyQt6.QtCore import QUrl, Qt, QTimer, pyqtSignal, QThread
 from PyQt6.QtWidgets import (
@@ -23,8 +25,236 @@ from engine.search_engine import SearchEngine
 from engine.results_page import ResultsPage
 from engine.domain_whitelist import DomainWhitelist
 from engine.demographic_detector import DemographicDetector
+from engine.loki_system import LOKISystem
 
 from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile
+
+# ============================================
+# SETUP WIZARD UI CLASS
+# ============================================
+from PyQt6.QtWidgets import QDialog, QFileDialog, QCheckBox, QTextEdit
+
+class SetupWizard(QDialog):
+    """First-run setup wizard for Klar"""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Klar 3.0 - Första gångs inställningar")
+        self.setModal(True)
+        self.setGeometry(200, 200, 600, 500)
+        self.setStyleSheet(self._get_styles())
+        
+        self.setup_data = {
+            'first_run_completed': False,
+            'loki_enabled': True,
+            'data_path': str(Path.home() / "Klar-data")
+        }
+        
+        self._setup_ui()
+    
+    def _setup_ui(self):
+        """Setup UI elements"""
+        layout = QVBoxLayout()
+        layout.setSpacing(20)
+        layout.setContentsMargins(30, 30, 30, 30)
+        
+        # Header
+        header = QLabel("Klar 3.0")
+        header.setFont(QFont("Segoe UI", 24, QFont.Weight.Bold))
+        header.setStyleSheet("color: #3b82f6;")
+        layout.addWidget(header)
+        
+        subtitle = QLabel("Första gångs inställningar")
+        subtitle.setFont(QFont("Segoe UI", 14))
+        subtitle.setStyleSheet("color: #a0a8c0; margin-bottom: 20px;")
+        layout.addWidget(subtitle)
+        
+        layout.addSpacing(10)
+        
+        # LOKI Section
+        loki_label = QLabel("🔍 Offline-sökning (LOKI)")
+        loki_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        layout.addWidget(loki_label)
+        
+        loki_desc = QTextEdit()
+        loki_desc.setPlainText(
+            "Med LOKI kan du söka på tidigare besökta sidor "
+            "och domäner även utan internetanslutning.\n\n"
+            "LOKI cachelagrar automatiskt sidor då du är online "
+            "och gör dem sörbara offline. Du kan stänga av detta "
+            "när som helst i inställningarna."
+        )
+        loki_desc.setReadOnly(True)
+        loki_desc.setMaximumHeight(80)
+        loki_desc.setStyleSheet("""
+            QTextEdit {
+                background: rgba(59, 130, 246, 0.1);
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                border-radius: 8px;
+                padding: 10px;
+                color: #a0a8c0;
+                font-size: 12px;
+            }
+        """)
+        layout.addWidget(loki_desc)
+        
+        # Enable LOKI checkbox
+        self.loki_checkbox = QCheckBox("Aktivera LOKI offline-sökning")
+        self.loki_checkbox.setFont(QFont("Segoe UI", 11))
+        self.loki_checkbox.setChecked(True)
+        self.loki_checkbox.setStyleSheet("""
+            QCheckBox {
+                color: #e8eaf0;
+                padding: 8px;
+            }
+            QCheckBox::indicator {
+                width: 20px;
+                height: 20px;
+            }
+        """)
+        layout.addWidget(self.loki_checkbox)
+        
+        layout.addSpacing(15)
+        
+        # Storage Path Section
+        storage_label = QLabel("💾 Välj lagringsplats för Klar-data")
+        storage_label.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+        layout.addWidget(storage_label)
+        
+        storage_desc = QLabel(
+            "Klar-data innehåller sökhisrika, cachad data (om LOKI är aktiverad) "
+            "och användarinställningar."
+        )
+        storage_desc.setStyleSheet("color: #6b7390; font-size: 11px;")
+        storage_desc.setWordWrap(True)
+        layout.addWidget(storage_desc)
+        
+        # Path selection
+        path_layout = QHBoxLayout()
+        self.path_input = QLineEdit()
+        self.path_input.setText(self.setup_data['data_path'])
+        self.path_input.setReadOnly(False)
+        self.path_input.setStyleSheet("""
+            QLineEdit {
+                padding: 10px;
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                border-radius: 6px;
+                background: #1e2538;
+                color: #e8eaf0;
+            }
+            QLineEdit:focus {
+                border: 1px solid #3b82f6;
+                background: #252d44;
+            }
+        """)
+        path_layout.addWidget(self.path_input)
+        
+        browse_btn = QPushButton("Bläddra...")
+        browse_btn.setFixedWidth(100)
+        browse_btn.setStyleSheet("""
+            QPushButton {
+                background: #1e2538;
+                color: #a0a8c0;
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 6px;
+                padding: 8px 16px;
+            }
+            QPushButton:hover {
+                background: #252d44;
+                color: #e8eaf0;
+                border-color: #3b82f6;
+            }
+        """)
+        browse_btn.clicked.connect(self._browse_folder)
+        path_layout.addWidget(browse_btn)
+        layout.addLayout(path_layout)
+        
+        # Info
+        info = QLabel(
+            "ℹ Du kan alltid ändra detta senare i inställningarna"
+        )
+        info.setStyleSheet("color: #6b7390; font-size: 10px;")
+        layout.addWidget(info)
+        
+        layout.addStretch()
+        
+        # Buttons
+        button_layout = QHBoxLayout()
+        button_layout.addStretch()
+        
+        skip_btn = QPushButton("Hoppa över")
+        skip_btn.setFixedWidth(120)
+        skip_btn.setStyleSheet("""
+            QPushButton {
+                background: #1e2538;
+                color: #a0a8c0;
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 6px;
+                padding: 10px;
+            }
+            QPushButton:hover {
+                background: #252d44;
+                border-color: #3b82f6;
+            }
+        """)
+        skip_btn.clicked.connect(self.reject)
+        button_layout.addWidget(skip_btn)
+        
+        next_btn = QPushButton("✓ Nästa")
+        next_btn.setFixedWidth(120)
+        next_btn.setStyleSheet("""
+            QPushButton {
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 10px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background: #60a5fa;
+            }
+            QPushButton:pressed {
+                background: #2563eb;
+            }
+        """)
+        next_btn.clicked.connect(self._on_next)
+        button_layout.addWidget(next_btn)
+        
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
+    
+    def _browse_folder(self):
+        """Browse for folder"""
+        folder = QFileDialog.getExistingDirectory(
+            self,
+            "Välj lagringsplats för Klar-data",
+            str(Path.home())
+        )
+        if folder:
+            self.path_input.setText(folder)
+    
+    def _on_next(self):
+        """Handle next button"""
+        self.setup_data['loki_enabled'] = self.loki_checkbox.isChecked()
+        self.setup_data['data_path'] = self.path_input.text()
+        self.setup_data['first_run_completed'] = True
+        self.accept()
+    
+    def get_setup_data(self):
+        """Get setup configuration"""
+        return self.setup_data
+    
+    def _get_styles(self):
+        """Get dialog styles"""
+        return """
+            QDialog {
+                background: linear-gradient(135deg, #0a0e1a 0%, #1a2032 100%);
+                color: #e8eaf0;
+            }
+            QLabel { color: #e8eaf0; }
+            QCheckBox { color: #e8eaf0; }
+        """
 
 class SearchWorker(QThread):
     """Background thread for searching with demographic support"""
@@ -40,7 +270,6 @@ class SearchWorker(QThread):
     
     def run(self):
         try:
-            # Pass demographic context to search engine
             results = self.search_engine.search(
                 self.query,
                 demographic=self.demographic
@@ -55,7 +284,28 @@ class KlarBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         # ============================================
-        # VIDEO CODEC SUPPORT - PyQt6 CORRECT WAY
+        # FIRST RUN SETUP
+        # ============================================
+        self.config_path = Path.home() / "klar_config.json"
+        self.config = self._load_or_create_config()
+        
+        self.data_path = self.config.get('loki', {}).get('storage_path', str(Path.home() / "Klar-data"))
+        
+        # Initialize LOKI if enabled
+        self.loki = None
+        if self.config.get('loki', {}).get('enabled', False):
+            try:
+                self.loki = LOKISystem(self.data_path)
+                print(f"[LOKI] Initialized at {self.data_path}")
+                print(f"[LOKI] {self.loki.get_cache_stats()}")
+            except Exception as e:
+                print(f"[LOKI] Initialization error: {e}")
+                self.loki = None
+        else:
+            print("[LOKI] Disabled by user")
+        
+        # ============================================
+        # VIDEO CODEC SUPPORT
         # ============================================
         profile = QWebEngineProfile.defaultProfile()
         settings = profile.settings()
@@ -76,13 +326,13 @@ class KlarBrowser(QMainWindow):
         self.search_engine = SearchEngine()
         self.search_worker = None
         
-        # NEW: Initialize security and demographic modules
-        self.blacklist = DomainWhitelist("domains.json")  # Renamed for clarity
+        # Initialize security and demographic modules
+        self.blacklist = DomainWhitelist("domains.json")
         self.demographic_detector = DemographicDetector()
         
         # Track state
         self.is_searching = False
-        self.pending_bypass_url = None  # Track URL waiting for bypass confirmation
+        self.pending_bypass_url = None
         
         # Setup UI
         self.setup_ui()
@@ -90,39 +340,83 @@ class KlarBrowser(QMainWindow):
         
         # Show home
         self.show_home_page()
+        
+        # Show LOKI status if enabled
+        if self.loki and self.loki.settings.get('enabled', False):
+            self.status.showMessage("✓ LOKI offline-sökning aktiverad", 5000)
+    
+    def _load_or_create_config(self):
+        """Load config or show setup wizard on first run"""
+        if not self.config_path.exists():
+            # First run - show setup wizard
+            print("[Setup] First run detected, showing wizard...")
+            wizard = SetupWizard()
+            
+            if wizard.exec():
+                # User completed setup
+                setup_data = wizard.get_setup_data()
+                config = {
+                    "version": "3.0",
+                    "first_run_completed": True,
+                    "loki": {
+                        "enabled": setup_data['loki_enabled'],
+                        "storage_path": setup_data['data_path']
+                    },
+                    "created_date": datetime.now().isoformat()
+                }
+                
+                # Save config
+                with open(self.config_path, 'w', encoding='utf-8') as f:
+                    json.dump(config, f, indent=2, ensure_ascii=False)
+                
+                print(f"[Setup] Config saved: LOKI={config['loki']['enabled']}")
+                return config
+            else:
+                # User skipped setup - use defaults
+                config = {
+                    "version": "3.0",
+                    "first_run_completed": True,
+                    "loki": {"enabled": False, "storage_path": str(Path.home() / "Klar-data")},
+                    "created_date": datetime.now().isoformat()
+                }
+                with open(self.config_path, 'w', encoding='utf-8') as f:
+                    json.dump(config, f, indent=2, ensure_ascii=False)
+                print("[Setup] Setup skipped, using defaults")
+                return config
+        else:
+            # Load existing config
+            try:
+                with open(self.config_path, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except Exception as e:
+                print(f"[Setup] Error loading config: {e}")
+                return {"loki": {"enabled": False}}
     
     def setup_ui(self):
         """Setup browser UI with centered search"""
-        # Central widget
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         
-        # Main layout
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
         central_widget.setLayout(main_layout)
         
-        # Top navigation bar (compact)
         nav_bar = self.create_top_nav()
         main_layout.addWidget(nav_bar)
         
-        # Stacked widget for home/browser view
         self.stacked_widget = QStackedWidget()
         main_layout.addWidget(self.stacked_widget)
         
-        # Home page (centered search)
         self.home_widget = self.create_home_widget()
         self.stacked_widget.addWidget(self.home_widget)
         
-        # Browser view (tabs)
         self.browser_widget = QWidget()
         browser_layout = QVBoxLayout()
         browser_layout.setContentsMargins(0, 0, 0, 0)
         browser_layout.setSpacing(0)
         self.browser_widget.setLayout(browser_layout)
         
-        # Tab widget
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
         self.tabs.setTabsClosable(True)
@@ -131,15 +425,12 @@ class KlarBrowser(QMainWindow):
         
         self.stacked_widget.addWidget(self.browser_widget)
         
-        # Status bar
         self.status = QStatusBar()
         self.setStatusBar(self.status)
         
-        # Add first tab
         self.add_new_tab(None, "Ny flik")
         self.open_videos_externally = True
         
-        # Shortcuts
         QShortcut(QKeySequence("Ctrl+T"), self, self.add_new_tab)
         QShortcut(QKeySequence("Ctrl+W"), self, lambda: self.close_tab(self.tabs.currentIndex()))
         QShortcut(QKeySequence("Ctrl+L"), self, lambda: self.main_search_bar.setFocus())
@@ -154,7 +445,6 @@ class KlarBrowser(QMainWindow):
         nav_layout.setSpacing(8)
         nav_widget.setLayout(nav_layout)
         
-        # Back button
         back_btn = QPushButton("◄")
         back_btn.setObjectName("navButton")
         back_btn.setFixedSize(36, 36)
@@ -162,7 +452,6 @@ class KlarBrowser(QMainWindow):
         back_btn.setToolTip("Bakåt (Alt+←)")
         nav_layout.addWidget(back_btn)
         
-        # Forward button
         forward_btn = QPushButton("►")
         forward_btn.setObjectName("navButton")
         forward_btn.setFixedSize(36, 36)
@@ -170,7 +459,6 @@ class KlarBrowser(QMainWindow):
         forward_btn.setToolTip("Framåt (Alt+→)")
         nav_layout.addWidget(forward_btn)
         
-        # Reload button
         reload_btn = QPushButton("↻")
         reload_btn.setObjectName("navButton")
         reload_btn.setFixedSize(36, 36)
@@ -178,7 +466,6 @@ class KlarBrowser(QMainWindow):
         reload_btn.setToolTip("Uppdatera (F5)")
         nav_layout.addWidget(reload_btn)
         
-        # Home button
         home_btn = QPushButton("⌂")
         home_btn.setObjectName("navButton")
         home_btn.setFixedSize(36, 36)
@@ -186,14 +473,12 @@ class KlarBrowser(QMainWindow):
         home_btn.setToolTip("Hem (Ctrl+H)")
         nav_layout.addWidget(home_btn)
         
-        # Main search/URL bar
         self.main_search_bar = QLineEdit()
         self.main_search_bar.setObjectName("mainSearchBar")
         self.main_search_bar.setPlaceholderText("Sök eller ange webbadress...")
         self.main_search_bar.returnPressed.connect(self.navigate_to_url)
         nav_layout.addWidget(self.main_search_bar)
         
-        # Search button
         search_btn = QPushButton("Sök")
         search_btn.setObjectName("primaryButton")
         search_btn.setFixedWidth(80)
@@ -211,31 +496,25 @@ class KlarBrowser(QMainWindow):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         home.setLayout(layout)
         
-        # Logo
         logo = QLabel("Klar")
         logo.setObjectName("homePageLogo")
         logo.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(logo)
         
-        # Version
         version = QLabel("3.0")
         version.setObjectName("homePageVersion")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version)
         
-        # Spacer
         layout.addSpacing(40)
         
-        # Search bar container
         search_container = QWidget()
         search_layout = QHBoxLayout()
         search_layout.setContentsMargins(0, 0, 0, 0)
         search_container.setLayout(search_layout)
         
-        # Add spacers for centering
         search_layout.addStretch()
         
-        # Search bar
         self.home_search_bar = QLineEdit()
         self.home_search_bar.setObjectName("homeSearchBar")
         self.home_search_bar.setPlaceholderText("Sök eller ange webbadress...")
@@ -244,7 +523,6 @@ class KlarBrowser(QMainWindow):
         self.home_search_bar.returnPressed.connect(self.home_search)
         search_layout.addWidget(self.home_search_bar)
         
-        # Search button
         home_search_btn = QPushButton("Sök")
         home_search_btn.setObjectName("primaryButton")
         home_search_btn.clicked.connect(self.home_search)
@@ -253,11 +531,8 @@ class KlarBrowser(QMainWindow):
         search_layout.addStretch()
         
         layout.addWidget(search_container)
-        
-        # Spacer
         layout.addSpacing(60)
         
-        # Features
         features_widget = QWidget()
         features_layout = QHBoxLayout()
         features_layout.setSpacing(20)
@@ -269,7 +544,7 @@ class KlarBrowser(QMainWindow):
             ("🇸🇪", "111 Svenska domäner"),
             ("⚡", "Snabb och effektiv sökning"),
             ("🔒", "Integritet i fokus"),
-            ("🌐", "Utforska webben smidigt"),
+            ("📶", "Offline-sökning med LOKI"),
             ("🖼️", "Inbyggd bildvisare"),
             ("🎥", "Spela upp videor direkt")
         ]
@@ -279,9 +554,7 @@ class KlarBrowser(QMainWindow):
             features_layout.addWidget(feature)
         
         features_layout.addStretch()
-        
         layout.addWidget(features_widget)
-        
         
         return home
     
@@ -325,34 +598,50 @@ class KlarBrowser(QMainWindow):
         i = self.tabs.addTab(browser, label)
         self.tabs.setCurrentIndex(i)
         
-        # Connect signals
         browser.urlChanged.connect(lambda qurl, browser=browser: 
                                    self.update_url_bar(qurl, browser))
         browser.loadFinished.connect(lambda _, i=i, browser=browser:
                                      self.tabs.setTabText(i, browser.page().title()[:25]))
         browser.loadProgress.connect(self.update_status)
         
-        # Switch to browser view
         self.stacked_widget.setCurrentIndex(1)
         
         return browser
     
     def on_url_changed(self, qurl: QUrl, browser):
-        """Handle URL changes - check for bypass protocol and video URLs"""
+        """Handle URL changes"""
         url_string = qurl.toString()
         
-        # Handle bypass protocol
         if url_string.startswith('klar-bypass://'):
             self.handle_bypass_redirect(url_string, browser)
             return
         
-        # Check for videos
+        # Cache page if LOKI enabled and valid content
+        if self.loki and self.loki.settings.get('enabled', False):
+            try:
+                page = browser.page()
+                page.toHtml(lambda html: self._cache_page_content(url_string, page, html))
+            except:
+                pass
+        
         self.check_video_url(qurl)
+    
+    def _cache_page_content(self, url: str, page, html: str):
+        """Cache page content if LOKI enabled"""
+        if self.loki and self.loki.settings.get('enabled', False):
+            try:
+                self.loki.cache_page({
+                    'url': url,
+                    'title': page.title(),
+                    'content': html[:10000]  # Limit to 10KB
+                })
+                print(f"[LOKI] Cached: {url}")
+            except Exception as e:
+                print(f"[LOKI] Cache error: {e}")
     
     def handle_bypass_redirect(self, protocol_url: str, browser):
         """Handle klar-bypass:// protocol redirect"""
         try:
-            # Parse: klar-bypass://TOKEN/URL
             parts = protocol_url.replace('klar-bypass://', '').split('/', 1)
             if len(parts) != 2:
                 self.status.showMessage("Bypass avbruten: Ogiltig format", 5000)
@@ -361,17 +650,14 @@ class KlarBrowser(QMainWindow):
             token, encoded_url = parts
             bypass_url = unquote(encoded_url)
             
-            # Verify token
             if not self.blacklist.verify_bypass_acknowledgment(token):
                 self.status.showMessage("Bypass avbruten: Ogiltig token", 5000)
                 print(f"[Security] Bypass rejected: Invalid token")
                 return
             
-            # Token valid - proceed with URL
             print(f"[Security] Bypass approved for: {bypass_url}")
             self.status.showMessage(f"✓ Säkerhetskontroll åsidosatt. Laddar...", 3000)
             
-            # Load the bypassed URL
             if not bypass_url.startswith('http'):
                 bypass_url = 'https://' + bypass_url
             
@@ -398,7 +684,6 @@ class KlarBrowser(QMainWindow):
         if any(indicator in url_string.lower() for indicator in video_indicators):
             print(f"[Video] Opening externally: {url_string}")
             webbrowser.open(url_string)
-            # Navigate back to prevent loading in Klar
             self.current_browser().back()
 
     def close_tab(self, i):
@@ -410,37 +695,31 @@ class KlarBrowser(QMainWindow):
         self.tabs.removeTab(i)
     
     def navigate_to_url(self):
-        """Navigate to URL or perform search with security validation"""
+        """Navigate to URL or perform search"""
         query = self.main_search_bar.text().strip()
         
         if not query:
             return
         
-        # Check if it's a URL
         if self.is_url(query):
-            # FIXED: Check blacklist - is_whitelisted now returns True if domain is ALLOWED
             is_allowed, reason = self.blacklist.is_whitelisted(query)
             
             if not is_allowed:
-                # Show security warning page - domain is BLOCKED (in blacklist)
                 blocked_html = self.blacklist.get_blocked_html(query, reason)
                 self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
                 self.stacked_widget.setCurrentIndex(1)
                 self.status.showMessage(f"⚠️ Domän blockerad för säkerhet", 5000)
                 print(f"[Security] Blocked: {query} - {reason}")
             else:
-                # Domain is ALLOWED, load it
                 url = query if query.startswith('http') else 'https://' + query
                 self.current_browser().setUrl(QUrl(url))
                 self.stacked_widget.setCurrentIndex(1)
                 print(f"[Security] Allowed: {query}")
         else:
-            # It's a search query
             self.perform_search(query)
     
     def is_url(self, text):
         """Check if text is a URL"""
-        # More lenient URL detection
         if text.startswith('http://') or text.startswith('https://'):
             return True
         if '.' in text and ' ' not in text and len(text.split('.')) >= 2:
@@ -448,24 +727,21 @@ class KlarBrowser(QMainWindow):
         return False
     
     def perform_search(self, query):
-        """Perform search using background thread with demographic awareness"""
+        """Perform search"""
         if self.is_searching:
             self.status.showMessage("Sökning pågår redan...", 2000)
             return
         
         self.is_searching = True
         
-        # NEW: Detect user demographic
         demographic, confidence, metadata = self.demographic_detector.detect(query)
         print(f"[Demographic] Detected: {demographic} (confidence: {confidence:.2f})")
         
         self.status.showMessage(f"Söker efter: {query}...")
         
-        # Show loading in browser
         self.show_loading_page(query)
         self.stacked_widget.setCurrentIndex(1)
         
-        # Start background search with demographic context
         self.search_worker = SearchWorker(
             self.search_engine, 
             query,
@@ -537,7 +813,6 @@ class KlarBrowser(QMainWindow):
         query = results.get('query', '')
         demographic = results.get('detected_demographic', 'general')
         
-        # Display results
         results_html = ResultsPage.generate_html(query, results, demographic)
         self.current_browser().setHtml(results_html, QUrl("about:blank"))
         
@@ -579,7 +854,6 @@ class KlarBrowser(QMainWindow):
         
         url_string = qurl.toString()
         
-        # Don't show data: URLs or bypass URLs
         if not url_string.startswith('data:') and not url_string.startswith('klar-bypass://'):
             self.main_search_bar.setText(url_string)
     
@@ -593,25 +867,13 @@ class KlarBrowser(QMainWindow):
     def apply_styles(self):
         """Apply modern Swedish design"""
         self.setStyleSheet("""
-            /* Main window */
-            QMainWindow {
-                background: #0a0e1a;
-            }
+            QMainWindow { background: #0a0e1a; }
             
-            /* Top navigation */
             #topNav {
                 background: #131824;
                 border-bottom: 1px solid rgba(59, 130, 246, 0.2);
             }
             
-            #logo {
-                font-size: 24px;
-                font-weight: 700;
-                color: #3b82f6;
-                padding-right: 20px;
-            }
-            
-            /* Navigation buttons */
             #navButton {
                 background: #1e2538;
                 color: #a0a8c0;
@@ -627,11 +889,6 @@ class KlarBrowser(QMainWindow):
                 border-color: #3b82f6;
             }
             
-            #navButton:pressed {
-                background: #1a2032;
-            }
-            
-            /* Search bars */
             #mainSearchBar, #homeSearchBar {
                 padding: 10px 16px;
                 border: 2px solid rgba(59, 130, 246, 0.3);
@@ -639,7 +896,6 @@ class KlarBrowser(QMainWindow):
                 font-size: 15px;
                 background: #1e2538;
                 color: #e8eaf0;
-                selection-background-color: #3b82f6;
             }
             
             #mainSearchBar:focus, #homeSearchBar:focus {
@@ -653,7 +909,6 @@ class KlarBrowser(QMainWindow):
                 border-radius: 16px;
             }
             
-            /* Primary button */
             #primaryButton {
                 background: #3b82f6;
                 color: white;
@@ -664,27 +919,16 @@ class KlarBrowser(QMainWindow):
                 font-weight: 600;
             }
             
-            #primaryButton:hover {
-                background: #60a5fa;
-            }
+            #primaryButton:hover { background: #60a5fa; }
+            #primaryButton:pressed { background: #2563eb; }
             
-            #primaryButton:pressed {
-                background: #2563eb;
-            }
-            
-            /* Tabs */
-            QTabWidget::pane {
-                border: none;
-                background: #0a0e1a;
-            }
+            QTabWidget::pane { border: none; background: #0a0e1a; }
             
             QTabBar::tab {
                 background: #131824;
                 color: #a0a8c0;
                 padding: 10px 20px;
                 margin-right: 2px;
-                border-top-left-radius: 8px;
-                border-top-right-radius: 8px;
             }
             
             QTabBar::tab:selected {
@@ -692,21 +936,13 @@ class KlarBrowser(QMainWindow):
                 color: #e8eaf0;
             }
             
-            QTabBar::tab:hover:!selected {
-                background: #1a2032;
-            }
-            
-            /* Status bar */
             QStatusBar {
                 background: #131824;
                 color: #a0a8c0;
                 border-top: 1px solid rgba(59, 130, 246, 0.2);
             }
             
-            /* Home page */
-            #homePage {
-                background: linear-gradient(135deg, #0a0e1a 0%, #1a2032 100%);
-            }
+            #homePage { background: linear-gradient(135deg, #0a0e1a 0%, #1a2032 100%); }
             
             #homePageLogo {
                 font-size: 96px;
@@ -717,45 +953,25 @@ class KlarBrowser(QMainWindow):
             #homePageVersion {
                 font-size: 32px;
                 color: #6b7390;
-                margin-bottom: 20px;
             }
             
-            #homePageTagline {
-                font-size: 18px;
-                color: #a0a8c0;
-            }
-            
-            #homePageStats {
-                font-size: 14px;
-                color: #6b7390;
-            }
-            
-            /* Feature cards */
             #featureCard {
                 background: rgba(59, 130, 246, 0.1);
                 border: 1px solid rgba(59, 130, 246, 0.2);
                 border-radius: 16px;
             }
             
-            #featureIcon {
-                font-size: 42px;
-            }
-            
-            #featureText {
-                font-size: 14px;
-                color: #a0a8c0;
-            }
+            #featureIcon { font-size: 42px; }
+            #featureText { font-size: 14px; color: #a0a8c0; }
         """)
 
 def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Klar 3.0")
     
-    # Set font
     font = QFont("Segoe UI", 10)
     app.setFont(font)
     
-    # Create and show browser
     browser = KlarBrowser()
     browser.show()
     
