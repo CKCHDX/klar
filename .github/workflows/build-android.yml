@@ -20,28 +20,36 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          path: master
 
-      - name: Copy project files to lab
+      - name: Prepare build directory
         run: |
-          cd master
-          cp keywords_db.json lab/ 2>/dev/null || true
-          cp domains.json lab/ 2>/dev/null || true
+          # Copy everything from lab to root for buildozer
+          cp -r lab/* .
           
+          # Copy data files
+          cp keywords_db.json . 2>/dev/null || true
+          cp domains.json . 2>/dev/null || true
+          
+          # Copy engine if exists
           if [ -d "engine" ]; then
-            cp -r engine lab/
+            cp -r engine .
           fi
+          
+          # Show what we have
+          echo "Files ready for build:"
+          ls -la
+          
+          echo "Buildozer spec:"
+          cat buildozer.spec
 
       - name: Build with Buildozer
         uses: ArtemSBulgakov/buildozer-action@v1
         id: buildozer
         with:
-          repository_root: master/lab
           workdir: .
           buildozer_version: stable
 
-      - name: Upload artifacts
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Klar-Android-APK
