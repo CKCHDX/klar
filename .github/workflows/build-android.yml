@@ -13,102 +13,121 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.9
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '11'
+          java-version: '17'
 
       - name: Install system dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git \
-            wget \
-            curl \
-            unzip \
             build-essential \
             libffi-dev \
-            libssl-dev
+            libssl-dev \
+            libimage-exiftool-perl \
+            libopenjp2-7 \
+            git \
+            wget \
+            unzip \
+            ccache \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libtinfo5 \
+            cmake \
+            libpng-dev
 
-      - name: Download Android SDK
+      - name: Set up Android SDK
         run: |
-          mkdir -p ~/android-sdk
-          cd ~/android-sdk
+          mkdir -p ~/android-sdk/cmdline-tools
+          cd ~/android-sdk/cmdline-tools
           
-          # Download Android SDK command-line tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip -q commandlinetools-linux-9477386_latest.zip
+          # Download latest stable command-line tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+          unzip -q commandlinetools-linux-11076708_latest.zip
+          mv cmdline-tools latest
           
-          # Setup SDK manager
-          mkdir -p cmdline-tools/latest
-          mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
           
-          export ANDROID_SDK_ROOT=~/android-sdk
-          export ANDROID_HOME=~/android-sdk
-          export PATH=$PATH:~/android-sdk/cmdline-tools/latest/bin
+          # Accept licenses
+          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platforms;android-34" > /dev/null 2>&1
+          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "build-tools;34.0.0" > /dev/null 2>&1
+          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "ndk;26.1.10909125" > /dev/null 2>&1
           
-          # Accept licenses and install SDK components
-          echo "y" | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platforms;android-33" 2>&1 | tail -20
-          echo "y" | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "build-tools;33.0.0" 2>&1 | tail -20
-          echo "y" | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "ndk;25.1.8937393" 2>&1 | tail -20
-          
-          echo "ANDROID_SDK_ROOT=~/android-sdk" >> $GITHUB_ENV
-          echo "ANDROID_HOME=~/android-sdk" >> $GITHUB_ENV
-          echo "PATH=$PATH:~/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$HOME/android-sdk" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$HOME/android-sdk/ndk/26.1.10909125" >> $GITHUB_ENV
+          echo "$HOME/android-sdk/cmdline-tools/latest/bin" >> $GITHUB_PATH
 
-      - name: Install p4a and build tools
+      - name: Install Python build dependencies
         run: |
-          pip install --upgrade pip
-          pip install python-for-android==2024.03.13
-          pip install cython==0.29.35
+          python -m pip install --upgrade pip setuptools wheel
+          pip install buildozer cython==0.29.36
 
-      - name: Verify tools
-        run: |
-          java -version
-          p4a --version || echo "p4a check failed"
-
-      - name: Build APK with p4a
+      - name: Build APK with buildozer
         working-directory: lab
         run: |
-          export ANDROID_SDK_ROOT=~/android-sdk
-          export ANDROID_HOME=~/android-sdk
-          export ANDROID_NDK_ROOT=~/android-sdk/ndk/25.1.8937393
-          export JAVA_HOME=/usr/lib/jvm/temurin-11-jdk-amd64
+          export ANDROID_SDK_ROOT=$HOME/android-sdk
+          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_NDK_ROOT=$HOME/android-sdk/ndk/26.1.10909125
+          export PATH=$PATH:$HOME/android-sdk/cmdline-tools/latest/bin
+          export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
           
-          echo "Building APK..."
-          p4a apk \
-            --private . \
-            --package=se.oscyra.klar \
-            --name="Klar" \
-            --version 3.0.0 \
-            --bootstrap=webview \
-            --requirements=python3,kivy,requests,beautifulsoup4 \
-            --permission INTERNET \
-            --permission ACCESS_NETWORK_STATE \
-            --icon ../klar.ico \
-            --release
-        env:
-          ANDROID_SDK_ROOT: ~/android-sdk
-          ANDROID_HOME: ~/android-sdk
-          ANDROID_NDK_ROOT: ~/android-sdk/ndk/25.1.8937393
-          JAVA_HOME: /usr/lib/jvm/temurin-11-jdk-amd64
+          # Build the APK
+          buildozer android release 2>&1 | tee build.log
+          BUILD_STATUS=$?
+          
+          if [ $BUILD_STATUS -eq 0 ]; then
+            echo "✓ Build successful!"
+          else
+            echo "✗ Build failed with status: $BUILD_STATUS"
+            tail -100 build.log
+          fi
+          
+          exit $BUILD_STATUS
 
       - name: Find APK
         if: always()
         run: |
-          echo "Searching for APK..."
-          find ~ -name "*.apk" -type f 2>/dev/null | head -20
+          echo "Searching for APK artifacts..."
+          if [ -f "lab/bin/*.apk" ]; then
+            ls -lh lab/bin/*.apk
+            echo "APK_FOUND=true" >> $GITHUB_ENV
+          else
+            echo "No APK found in expected location"
+            find ~/android-sdk -name "*.apk" -type f 2>/dev/null | head -10
+            echo "APK_FOUND=false" >> $GITHUB_ENV
+          fi
 
-      - name: Upload APK
-        if: success()
+      - name: Upload APK to artifacts
+        if: env.APK_FOUND == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: klar-apk
-          path: "**/*.apk"
-          if-no-files-found: warn
+          name: klar-android-apk
+          path: lab/bin/*.apk
+          retention-days: 30
+
+      - name: Create release on success
+        if: success() && env.APK_FOUND == 'true'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: android-build-${{ github.run_number }}
+          release_name: Klar Android Build ${{ github.run_number }}
+          body: |
+            Automated Android APK build
+            Commit: ${{ github.sha }}
+          draft: false
+          prerelease: true
