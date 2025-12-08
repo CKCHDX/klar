@@ -156,6 +156,8 @@ class DomainWhitelist:
         
         # Escape URL for display
         display_url = url.replace('"', '&quot;').replace("'", '&#39;')
+        # JSON encode URL for JavaScript
+        display_url_json = json.dumps(display_url)
         
         return f"""
         <!DOCTYPE html>
@@ -484,7 +486,7 @@ class DomainWhitelist:
             </script>
         </body>
         </html>
-        """.format(display_url_json=json.dumps(display_url))
+        """
     
     def get_statistics(self) -> dict:
         """Get whitelist statistics"""
