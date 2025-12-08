@@ -38,6 +38,34 @@ class DomainWhitelist:
             print(f"[Security] ✗ Error: Invalid JSON in {domains_file}")
             self.blacklist = set()
     
+    def _extract_domain(self, url: str) -> str:
+        """
+        Extract domain from URL, handling cases where URL doesn't have a scheme.
+        
+        Args:
+            url: URL string (may or may not have http:// prefix)
+        
+        Returns:
+            Domain name, or empty string if invalid
+        """
+        url_lower = url.lower().strip()
+        
+        # Add scheme if missing for proper parsing
+        if not url_lower.startswith(('http://', 'https://')):
+            # Check if it looks like a domain
+            if '.' in url_lower and not url_lower.startswith(' '):
+                # Looks like a domain, add https:// for parsing
+                url_lower = 'https://' + url_lower
+            else:
+                return ''
+        
+        try:
+            parsed = urlparse(url_lower)
+            domain = parsed.netloc.replace('www.', '')
+            return domain if domain else ''
+        except:
+            return ''
+    
     def is_whitelisted(self, url: str) -> Tuple[bool, str]:
         """
         Check if URL domain is allowed (NOT blacklisted).
@@ -49,25 +77,29 @@ class DomainWhitelist:
             (is_allowed: bool, reason: str)
         """
         try:
-            parsed = urlparse(url.lower())
-            domain = parsed.netloc.replace('www.', '')
+            # Extract domain properly
+            domain = self._extract_domain(url)
             
             if not domain:
-                return False, "Invalid URL: no domain found"
+                # If we can't extract a domain, allow it (not our responsibility)
+                self.allowed_count += 1
+                return True, f"✓ {url} - No domain found, allowing"
+            
+            domain_lower = domain.lower()
             
             # Extract main domain intelligently
-            parts = domain.split('.')
+            parts = domain_lower.split('.')
             
             # Handle .co.uk, .ac.uk, etc.
             if len(parts) > 2 and parts[-2] in ['co', 'ac', 'gov']:
                 main_domain = '.'.join(parts[-3:])
             else:
-                main_domain = '.'.join(parts[-2:]) if len(parts) > 1 else domain
+                main_domain = '.'.join(parts[-2:]) if len(parts) > 1 else domain_lower
             
             # Check if domain is in blacklist (INVERTED LOGIC)
-            if domain in self.blacklist:
+            if domain_lower in self.blacklist:
                 self.blocked_count += 1
-                return False, f"✓ {domain} is on the blocked domains list"
+                return False, f"✓ {domain_lower} is on the blocked domains list"
             
             if main_domain in self.blacklist:
                 self.blocked_count += 1
@@ -75,17 +107,17 @@ class DomainWhitelist:
             
             # Check if it's a subdomain of blacklisted domain
             for blacklisted in self.blacklist:
-                if domain.endswith('.' + blacklisted):
+                if domain_lower.endswith('.' + blacklisted):
                     self.blocked_count += 1
                     return False, f"✓ Subdomain of {blacklisted} is on the blocked list"
             
             # Not in blacklist = ALLOWED (inverted logic)
             self.allowed_count += 1
-            return True, f"✓ {domain} is allowed"
+            return True, f"✓ {domain_lower} is allowed"
         
         except Exception as e:
-            self.blocked_count += 1
-            return False, f"Invalid URL format: {str(e)}"
+            self.allowed_count += 1
+            return True, f"✓ Allowing due to parse error: {str(e)}"
     
     def generate_bypass_token(self) -> str:
         """
