@@ -1,14 +1,27 @@
 """
 Generate HTML for search results page with modern design
+Supports demographic-aware result presentation
 """
 
 class ResultsPage:
     @staticmethod
-    def generate_html(query: str, results: dict) -> str:
-        """Generate search results HTML"""
+    def generate_html(query: str, results: dict, demographic: str = "general") -> str:
+        """Generate search results HTML with demographic optimization"""
         
         results_list = results.get('results', [])
         total = results.get('total', 0)
+        
+        # Demographic-specific messages
+        demographic_messages = {
+            'seniors_65plus': '👴 Optimerad för äldre - Färre, tydligare resultat',
+            'women_general': '👩 Optimerad för kvinnor - Relevanta resultat',
+            'men_general': '👨 Optimerad för män - Relevanta resultat',
+            'teens_10to20': '👦 Optimerad för ungdomar - Säkert innehål',
+            'young_adults_20to40': '👨‍💼 Optimerad för unga vuxna',
+            'general': '🔍 Allmän sökning'
+        }
+        
+        demographic_info = demographic_messages.get(demographic, demographic_messages['general'])
         
         results_html = ""
         for i, result in enumerate(results_list, 1):
@@ -90,6 +103,17 @@ class ResultsPage:
                 .stats {{
                     font-size: 14px;
                     color: #6b7390;
+                    margin-bottom: 12px;
+                }}
+                
+                .demographic-info {{
+                    font-size: 13px;
+                    color: #a0a8c0;
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    border-left: 3px solid #3b82f6;
+                    display: inline-block;
                 }}
                 
                 .result-item {{
@@ -249,6 +273,7 @@ class ResultsPage:
             <div class="header">
                 <div class="query">"{query}"</div>
                 <div class="stats">Hittade {total} resultat</div>
+                <div class="demographic-info">{demographic_info}</div>
             </div>
             
             {results_html}

@@ -2,6 +2,7 @@
 KLAR - Domain Whitelist Security System
 Only allows access to whitelisted Swedish domains
 All other URLs are blocked with security warning
+Advanced users can bypass with explicit disclaimer acknowledgment
 """
 
 import json
@@ -13,13 +14,16 @@ class DomainWhitelist:
     """
     Security layer: Enforce whitelist-only domain access.
     Protects users from phishing, malware, and unwanted content.
+    Advanced users can bypass with explicit acknowledgment.
     """
     
     def __init__(self, domains_file: str = "domains.json"):
         self.whitelist: Set[str] = set()
+        self.bypass_tokens: Set[str] = set()  # Track users who acknowledged bypass
         self.load_whitelist(domains_file)
         self.blocked_count = 0
         self.allowed_count = 0
+        self.bypass_count = 0
     
     def load_whitelist(self, domains_file: str):
         """Load whitelisted domains from JSON file"""
@@ -83,11 +87,35 @@ class DomainWhitelist:
             self.blocked_count += 1
             return False, f"Invalid URL format: {str(e)}"
     
+    def generate_bypass_token(self) -> str:
+        """
+        Generate a unique bypass token for this session.
+        Returns a token that user must confirm to bypass security.
+        """
+        import uuid
+        token = str(uuid.uuid4())
+        self.bypass_tokens.add(token)
+        return token
+    
+    def verify_bypass_acknowledgment(self, token: str) -> bool:
+        """
+        Verify that user has acknowledged the bypass disclaimer.
+        
+        Args:
+            token: Bypass token generated earlier
+        
+        Returns:
+            True if token is valid and acknowledged
+        """
+        return token in self.bypass_tokens
+    
     def get_blocked_html(self, url: str, reason: str) -> str:
         """
         Generate HTML for blocked domain warning page.
-        Shows user-friendly security message in Swedish.
+        Shows user-friendly security message in Swedish with bypass option.
         """
+        bypass_token = self.generate_bypass_token()
+        
         return f"""
         <!DOCTYPE html>
         <html>
@@ -111,8 +139,8 @@ class DomainWhitelist:
                     padding: 20px;
                 }}
                 .container {{
-                    max-width: 600px;
-                    background: rgba(19, 24, 36, 0.8);
+                    max-width: 700px;
+                    background: rgba(19, 24, 36, 0.9);
                     border: 1px solid rgba(59, 130, 246, 0.2);
                     border-radius: 16px;
                     padding: 50px 40px;
@@ -181,6 +209,67 @@ class DomainWhitelist:
                 .info strong {{
                     color: #4ade80;
                 }}
+                
+                .bypass-section {{
+                    margin-top: 35px;
+                    padding-top: 25px;
+                    border-top: 1px solid rgba(59, 130, 246, 0.2);
+                }}
+                
+                .bypass-title {{
+                    font-size: 16px;
+                    font-weight: 600;
+                    color: #fbbf24;
+                    margin-bottom: 15px;
+                }}
+                
+                .disclaimer {{
+                    background: rgba(239, 68, 68, 0.05);
+                    border: 2px solid rgba(239, 68, 68, 0.3);
+                    padding: 20px;
+                    border-radius: 12px;
+                    margin: 20px 0;
+                    text-align: left;
+                }}
+                
+                .disclaimer-title {{
+                    color: #ef4444;
+                    font-weight: 700;
+                    margin-bottom: 12px;
+                }}
+                
+                .disclaimer-text {{
+                    font-size: 13px;
+                    color: #a0a8c0;
+                    line-height: 1.7;
+                }}
+                
+                .disclaimer-text strong {{
+                    color: #fca5a5;
+                }}
+                
+                .checkbox-container {{
+                    display: flex;
+                    align-items: flex-start;
+                    gap: 12px;
+                    margin: 20px 0;
+                    text-align: left;
+                }}
+                
+                .checkbox-container input[type="checkbox"] {{
+                    width: 20px;
+                    height: 20px;
+                    margin-top: 2px;
+                    cursor: pointer;
+                    accent-color: #ef4444;
+                }}
+                
+                .checkbox-label {{
+                    font-size: 14px;
+                    color: #a0a8c0;
+                    cursor: pointer;
+                }}
+                
                 .actions {{
                     margin-top: 30px;
                     display: flex;
@@ -201,9 +290,21 @@ class DomainWhitelist:
                     background: #3b82f6;
                     color: white;
                 }}
-                .btn-primary:hover {{
+                .btn-primary:hover:not(:disabled) {{
                     background: #60a5fa;
                     transform: translateY(-2px);
+                }}
+                .btn-danger {{
+                    background: #ef4444;
+                    color: white;
+                }}
+                .btn-danger:hover:not(:disabled) {{
+                    background: #f87171;
+                    transform: translateY(-2px);
+                }}
+                .btn:disabled {{
+                    opacity: 0.5;
+                    cursor: not-allowed;
                 }}
                 .btn-secondary {{
                     background: rgba(59, 130, 246, 0.2);
@@ -227,6 +328,23 @@ class DomainWhitelist:
                     border-radius: 6px;
                     margin: 15px 0;
                 }}
+                .status-message {{
+                    font-size: 13px;
+                    padding: 10px;
+                    margin: 10px 0;
+                    border-radius: 6px;
+                    display: none;
+                }}
+                .status-message.success {{
+                    background: rgba(34, 197, 94, 0.2);
+                    color: #86efac;
+                    display: block;
+                }}
+                .status-message.error {{
+                    background: rgba(239, 68, 68, 0.2);
+                    color: #fca5a5;
+                    display: block;
+                }}
             </style>
         </head>
         <body>
@@ -246,25 +364,92 @@ class DomainWhitelist:
                 
                 <div class="info">
                     <strong>ℹ️ Om Klar-säkerhet:</strong><br>
-                    Klar är designad för att skydda dig och din familj. Vi tillåter endast 
-                    godkända svenska webbplatser för att undvika nätfiske, malvara och 
-                    olämpligt innehål. Det är en viktig del av din digitala säkerhet.
+                    Klar är designad för att skydda dig och din familj. Vi tillåter endast godkända svenska webbplatser för att undvika nätfiske, malvara och olämpligt innehål. Det är en viktig del av din digitala säkerhet.
                 </div>
                 
                 <div class="whitelisted-count">
-                    ✓ {111} godkända svenska domäner tillgängliga
+                    ✓ 111 godkända svenska domäner tillgängliga
                 </div>
                 
-                <div class="actions">
+                <!-- BYPASS SECTION -->
+                <div class="bypass-section">
+                    <div class="bypass-title">⚠️ Avancerad användare? Åsidosätt säkerhet</div>
+                    
+                    <div class="disclaimer">
+                        <div class="disclaimer-title">⚠️ VIKTIGT ANSVARSBEFRIELSE</div>
+                        <div class="disclaimer-text">
+                            <p>
+                                <strong>Oscyra.solutions är INTE ansvarig</strong> för något som helst som sker när du besöker webbplatser utanför vår säkra domänlista.
+                            </p>
+                            <p style="margin-top: 12px;">
+                                Detta inkluderar men är inte begränsat till:
+                            </p>
+                            <ul style="margin: 12px 0 0 20px;">
+                                <li>Nätfiske, bedrägerier eller identitetsstöld</li>
+                                <li>Malvara, virus eller andra skadliga program</li>
+                                <li>Datainsamling eller integritetsintrång</li>
+                                <li>Olämpligt eller illegalt innehål</li>
+                                <li>Ekonomisk förlust eller skada</li>
+                                <li>Någon annan form av skada eller förlust</li>
+                            </ul>
+                            <p style="margin-top: 12px; font-weight: 700;">
+                                DU ANVÄNDER DESSA WEBBPLATSER PÅ DIN EGEN RISK.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="acknowledgement" onchange="updateBypassButton()">
+                        <label for="acknowledgement" class="checkbox-label">
+                            Jag förstår och accepterar all risk. Jag vet att Oscyra.solutions inte är ansvarig för något som helst utanför den säkra domänlistan.
+                        </label>
+                    </div>
+                    
+                    <div id="statusMessage" class="status-message"></div>
+                    
+                    <div class="actions">
+                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity()" disabled>
+                            Åsidosätt säkerhet och besök webbplatsen
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="actions" style="margin-top: 20px;">
                     <button class="btn btn-primary" onclick="history.back()">← Gå tillbaka</button>
                     <button class="btn btn-secondary" onclick="location.href='about:blank'">Hem</button>
                 </div>
                 
                 <div class="footer">
-                    <p>Om du tror att denna webbplats bör vara tillgänglig, 
-                    kontakta oss på oscyra.solutions</p>
+                    <p>Om du tror att denna webbplats bör vara tillgänglig, kontakta oss på oscyra.solutions</p>
                 </div>
             </div>
+            
+            <script>
+                const bypassToken = '{bypass_token}';
+                
+                function updateBypassButton() {{
+                    const checkbox = document.getElementById('acknowledgement');
+                    const button = document.getElementById('bypassBtn');
+                    button.disabled = !checkbox.checked;
+                }}
+                
+                function bypassSecurity() {{
+                    const checkbox = document.getElementById('acknowledgement');
+                    if (checkbox.checked) {{
+                        // Send bypass token back to application
+                        localStorage.setItem('klar_bypass_' + '{url}'.replace(/[^a-zA-Z0-9]/g, '_'), bypassToken);
+                        
+                        const statusMsg = document.getElementById('statusMessage');
+                        statusMsg.className = 'status-message success';
+                        statusMsg.textContent = '✓ Säkerhetskontroll åsidosatt. Omdirigerar...';
+                        
+                        // Redirect after brief delay
+                        setTimeout(function() {{
+                            window.location.href = '{url}';
+                        }}, 800);
+                    }}
+                }}
+            </script>
         </body>
         </html>
         """
@@ -275,5 +460,6 @@ class DomainWhitelist:
             "total_whitelisted": len(self.whitelist),
             "allowed_count": self.allowed_count,
             "blocked_count": self.blocked_count,
+            "bypass_count": self.bypass_count,
             "block_rate": self.blocked_count / max(1, self.allowed_count + self.blocked_count)
         }
