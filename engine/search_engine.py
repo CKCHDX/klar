@@ -1,5 +1,5 @@
 """
-Enhanced search with phrase matching and subpage discovery
+Enhanced search with phrase matching, subpage discovery, and demographic optimization
 """
 import requests
 from bs4 import BeautifulSoup
@@ -136,8 +136,8 @@ class SearchEngine:
         
         return detected_categories, priority_domains
     
-    def get_relevant_domains(self, query: str) -> List[str]:
-        """Get relevant domains"""
+    def get_relevant_domains(self, query: str, demographic: str = "general") -> List[str]:
+        """Get relevant domains with demographic optimization"""
         if '.' in query and ' ' not in query:
             domain = query.lower().replace('www.', '')
             if domain in self.domains:
@@ -152,7 +152,16 @@ class SearchEngine:
                 relevant_domains.extend(self.domain_categories[category])
         
         if not relevant_domains:
-            relevant_domains = ['svt.se', 'dn.se', 'aftonbladet.se']
+            # NEW: Default domains based on demographic
+            defaults = {
+                'seniors_65plus': ['1177.se', 'svt.se', 'folkhalsomyndigheten.se'],
+                'women_general': ['hemnet.se', 'ica.se', 'svt.se'],
+                'men_general': ['webhallen.com', 'inet.se', 'svt.se'],
+                'teens_10to20': ['1177.se', 'svt.se', 'dn.se'],
+                'young_adults_20to40': ['dn.se', 'aftonbladet.se', 'arbetsformedlingen.se'],
+                'general': ['svt.se', 'dn.se', 'aftonbladet.se']
+            }
+            relevant_domains = defaults.get(demographic, defaults['general'])
         
         seen = set()
         result = []
@@ -163,11 +172,61 @@ class SearchEngine:
         
         return result[:12]
     
-    def search(self, query: str) -> Dict:
-        """Main search with phrase support and subpage discovery"""
-        print(f"\n[Search] Query: {query}")
+    def get_demographic_hints(self, demographic: str) -> Dict:
+        """Get result optimization hints for demographic"""
+        hints = {
+            'seniors_65plus': {
+                'result_count': 5,
+                'min_snippet_length': 200,
+                'avoid_technical_jargon': True,
+                'prioritize_safe_domains': True,
+                'include_instructions': True,
+                'language_style': 'simplified'
+            },
+            'women_general': {
+                'result_count': 10,
+                'min_snippet_length': 100,
+                'include_reviews': True,
+                'include_prices': True,
+                'language_style': 'normal'
+            },
+            'men_general': {
+                'result_count': 10,
+                'min_snippet_length': 100,
+                'include_technical_specs': True,
+                'include_comparisons': True,
+                'language_style': 'normal'
+            },
+            'teens_10to20': {
+                'result_count': 10,
+                'min_snippet_length': 100,
+                'prioritize_safe_domains': True,
+                'avoid_inappropriate_content': True,
+                'educational_focus': True,
+                'mental_health_resources': True,
+                'language_style': 'casual'
+            },
+            'young_adults_20to40': {
+                'result_count': 10,
+                'min_snippet_length': 100,
+                'include_latest_news': True,
+                'language_style': 'professional'
+            },
+            'general': {
+                'result_count': 10,
+                'min_snippet_length': 100,
+                'language_style': 'normal'
+            }
+        }
         
-        relevant_domains = self.get_relevant_domains(query)
+        return hints.get(demographic, hints['general'])
+    
+    def search(self, query: str, demographic: str = "general") -> Dict:
+        """Main search with phrase support, subpage discovery, and demographic optimization"""
+        print(f"\n[Search] Query: {query}")
+        print(f"[Search] Demographic: {demographic}")
+        
+        relevant_domains = self.get_relevant_domains(query, demographic)
         categories, priority_domains = self.detect_query_intent(query)
         
         print(f"[Search] Detected: {', '.join(categories) if categories else 'general'}")
@@ -200,25 +259,31 @@ class SearchEngine:
                             results.extend(result)
                         else:
                             results.append(result)
-                        print(f"  âœ“ {domain}")
+                        print(f"  ✓ {domain}")
                 except:
-                    print(f"  âœ— {domain}")
+                    print(f"  ✗ {domain}")
         
         # Rank results
-        ranked_results = self.rank_results(results, query, priority_domains)
+        ranked_results = self.rank_results(results, query, priority_domains, demographic)
+        
+        # Get demographic hints for result limiting
+        hints = self.get_demographic_hints(demographic)
+        result_count = hints['result_count']
         
         return {
             'query': query,
-            'results': ranked_results[:15],
+            'results': ranked_results[:result_count],
             'total': len(ranked_results),
             'categories_used': categories,
-            'is_phrase_search': is_phrase
+            'is_phrase_search': is_phrase,
+            'demographic': demographic,
+            'demographic_hints': hints
         }
     
     def search_domain_deeply(self, domain: str, query: str) -> List[Dict]:
         """
         Deep search within a domain to find specific subpages
-        This is especially useful for phrases like "smÃ¤rta i nacken"
+        This is especially useful for phrases like "smärta i nacken"
         """
         results = []
         
@@ -366,7 +431,7 @@ class SearchEngine:
             if len(text) > 50:
                 return text[:250] + "..."
         
-        return "Ingen beskrivning tillgÃ¤nglig"
+        return "Ingen beskrivning tillgänglig"
     
     def extract_content(self, soup: BeautifulSoup) -> str:
         """Extract content"""
@@ -461,8 +526,8 @@ class SearchEngine:
         
         return 0.0
     
-    def rank_results(self, results: List[Dict], query: str, priority_domains: List[str]) -> List[Dict]:
-        """Rank results"""
+    def rank_results(self, results: List[Dict], query: str, priority_domains: List[str], demographic: str = "general") -> List[Dict]:
+        """Rank results with demographic optimization"""
         authority = {
             '1177.se': 1.0,
             'folkhalsomyndigheten.se': 0.98,
@@ -484,11 +549,21 @@ class SearchEngine:
             
             priority_boost = 0.5 if domain in priority_domains else 0.0
             
+            # NEW: Demographic-aware weighting
+            demographic_boost = 0.0
+            if demographic == 'seniors_65plus' and domain in ['1177.se', 'folkhalsomyndigheten.se', 'svt.se']:
+                demographic_boost = 0.3
+            elif demographic == 'teens_10to20' and domain in ['1177.se', 'dn.se']:
+                demographic_boost = 0.2
+            elif demographic == 'young_adults_20to40' and domain in ['arbetsformedlingen.se', 'hemnet.se']:
+                demographic_boost = 0.2
+            
             # Heavily favor relevance
             result['final_score'] = (
-                (result['relevance'] * 0.75) + 
-                (auth_score * 0.15) + 
-                (priority_boost * 0.10)
+                (result['relevance'] * 0.70) + 
+                (auth_score * 0.12) + 
+                (priority_boost * 0.10) +
+                (demographic_boost * 0.08)
             )
         
         return sorted(results, key=lambda x: x['final_score'], reverse=True)

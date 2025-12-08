@@ -1,0 +1,279 @@
+"""
+KLAR - Domain Whitelist Security System
+Only allows access to whitelisted Swedish domains
+All other URLs are blocked with security warning
+"""
+
+import json
+from typing import Tuple, Set
+from urllib.parse import urlparse
+
+
+class DomainWhitelist:
+    """
+    Security layer: Enforce whitelist-only domain access.
+    Protects users from phishing, malware, and unwanted content.
+    """
+    
+    def __init__(self, domains_file: str = "domains.json"):
+        self.whitelist: Set[str] = set()
+        self.load_whitelist(domains_file)
+        self.blocked_count = 0
+        self.allowed_count = 0
+    
+    def load_whitelist(self, domains_file: str):
+        """Load whitelisted domains from JSON file"""
+        try:
+            with open(domains_file, 'r', encoding='utf-8') as f:
+                domains = json.load(f)
+                self.whitelist = set(domain.lower() for domain in domains)
+                print(f"[Security] ✓ Loaded {len(self.whitelist)} whitelisted domains")
+        except FileNotFoundError:
+            print(f"[Security] ⚠ Warning: {domains_file} not found")
+            self.whitelist = set()
+        except json.JSONDecodeError:
+            print(f"[Security] ✗ Error: Invalid JSON in {domains_file}")
+            self.whitelist = set()
+    
+    def is_whitelisted(self, url: str) -> Tuple[bool, str]:
+        """
+        Check if URL domain is whitelisted.
+        
+        Args:
+            url: Full URL to check
+        
+        Returns:
+            (is_whitelisted: bool, reason: str)
+        """
+        try:
+            parsed = urlparse(url.lower())
+            domain = parsed.netloc.replace('www.', '')
+            
+            if not domain:
+                return False, "Invalid URL: no domain found"
+            
+            # Extract main domain intelligently
+            parts = domain.split('.')
+            
+            # Handle .co.uk, .ac.uk, etc.
+            if len(parts) > 2 and parts[-2] in ['co', 'ac', 'gov']:
+                main_domain = '.'.join(parts[-3:])
+            else:
+                main_domain = '.'.join(parts[-2:]) if len(parts) > 1 else domain
+            
+            # Check variations
+            if domain in self.whitelist:
+                self.allowed_count += 1
+                return True, f"✓ {domain} is whitelisted"
+            
+            if main_domain in self.whitelist:
+                self.allowed_count += 1
+                return True, f"✓ {main_domain} is whitelisted"
+            
+            # Check if it's a subdomain of whitelisted domain
+            for whitelisted in self.whitelist:
+                if domain.endswith('.' + whitelisted):
+                    self.allowed_count += 1
+                    return True, f"✓ Subdomain of {whitelisted} is whitelisted"
+            
+            self.blocked_count += 1
+            return False, f"Domain '{domain}' is NOT on the whitelisted domains list"
+        
+        except Exception as e:
+            self.blocked_count += 1
+            return False, f"Invalid URL format: {str(e)}"
+    
+    def get_blocked_html(self, url: str, reason: str) -> str:
+        """
+        Generate HTML for blocked domain warning page.
+        Shows user-friendly security message in Swedish.
+        """
+        return f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                * {{
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }}
+                body {{
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+                    background: linear-gradient(135deg, #0a0e1a 0%, #1a2032 100%);
+                    color: #e8eaf0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                    padding: 20px;
+                }}
+                .container {{
+                    max-width: 600px;
+                    background: rgba(19, 24, 36, 0.8);
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                    border-radius: 16px;
+                    padding: 50px 40px;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                }}
+                .warning-icon {{
+                    font-size: 80px;
+                    margin-bottom: 30px;
+                    animation: float 3s ease-in-out infinite;
+                }}
+                @keyframes float {{
+                    0%, 100% {{ transform: translateY(0px); }}
+                    50% {{ transform: translateY(-10px); }}
+                }}
+                h1 {{
+                    color: #ef4444;
+                    margin-bottom: 15px;
+                    font-size: 28px;
+                    font-weight: 700;
+                }}
+                h2 {{
+                    color: #60a5fa;
+                    font-size: 16px;
+                    font-weight: 500;
+                    margin-bottom: 25px;
+                }}
+                p {{
+                    color: #a0a8c0;
+                    font-size: 15px;
+                    line-height: 1.6;
+                    margin: 15px 0;
+                }}
+                .url {{
+                    background: rgba(239, 68, 68, 0.1);
+                    border: 1px solid rgba(239, 68, 68, 0.3);
+                    padding: 16px;
+                    border-radius: 12px;
+                    color: #fca5a5;
+                    word-break: break-all;
+                    font-family: 'Monaco', 'Courier New', monospace;
+                    font-size: 13px;
+                    margin: 25px 0;
+                }}
+                .reason {{
+                    background: rgba(59, 130, 246, 0.1);
+                    border-left: 4px solid #3b82f6;
+                    padding: 20px;
+                    border-radius: 8px;
+                    color: #93c5fd;
+                    margin: 25px 0;
+                    text-align: left;
+                }}
+                .reason strong {{
+                    color: #60a5fa;
+                }}
+                .info {{
+                    background: rgba(34, 197, 94, 0.1);
+                    border-left: 4px solid #22c55e;
+                    padding: 20px;
+                    border-radius: 8px;
+                    color: #86efac;
+                    margin: 25px 0;
+                    text-align: left;
+                }}
+                .info strong {{
+                    color: #4ade80;
+                }}
+                .actions {{
+                    margin-top: 30px;
+                    display: flex;
+                    gap: 12px;
+                    justify-content: center;
+                    flex-wrap: wrap;
+                }}
+                .btn {{
+                    padding: 12px 24px;
+                    border: none;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                }}
+                .btn-primary {{
+                    background: #3b82f6;
+                    color: white;
+                }}
+                .btn-primary:hover {{
+                    background: #60a5fa;
+                    transform: translateY(-2px);
+                }}
+                .btn-secondary {{
+                    background: rgba(59, 130, 246, 0.2);
+                    color: #60a5fa;
+                    border: 1px solid #3b82f6;
+                }}
+                .btn-secondary:hover {{
+                    background: rgba(59, 130, 246, 0.3);
+                }}
+                .footer {{
+                    margin-top: 40px;
+                    padding-top: 25px;
+                    border-top: 1px solid rgba(59, 130, 246, 0.2);
+                    font-size: 12px;
+                    color: #6b7390;
+                }}
+                .whitelisted-count {{
+                    display: inline-block;
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    margin: 15px 0;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="warning-icon">🔒</div>
+                <h1>Webbplats blockerad för säkerhet</h1>
+                <h2>Denna domän är inte godkänd för din säkerhet</h2>
+                
+                <p>Du försökte komma åt en webbplats som inte finns på vår säkra domänlista.</p>
+                
+                <div class="url">{url}</div>
+                
+                <div class="reason">
+                    <strong>Varför är denna webbplats blockerad?</strong><br>
+                    {reason}
+                </div>
+                
+                <div class="info">
+                    <strong>ℹ️ Om Klar-säkerhet:</strong><br>
+                    Klar är designad för att skydda dig och din familj. Vi tillåter endast 
+                    godkända svenska webbplatser för att undvika nätfiske, malvara och 
+                    olämpligt innehål. Det är en viktig del av din digitala säkerhet.
+                </div>
+                
+                <div class="whitelisted-count">
+                    ✓ {111} godkända svenska domäner tillgängliga
+                </div>
+                
+                <div class="actions">
+                    <button class="btn btn-primary" onclick="history.back()">← Gå tillbaka</button>
+                    <button class="btn btn-secondary" onclick="location.href='about:blank'">Hem</button>
+                </div>
+                
+                <div class="footer">
+                    <p>Om du tror att denna webbplats bör vara tillgänglig, 
+                    kontakta oss på oscyra.solutions</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+    
+    def get_statistics(self) -> dict:
+        """Get whitelist statistics"""
+        return {
+            "total_whitelisted": len(self.whitelist),
+            "allowed_count": self.allowed_count,
+            "blocked_count": self.blocked_count,
+            "block_rate": self.blocked_count / max(1, self.allowed_count + self.blocked_count)
+        }
