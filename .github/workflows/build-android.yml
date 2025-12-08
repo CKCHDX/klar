@@ -29,18 +29,9 @@ jobs:
       run: |
         cp keywords_db.json lab/ 2>/dev/null || echo "keywords_db.json not found"
         cp domains.json lab/ 2>/dev/null || echo "domains.json not found"
-        cp klar.ico lab/ 2>/dev/null || echo "klar.ico not found"
         
         if [ -d "engine" ]; then
           cp -r engine lab/
-        fi
-        
-        if [ -d "algorithms" ]; then
-          cp -r algorithms lab/
-        fi
-        
-        if [ -d "core" ]; then
-          cp -r core lab/
         fi
         
         echo "Lab directory contents:"
@@ -52,197 +43,64 @@ jobs:
         sudo apt-get install -y \
           build-essential \
           git \
-          python3 \
           python3-pip \
-          python3-setuptools \
           libffi-dev \
           libssl-dev \
-          automake \
-          autoconf \
-          libtool \
-          pkg-config \
           zip \
           unzip \
           openjdk-17-jdk \
           zlib1g-dev \
-          libncurses5-dev \
           cmake
-    
-    - name: Set up Java and Android environment
-      run: |
-        echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
-        echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> $GITHUB_PATH
-        echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
-        echo "ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
     
     - name: Install Buildozer
       run: |
-        pip3 install --upgrade pip
-        pip3 install --upgrade setuptools wheel
-        pip3 install buildozer==1.5.0
-        pip3 install cython==0.29.36
-        
-        # Verify installation
-        which buildozer
+        pip3 install --upgrade pip setuptools wheel
+        pip3 install buildozer==1.5.0 cython==0.29.36
         buildozer --version
     
-    - name: Cache Buildozer directories
+    - name: Cache Buildozer
       uses: actions/cache@v4
       with:
         path: |
           ~/.buildozer
           lab/.buildozer
-        key: ${{ runner.os }}-buildozer-${{ hashFiles('lab/buildozer.spec') }}
-        restore-keys: |
-          ${{ runner.os }}-buildozer-
+        key: buildozer-${{ hashFiles('lab/buildozer.spec') }}
+        restore-keys: buildozer-
     
-    - name: Update buildozer.spec
+    - name: Build APK
       working-directory: ./lab
       run: |
-        # Show current spec
-        echo "Current buildozer.spec:"
-        cat buildozer.spec
-        
-        # Add SDK configuration
-        echo "" >> buildozer.spec
-        echo "# Android SDK/NDK configuration" >> buildozer.spec
-        echo "android.accept_sdk_license = True" >> buildozer.spec
-        
-        echo "" 
-        echo "Updated buildozer.spec:"
-        cat buildozer.spec
+        echo "========== BUILD START =========="
+        buildozer -v android debug || {
+          echo "========== BUILD FAILED =========="
+          echo "Checking for logs..."
+          find .buildozer -name "*.log" -exec echo "{}:" \; -exec cat {} \; 2>/dev/null || true
+          exit 1
+        }
+        echo "========== BUILD SUCCESS =========="
     
-    - name: Initialize Buildozer
-      working-directory: ./lab
-      run: |
-        # Clean any previous builds
-        rm -rf .buildozer bin __pycache__
-        
-        # Show environment
-        echo "Python version:"
-        python3 --version
-        
-        echo "Buildozer version:"
-        buildozer --version
-        
-        echo "Java version:"
-        java -version
-    
-    - name: Build APK with Buildozer
-      working-directory: ./lab
-      run: |
-        set -e
-        
-        # Run buildozer with verbose output
-        echo "Starting Buildozer build..."
-        buildozer -v android debug 2>&1 | tee build.log
-        
-        echo "Build completed!"
-      continue-on-error: false
-    
-    - name: Upload build log on failure
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: buildozer-build-log
-        path: lab/build.log
-        retention-days: 7
-    
-    - name: Find and organize APK
+    - name: Find APK
       run: |
         mkdir -p release/android
         
-        echo "Searching for APK files..."
+        echo "Searching for APK..."
         find lab -name "*.apk" -type f
         
-        APK_FILE=$(find lab/.buildozer -name "*.apk" -type f 2>/dev/null | head -n 1)
+        APK=$(find lab -name "*.apk" -type f | head -n 1)
         
-        if [ -z "$APK_FILE" ]; then
-          echo "Trying alternate locations..."
-          APK_FILE=$(find lab -name "*.apk" -type f 2>/dev/null | head -n 1)
-        fi
-        
-        if [ -z "$APK_FILE" ]; then
+        if [ -z "$APK" ]; then
           echo "ERROR: No APK found!"
-          echo "Directory structure:"
-          find lab/.buildozer -type f -name "*.apk" 2>/dev/null || echo "No APK in .buildozer"
+          echo "Build output structure:"
+          ls -la lab/.buildozer/android/platform/build-* 2>/dev/null || true
           exit 1
         fi
         
-        echo "Found APK: $APK_FILE"
-        cp "$APK_FILE" release/android/Klar-3.0-debug.apk
-        
-        echo "APK Details:"
+        cp "$APK" release/android/Klar-3.0-debug.apk
         ls -lh release/android/
-    
-    - name: Create Android README
-      run: |
-        cat > release/android/README.md << 'EOF'
-        # Klar 3.0 - Android APK
-
-        ## Installation
-
-        1. Download `Klar-3.0-debug.apk`
-        2. Enable "Install from Unknown Sources" in Android settings
-        3. Open the APK file and install
-        4. Launch Klar from your app drawer
-
-        ## Features
-
-        - Native Android app (Python + Kivy)
-        - 111 Swedish domains
-        - 700+ Swedish keywords
-        - Dark mode Material Design
-        - Touch-optimized for mobile
-        - No tracking or ads
-
-        ## System Requirements
-
-        - Android 5.0+ (Lollipop or higher)
-        - ~100MB storage space
-        - Internet connection
-
-        ## First Launch
-
-        May take 10-20 seconds on first launch.
-        Subsequent launches will be faster.
-
-        ## Technical Details
-
-        - Python 3.9 + Kivy + KivyMD
-        - Package: se.oscyra.klar
-        - Version: 3.0.0
-        - Architecture: ARM64-v8a + ARMv7a
-        - Min SDK: 21 (Android 5.0)
-        - Target SDK: 33 (Android 13)
-
-        ## Support
-
-        https://github.com/CKCHDX/klar
-        EOF
-    
-    - name: Generate checksum
-      working-directory: ./release/android
-      run: |
-        sha256sum Klar-3.0-debug.apk > Klar-3.0-debug.apk.sha256
-        cat Klar-3.0-debug.apk.sha256
     
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: Klar-Android-APK
-        path: |
-          release/android/Klar-3.0-debug.apk
-          release/android/README.md
-          release/android/Klar-3.0-debug.apk.sha256
+        path: release/android/Klar-3.0-debug.apk
         retention-days: 90
-    
-    - name: Build summary
-      run: |
-        APK_SIZE=$(du -h release/android/Klar-3.0-debug.apk | cut -f1)
-        echo "## 🎉 Android Build Complete!" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "**APK File**: Klar-3.0-debug.apk" >> $GITHUB_STEP_SUMMARY
-        echo "**Size**: $APK_SIZE" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Download from Artifacts section below." >> $GITHUB_STEP_SUMMARY
