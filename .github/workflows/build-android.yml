@@ -80,20 +80,37 @@ jobs:
           export PATH=$PATH:$HOME/android-sdk/cmdline-tools/latest/bin
           export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
           
+          echo "========== Environment =========="
+          echo "Working directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo ""
+          echo "Android SDK: $ANDROID_SDK_ROOT"
+          echo "Android NDK: $ANDROID_NDK_ROOT"
+          echo ""
+          
           echo "========== Starting buildozer android debug =========="
-          # Build debug APK (faster and more reliable than release)
-          buildozer -v android debug 2>&1 | tee build.log
+          # Build debug APK with maximum verbosity
+          buildozer -v android debug 2>&1 | head -200
           BUILD_STATUS=$?
           
+          echo ""
           echo "========== Build completed with status: $BUILD_STATUS =========="
           
           if [ $BUILD_STATUS -ne 0 ]; then
-            echo "❌ Build failed! Last 50 lines of log:"
-            tail -50 build.log
+            echo "❌ Build failed!"
             exit 1
           fi
           
           echo "✅ Build successful!"
+          
+          echo ""
+          echo "========== Contents after build =========="
+          echo "Checking bin directory:"
+          ls -lh bin/ || echo "bin/ does not exist"
+          echo ""
+          echo "Checking .buildozer directory:"
+          ls -lh .buildozer/android/platform/build-*/dists/ 2>/dev/null || echo "dists directory not found"
 
       - name: Find and list APK
         id: find_apk
@@ -121,24 +138,13 @@ jobs:
             echo ""
             echo "✅ Found APK: $APK_FILE"
             echo "APK size: $(du -h $APK_FILE | cut -f1)"
-            echo "APK_FOUND=true" >> $GITHUB_ENV
-            echo "APK_FILE=$APK_FILE" >> $GITHUB_ENV
-            # Also set as output
             echo "found=true" >> $GITHUB_OUTPUT
             echo "apk_file=$APK_FILE" >> $GITHUB_OUTPUT
           else
             echo ""
             echo "❌ No APK file found!"
-            echo "APK_FOUND=false" >> $GITHUB_ENV
             echo "found=false" >> $GITHUB_OUTPUT
           fi
-
-      - name: Debug environment
-        run: |
-          echo "APK_FOUND env var: ${{ env.APK_FOUND }}"
-          echo "APK_FILE env var: ${{ env.APK_FILE }}"
-          echo "Step output found: ${{ steps.find_apk.outputs.found }}"
-          echo "Step output apk_file: ${{ steps.find_apk.outputs.apk_file }}"
 
       - name: Upload APK to artifacts
         if: steps.find_apk.outputs.found == 'true'
