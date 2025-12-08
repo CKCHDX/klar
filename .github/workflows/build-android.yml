@@ -80,40 +80,51 @@ jobs:
           export PATH=$PATH:$HOME/android-sdk/cmdline-tools/latest/bin
           export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
           
-          # Build the APK
-          buildozer android release 2>&1 | tee build.log
+          echo "========== Starting buildozer android debug =========="
+          # Build debug APK (faster and more reliable than release)
+          buildozer -v android debug 2>&1 | tee build.log
           BUILD_STATUS=$?
           
-          if [ $BUILD_STATUS -eq 0 ]; then
-            echo "✓ Build successful!"
-          else
-            echo "✗ Build failed with status: $BUILD_STATUS"
-            tail -100 build.log
+          echo "========== Build completed with status: $BUILD_STATUS =========="
+          
+          if [ $BUILD_STATUS -ne 0 ]; then
+            echo "❌ Build failed! Last 50 lines of log:"
+            tail -50 build.log
+            exit 1
           fi
           
-          exit $BUILD_STATUS
+          echo "✅ Build successful!"
 
-      - name: Find APK
+      - name: Find and list APK
         if: always()
         run: |
-          echo "Searching for APK artifacts..."
+          echo "========== Searching for APK files =========="
+          echo "Current directory: $(pwd)"
           
-          # Search in lab/bin directory
-          if ls lab/bin/*.apk 1> /dev/null 2>&1; then
-            echo "APKs found in lab/bin/:"
-            ls -lh lab/bin/*.apk
+          # Find all APK files
+          echo "All APK files in workspace:"
+          find . -name "*.apk" -type f 2>/dev/null || echo "No APK files found with find command"
+          
+          # Check specific locations
+          echo ""
+          echo "Checking lab/bin/:"
+          ls -lah lab/bin/ 2>/dev/null || echo "lab/bin/ does not exist"
+          
+          echo ""
+          echo "Checking .buildozer directories:"
+          find lab/.buildozer -name "*.apk" 2>/dev/null || echo "No APK in .buildozer"
+          
+          # Try to find and set the APK path
+          APK_FILE=$(find . -name "*.apk" -type f | head -1)
+          if [ -n "$APK_FILE" ]; then
+            echo ""
+            echo "✅ Found APK: $APK_FILE"
+            echo "APK size: $(du -h $APK_FILE | cut -f1)"
             echo "APK_FOUND=true" >> $GITHUB_ENV
-            echo "APK_PATH=lab/bin" >> $GITHUB_ENV
-          # Search in .buildozer/android/platform/build-*/dists directory  
-          elif find lab/.buildozer -name "*.apk" -type f | grep -q .; then
-            echo "APKs found in .buildozer directory:"
-            find lab/.buildozer -name "*.apk" -type f -exec ls -lh {} \;
-            APK_DIR=$(dirname $(find lab/.buildozer -name "*.apk" -type f | head -1))
-            echo "APK_FOUND=true" >> $GITHUB_ENV
-            echo "APK_PATH=$APK_DIR" >> $GITHUB_ENV
+            echo "APK_FILE=$APK_FILE" >> $GITHUB_ENV
           else
-            echo "No APK found. Searching entire workspace..."
-            find . -name "*.apk" -type f 2>/dev/null | head -20
+            echo ""
+            echo "❌ No APK file found!"
             echo "APK_FOUND=false" >> $GITHUB_ENV
           fi
 
@@ -121,12 +132,12 @@ jobs:
         if: env.APK_FOUND == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: klar-android-apk
-          path: ${{ env.APK_PATH }}/*.apk
+          name: klar-debug-apk
+          path: ${{ env.APK_FILE }}
           retention-days: 30
 
       - name: Create release on success
-        if: success() && env.APK_FOUND == 'true'
+        if: env.APK_FOUND == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v3.0.0-build${{ github.run_number }}
@@ -137,10 +148,12 @@ jobs:
             **Build Information:**
             - Build Number: ${{ github.run_number }}
             - Commit: ${{ github.sha }}
-            - Built: ${{ github.event.head_commit.timestamp }}
+            - Build Type: Debug (unsigned)
             
             **Download:** See attached APK file below
-          files: ${{ env.APK_PATH }}/*.apk
+            
+            To install: Enable "Install from Unknown Sources" in Android settings
+          files: ${{ env.APK_FILE }}
           draft: false
           prerelease: true
         env:
