@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     
     steps:
     - name: Checkout code
@@ -68,19 +68,17 @@ jobs:
           libltdl-dev \
           zip \
           unzip \
-          openjdk-11-jdk \
+          openjdk-17-jdk \
           zlib1g-dev \
           libncurses5-dev \
           libncursesw5-dev \
           libtinfo5 \
-          cmake \
-          libffi-dev \
-          libssl-dev
+          cmake
     
     - name: Set up Java environment
       run: |
-        echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
-        echo "/usr/lib/jvm/java-11-openjdk-amd64/bin" >> $GITHUB_PATH
+        echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+        echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> $GITHUB_PATH
     
     - name: Install Buildozer
       run: |
