@@ -3,107 +3,96 @@ name: Build Klar Android APK
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-android:
+  build:
     runs-on: ubuntu-latest
     timeout-minutes: 180
-    container:
-      image: kivy/buildozer:latest
-      options: --user root
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v4
 
-      - name: Setup Build Environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
         run: |
-          echo "=== Build Environment ==="
-          python --version
-          buildozer --version
-          java -version
-          echo ""
-          echo "=== Preparing workspace ==="
-          mkdir -p /tmp/klar_build
-          cd /tmp/klar_build
-          cp -r $GITHUB_WORKSPACE/lab .
-          cp $GITHUB_WORKSPACE/keywords_db.json . 2>/dev/null || echo "keywords_db.json not found"
-          cp $GITHUB_WORKSPACE/domains.json . 2>/dev/null || echo "domains.json not found"
-          cp -r $GITHUB_WORKSPACE/engine . 2>/dev/null || echo "engine not found"
-          echo "Workspace ready:"
-          ls -la /tmp/klar_build/
-          echo ""
-          echo "Lab contents:"
-          ls -la /tmp/klar_build/lab/
+          sudo apt-get update
+          sudo apt-get install -y \
+            openjdk-11-jdk \
+            android-sdk \
+            android-sdk-platform-tools \
+            android-sdk-build-tools \
+            git \
+            wget \
+            curl \
+            unzip
+
+      - name: Setup Android SDK
+        run: |
+          mkdir -p ~/Android/Sdk/cmdline-tools
+          cd ~/Android/Sdk/cmdline-tools
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q commandlinetools-linux-9477386_latest.zip
+          mv cmdline-tools latest
+          
+          export ANDROID_SDK_ROOT=~/Android/Sdk
+          export ANDROID_HOME=~/Android/Sdk
+          export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin
+          
+          yes | sdkmanager --sdk_root=$ANDROID_SDK_ROOT "platforms;android-33" "build-tools;33.0.0" "ndk;25.1.8937393" > /dev/null 2>&1
+          
+          echo "ANDROID_SDK_ROOT=~/Android/Sdk" >> $GITHUB_ENV
+          echo "ANDROID_HOME=~/Android/Sdk" >> $GITHUB_ENV
+          echo "PATH=$PATH:~/Android/Sdk/cmdline-tools/latest/bin" >> $GITHUB_ENV
+
+      - name: Install build tools
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install cython==0.29.37 buildozer==1.4.6
+
+      - name: Prepare build files
+        run: |
+          cd lab
+          ls -la
+          cat buildozer.spec | head -20
 
       - name: Build APK
-        working-directory: /tmp/klar_build/lab
+        working-directory: lab
         run: |
-          set -e
-          echo "=== Starting Buildozer ==="
-          echo "Current directory: $(pwd)"
-          echo "Files:"
-          ls -la
-          echo ""
+          export ANDROID_SDK_ROOT=~/Android/Sdk
+          export ANDROID_HOME=~/Android/Sdk
+          export ANDROID_NDK=~/Android/Sdk/ndk/25.1.8937393
+          export PATH=$PATH:~/Android/Sdk/cmdline-tools/latest/bin
           
-          # Run buildozer with verbose output
-          buildozer -v android debug 2>&1 | tee build.log
-          
-          BUILD_STATUS=${PIPESTATUS[0]}
-          
-          if [ $BUILD_STATUS -eq 0 ]; then
-            echo ""
-            echo "✓ Build completed"
-          else
-            echo ""
-            echo "✗ Build failed with code $BUILD_STATUS"
-            echo ""
-            echo "=== Last 200 lines of build log ==="
-            tail -n 200 build.log
-          fi
-          
-          exit $BUILD_STATUS
+          buildozer android debug 2>&1 | tee build.log
         env:
-          USER: root
-          HOME: /root
+          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
 
-      - name: Check For APK
+      - name: Check build output
         if: always()
-        working-directory: /tmp/klar_build/lab
+        working-directory: lab
         run: |
-          echo "=== Searching for APK files ==="
+          echo "=== Checking for APK ==="
           find . -name "*.apk" -type f
           
           echo ""
-          echo "=== Checking bin directory ==="
-          if [ -d bin ]; then
-            echo "bin directory contents:"
-            ls -lh bin/
-          else
-            echo "bin directory does not exist"
-          fi
-          
-          echo ""
-          echo "=== Full directory structure ==="
-          find . -maxdepth 3 -type d | head -20
+          echo "=== bin directory ==="
+          ls -la bin/ 2>/dev/null || echo "No bin directory"
 
       - name: Upload APK
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: klar-android-apk
-          path: /tmp/klar_build/lab/bin/*.apk
-          retention-days: 30
+          path: lab/bin/*.apk
 
-      - name: Upload Logs
+      - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: build-logs
-          path: /tmp/klar_build/lab/build.log
-          retention-days: 7
+          path: lab/build.log
