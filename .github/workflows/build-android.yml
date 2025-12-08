@@ -97,12 +97,23 @@ jobs:
         if: always()
         run: |
           echo "Searching for APK artifacts..."
-          if [ -f "lab/bin/*.apk" ]; then
+          
+          # Search in lab/bin directory
+          if ls lab/bin/*.apk 1> /dev/null 2>&1; then
+            echo "APKs found in lab/bin/:"
             ls -lh lab/bin/*.apk
             echo "APK_FOUND=true" >> $GITHUB_ENV
+            echo "APK_PATH=lab/bin" >> $GITHUB_ENV
+          # Search in .buildozer/android/platform/build-*/dists directory  
+          elif find lab/.buildozer -name "*.apk" -type f | grep -q .; then
+            echo "APKs found in .buildozer directory:"
+            find lab/.buildozer -name "*.apk" -type f -exec ls -lh {} \;
+            APK_DIR=$(dirname $(find lab/.buildozer -name "*.apk" -type f | head -1))
+            echo "APK_FOUND=true" >> $GITHUB_ENV
+            echo "APK_PATH=$APK_DIR" >> $GITHUB_ENV
           else
-            echo "No APK found in expected location"
-            find ~/android-sdk -name "*.apk" -type f 2>/dev/null | head -10
+            echo "No APK found. Searching entire workspace..."
+            find . -name "*.apk" -type f 2>/dev/null | head -20
             echo "APK_FOUND=false" >> $GITHUB_ENV
           fi
 
@@ -111,19 +122,26 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: klar-android-apk
-          path: lab/bin/*.apk
+          path: ${{ env.APK_PATH }}/*.apk
           retention-days: 30
 
       - name: Create release on success
         if: success() && env.APK_FOUND == 'true'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v1
         with:
-          tag_name: android-build-${{ github.run_number }}
-          release_name: Klar Android Build ${{ github.run_number }}
+          tag_name: v3.0.0-build${{ github.run_number }}
+          name: Klar Android v3.0.0 Build ${{ github.run_number }}
           body: |
-            Automated Android APK build
-            Commit: ${{ github.sha }}
+            ⚡ **Automated Android APK Build**
+            
+            **Build Information:**
+            - Build Number: ${{ github.run_number }}
+            - Commit: ${{ github.sha }}
+            - Built: ${{ github.event.head_commit.timestamp }}
+            
+            **Download:** See attached APK file below
+          files: ${{ env.APK_PATH }}/*.apk
           draft: false
           prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
