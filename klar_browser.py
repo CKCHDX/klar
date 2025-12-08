@@ -1,6 +1,7 @@
 """
 Klar 3.0 - Standalone Swedish Browser
 Complete browser application with integrated search engine
+Features: Domain whitelisting, demographic-aware search, multi-user safety
 """
 import sys
 import os
@@ -15,24 +16,36 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtGui import QIcon, QKeySequence, QShortcut, QFont
-# Import search engine
+
+# Import search engine and security modules
 from engine.search_engine import SearchEngine
 from engine.results_page import ResultsPage
+from engine.domain_whitelist import DomainWhitelist
+from engine.demographic_detector import DemographicDetector
+
 from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile
 
 class SearchWorker(QThread):
-    """Background thread for searching"""
+    """Background thread for searching with demographic support"""
     finished = pyqtSignal(dict)
     error = pyqtSignal(str)
     
-    def __init__(self, search_engine, query):
+    def __init__(self, search_engine, query, demographic="general", metadata=None):
         super().__init__()
         self.search_engine = search_engine
         self.query = query
+        self.demographic = demographic
+        self.metadata = metadata or {}
     
     def run(self):
         try:
-            results = self.search_engine.search(self.query)
+            # Pass demographic context to search engine
+            results = self.search_engine.search(
+                self.query,
+                demographic=self.demographic
+            )
+            results['detected_demographic'] = self.demographic
+            results['confidence'] = self.metadata.get('all_scores', {})
             self.finished.emit(results)
         except Exception as e:
             self.error.emit(str(e))
@@ -43,11 +56,9 @@ class KlarBrowser(QMainWindow):
         # ============================================
         # VIDEO CODEC SUPPORT - PyQt6 CORRECT WAY
         # ============================================
-        # Get default profile settings
         profile = QWebEngineProfile.defaultProfile()
         settings = profile.settings()
         
-        # Enable video playback
         settings.setAttribute(QWebEngineSettings.WebAttribute.PluginsEnabled, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.PlaybackRequiresUserGesture, False)
@@ -63,6 +74,10 @@ class KlarBrowser(QMainWindow):
         # Initialize search engine
         self.search_engine = SearchEngine()
         self.search_worker = None
+        
+        # NEW: Initialize security and demographic modules
+        self.whitelist = DomainWhitelist("domains.json")
+        self.demographic_detector = DemographicDetector()
         
         # Track state
         self.is_searching = False
@@ -121,6 +136,7 @@ class KlarBrowser(QMainWindow):
         # Add first tab
         self.add_new_tab(None, "Ny flik")
         self.open_videos_externally = True
+        
         # Shortcuts
         QShortcut(QKeySequence("Ctrl+T"), self, self.add_new_tab)
         QShortcut(QKeySequence("Ctrl+W"), self, lambda: self.close_tab(self.tabs.currentIndex()))
@@ -136,19 +152,12 @@ class KlarBrowser(QMainWindow):
         nav_layout.setSpacing(8)
         nav_widget.setLayout(nav_layout)
         
-        # Logo
-        #logo_label = QLabel("Klar") <- change to klar.ico file as icon
-        
-        #example -> logo_label.setPixmap(QIcon('klar.ico').pixmap(24,
-        #logo_label.setObjectName("logo")
-        #nav_layout.addWidget(logo_label)
-        
         # Back button
         back_btn = QPushButton("◄")
         back_btn.setObjectName("navButton")
         back_btn.setFixedSize(36, 36)
         back_btn.clicked.connect(self.navigate_back)
-        back_btn.setToolTip("BakÃ¥t (Alt+â†)")
+        back_btn.setToolTip("Bakåt (Alt+←)")
         nav_layout.addWidget(back_btn)
         
         # Forward button
@@ -156,7 +165,7 @@ class KlarBrowser(QMainWindow):
         forward_btn.setObjectName("navButton")
         forward_btn.setFixedSize(36, 36)
         forward_btn.clicked.connect(self.navigate_forward)
-        forward_btn.setToolTip("FramÃ¥t (Alt+â†’)")
+        forward_btn.setToolTip("Framåt (Alt+→)")
         nav_layout.addWidget(forward_btn)
         
         # Reload button
@@ -211,8 +220,6 @@ class KlarBrowser(QMainWindow):
         version.setObjectName("homePageVersion")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(version)
-        
-
         
         # Spacer
         layout.addSpacing(40)
@@ -357,7 +364,7 @@ class KlarBrowser(QMainWindow):
         self.tabs.removeTab(i)
     
     def navigate_to_url(self):
-        """Navigate to URL or perform search"""
+        """Navigate to URL or perform search with security validation"""
         query = self.main_search_bar.text().strip()
         
         if not query:
@@ -365,9 +372,22 @@ class KlarBrowser(QMainWindow):
         
         # Check if it's a URL
         if self.is_url(query):
-            url = query if query.startswith('http') else 'https://' + query
-            self.current_browser().setUrl(QUrl(url))
-            self.stacked_widget.setCurrentIndex(1)
+            # NEW: Check whitelist first for security
+            is_safe, reason = self.whitelist.is_whitelisted(query)
+            
+            if not is_safe:
+                # Show security warning page
+                blocked_html = self.whitelist.get_blocked_html(query, reason)
+                self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
+                self.stacked_widget.setCurrentIndex(1)
+                self.status.showMessage(f"⚠️ Domän blockerad för säkerhet", 5000)
+                print(f"[Security] Blocked: {query} - {reason}")
+            else:
+                # Domain is whitelisted, load it
+                url = query if query.startswith('http') else 'https://' + query
+                self.current_browser().setUrl(QUrl(url))
+                self.stacked_widget.setCurrentIndex(1)
+                print(f"[Security] Allowed: {query}")
         else:
             # It's a search query
             self.perform_search(query)
@@ -382,20 +402,30 @@ class KlarBrowser(QMainWindow):
         return False
     
     def perform_search(self, query):
-        """Perform search using background thread"""
+        """Perform search using background thread with demographic awareness"""
         if self.is_searching:
-            self.status.showMessage("SÃ¶kning pÃ¥gÃ¥r redan...", 2000)
+            self.status.showMessage("Sökning pågår redan...", 2000)
             return
         
         self.is_searching = True
-        self.status.showMessage(f"SÃ¶ker efter: {query}...")
+        
+        # NEW: Detect user demographic
+        demographic, confidence, metadata = self.demographic_detector.detect(query)
+        print(f"[Demographic] Detected: {demographic} (confidence: {confidence:.2f})")
+        
+        self.status.showMessage(f"Söker efter: {query}...")
         
         # Show loading in browser
         self.show_loading_page(query)
         self.stacked_widget.setCurrentIndex(1)
         
-        # Start background search
-        self.search_worker = SearchWorker(self.search_engine, query)
+        # Start background search with demographic context
+        self.search_worker = SearchWorker(
+            self.search_engine, 
+            query,
+            demographic=demographic,
+            metadata=metadata
+        )
         self.search_worker.finished.connect(self.on_search_finished)
         self.search_worker.error.connect(self.on_search_error)
         self.search_worker.start()
@@ -448,7 +478,7 @@ class KlarBrowser(QMainWindow):
         <body>
             <div class="loader">
                 <div class="spinner"></div>
-                <div class="text">SÃ¶ker efter <span class="query">{query}</span>...</div>
+                <div class="text">Söker efter <span class="query">{query}</span>...</div>
             </div>
         </body>
         </html>
@@ -459,18 +489,19 @@ class KlarBrowser(QMainWindow):
         """Handle search completion"""
         self.is_searching = False
         query = results.get('query', '')
+        demographic = results.get('detected_demographic', 'general')
         
         # Display results
-        results_html = ResultsPage.generate_html(query, results)
+        results_html = ResultsPage.generate_html(query, results, demographic)
         self.current_browser().setHtml(results_html, QUrl("about:blank"))
         
         count = len(results.get('results', []))
-        self.status.showMessage(f"Hittade {count} resultat fÃ¶r: {query}", 3000)
+        self.status.showMessage(f"Hittade {count} resultat för: {query}", 3000)
     
     def on_search_error(self, error):
         """Handle search error"""
         self.is_searching = False
-        self.status.showMessage(f"SÃ¶kfel: {error}", 5000)
+        self.status.showMessage(f"Sökfel: {error}", 5000)
     
     def show_home_page(self):
         """Show home page"""
