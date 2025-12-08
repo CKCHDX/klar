@@ -1,74 +1,112 @@
-﻿aiohttp==3.8.3
-aiosignal==1.3.1
-altgraph==0.17.4
-annotated-types==0.7.0
-anyio==4.5.2
-async-timeout==4.0.3
-attrs==25.3.0
-beautifulsoup4==4.12.2
-blinker==1.8.2
-certifi==2025.10.5
-charset-normalizer==2.1.1
-click==8.1.8
-colorama==0.4.6
-comtypes==1.4.12
-exceptiongroup==1.3.0
-ffmpeg==1.4
-filelock==3.16.1
-Flask==3.0.3
-frozenlist==1.5.0
-fsspec==2025.3.0
-h11==0.16.0
-httpcore==1.0.9
-httpx==0.28.1
-idna==3.11
-importlib_metadata==8.5.0
-itsdangerous==2.2.0
-Jinja2==3.1.6
-langdetect==1.0.9
-lxml==4.9.3
-MarkupSafe==2.1.5
-mpmath==1.3.0
-multidict==6.1.0
-networkx==3.1
-numpy==1.24.4
-ollama==0.6.0
-opencv-python==4.12.0.88
-packaging==25.0
-pefile==2023.2.7
-pillow==10.4.0
-propcache==0.2.0
-psutil==7.1.3
-PyAudio==0.2.14
-PyBluez @ file:///C:/Users/akoj2/Downloads/PyBluez-0.23-cp38-cp38-win_amd64.whl#sha256=554ab2d086c85acb0977c0ad73c00fe4df003cbd544f15ebe296104df5164a59
-pycryptodome==3.23.0
-pydantic==2.10.6
-pydantic_core==2.27.2
-pyinstaller==6.16.0
-pyinstaller-hooks-contrib==2025.9
-pypiwin32==223
-PyQt5==5.15.9
-PyQt5-Qt5==5.15.2
-PyQt5_sip==12.15.0
-PyQtWebEngine==5.15.7
-PyQtWebEngine-Qt5==5.15.2
-pyserial==3.5
-pytesseract==0.3.13
-pyttsx3==2.99
-pywin32==311
-pywin32-ctypes==0.2.3
-qasync==0.28.0
-requests==2.32.4
-six==1.17.0
-sniffio==1.3.1
-soupsieve==2.7
-SpeechRecognition==3.10.4
-sympy==1.13.3
-torch==2.4.1
-typing_extensions==4.13.2
-urllib3==2.2.3
-websockets==13.1
-Werkzeug==3.0.6
-yarl==1.15.2
-zipp==3.20.2
-PyQt6
+# Klar 3.0 - Swedish Browser Requirements
+# Core dependencies for browser, search engine, and offline mode
+
+# ===== PyQt6 - Modern GUI Framework =====
+PyQt6>=6.6.0
+PyQt6-WebEngine>=6.6.0
+PyQt6-Qt6>=6.6.0
+PyQt6-sip>=13.6.0
+
+# ===== Web Scraping & Parsing =====
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+html5lib>=1.1
+soupsieve>=2.5
+
+# ===== HTTP & Networking =====
+requests>=2.31.0
+httpx>=0.27.0
+aiohttp>=3.9.0
+websockets>=12.0
+urllib3>=2.2.0
+certifi>=2024.0.0
+
+# ===== Search & NLP =====
+langdetect>=1.0.9
+
+# ===== Database & Storage =====
+# For LOKI offline search mode
+sqlite3  # Built-in, but listed for reference
+
+# ===== JSON & Data Processing =====
+# json - Built-in Python standard library
+# pathlib - Built-in Python standard library
+
+# ===== Web Framework (if using Flask for API) =====
+Flask>=3.0.0
+Werkzeug>=3.0.0
+Jinja2>=3.1.0
+click>=8.1.0
+itsdangerous>=2.1.0
+
+# ===== File & Path Handling =====
+fsspec>=2024.0.0
+
+# ===== Async Support =====
+qasync>=0.28.0
+anyio>=4.0.0
+
+# ===== Utilities =====
+colorama>=0.4.6  # Terminal colors
+typing-extensions>=4.8.0  # Type hints
+packaging>=24.0  # Version parsing
+
+# ===== Character Encoding =====
+charset-normalizer>=3.3.0
+idna>=3.6
+
+# ===== Data Validation =====
+pydantic>=2.5.0
+pydantic-core>=2.14.0
+
+# ===== Security & Crypto =====
+pycryptodome>=3.19.0
+
+# ===== System Integration =====
+psutil>=5.9.0  # System monitoring
+
+# ===== Logging & Debugging =====
+# logging - Built-in Python standard library
+
+# ===== Additional Async Libraries =====
+aiosignal>=1.3.0
+async-timeout>=4.0.0
+frozenlist>=1.4.0
+multidict>=6.0.0
+propcache>=0.2.0
+yarl>=1.9.0
+
+# ===== Common Dependencies =====
+attrs>=23.0.0
+six>=1.16.0
+sniffio>=1.3.0
+exceptiongroup>=1.2.0
+h11>=0.14.0
+httpcore>=1.0.0
+
+# ===== Optional: Advanced Features =====
+# numpy>=1.24.0  # Uncomment if using numerical computations
+# torch>=2.0.0  # Uncomment if using AI/ML features
+# pillow>=10.0.0  # Uncomment if using image processing
+
+# ===== Development & Building =====
+# pyinstaller>=6.0.0  # For building executables
+# pyinstaller-hooks-contrib>=2024.0  # Additional hooks
+
+# ===== Platform-Specific (Windows) =====
+# pywin32>=305; sys_platform == 'win32'  # Windows API access
+# pywin32-ctypes>=0.2.0; sys_platform == 'win32'
+# comtypes>=1.4.0; sys_platform == 'win32'
+
+# ===== Notes =====
+# - Use Python 3.8+ for best compatibility
+# - PyQt6 is used instead of PyQt5 for modern features
+# - LOKI offline mode uses SQLite (built-in)
+# - SVEN 3.0 uses built-in regex and data structures
+# - All core functionality works with these packages
+# - Optional packages can be installed as needed
+
+# ===== Installation =====
+# pip install -r requirements.txt
+# or
+# pip install -r requirements.txt --upgrade
