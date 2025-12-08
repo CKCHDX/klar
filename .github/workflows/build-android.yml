@@ -27,22 +27,18 @@ jobs:
     
     - name: Copy project files to lab directory
       run: |
-        # Copy core files to lab
         cp keywords_db.json lab/ 2>/dev/null || echo "keywords_db.json not found"
         cp domains.json lab/ 2>/dev/null || echo "domains.json not found"
         cp klar.ico lab/ 2>/dev/null || echo "klar.ico not found"
         
-        # Copy engine directory
         if [ -d "engine" ]; then
           cp -r engine lab/
         fi
         
-        # Copy algorithms if exists
         if [ -d "algorithms" ]; then
           cp -r algorithms lab/
         fi
         
-        # Copy core if exists  
         if [ -d "core" ]; then
           cp -r core lab/
         fi
@@ -72,10 +68,12 @@ jobs:
           libncurses5-dev \
           cmake
     
-    - name: Set up Java environment
+    - name: Set up Java and Android environment
       run: |
         echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
         echo "/usr/lib/jvm/java-17-openjdk-amd64/bin" >> $GITHUB_PATH
+        echo "ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+        echo "ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
     
     - name: Install Buildozer
       run: |
@@ -84,68 +82,42 @@ jobs:
         pip3 install buildozer==1.5.0
         pip3 install cython==0.29.36
     
-    - name: Install Android SDK/NDK
-      run: |
-        # Create Android directories
-        mkdir -p $HOME/.buildozer/android/platform
-        
-        # Download and extract Android SDK command line tools
-        cd $HOME/.buildozer/android/platform
-        wget -q https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
-        unzip -q commandlinetools-linux-8512546_latest.zip
-        mkdir -p cmdline-tools/latest
-        mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
-        
-        # Set Android environment
-        export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-        mkdir -p $ANDROID_HOME
-        mv cmdline-tools $ANDROID_HOME/
-        
-        # Accept licenses and install components
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
-        
-        # Download NDK
-        cd $HOME/.buildozer/android/platform
-        wget -q https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
-        unzip -q android-ndk-r25b-linux.zip
-        mv android-ndk-r25b android-ndk
-        
-        echo "Android SDK and NDK installed"
-    
-    - name: Cache Buildozer global directory
+    - name: Cache Buildozer directories
       uses: actions/cache@v4
       with:
-        path: ~/.buildozer
-        key: ${{ runner.os }}-buildozer-global-${{ hashFiles('lab/buildozer.spec') }}
+        path: |
+          ~/.buildozer
+          lab/.buildozer
+        key: ${{ runner.os }}-buildozer-${{ hashFiles('lab/buildozer.spec') }}
         restore-keys: |
-          ${{ runner.os }}-buildozer-global-
+          ${{ runner.os }}-buildozer-
     
-    - name: Cache Buildozer directory
-      uses: actions/cache@v4
-      with:
-        path: lab/.buildozer
-        key: ${{ runner.os }}-buildozer-local-${{ hashFiles('lab/buildozer.spec') }}
-        restore-keys: |
-          ${{ runner.os }}-buildozer-local-
-    
-    - name: Build APK
+    - name: Update buildozer.spec with correct SDK paths
       working-directory: ./lab
       run: |
-        # Ensure buildozer is in path
-        export PATH=$PATH:$HOME/.local/bin
+        # Update buildozer.spec to use our SDK location
+        cat >> buildozer.spec << 'EOF'
         
-        # Build the APK
+        # Android SDK/NDK paths
+        android.sdk_path = /home/runner/.buildozer/android/platform/android-sdk
+        android.ndk_path = /home/runner/.buildozer/android/platform/android-ndk
+        android.accept_sdk_license = True
+        EOF
+    
+    - name: Build APK with Buildozer
+      working-directory: ./lab
+      run: |
+        # Let buildozer handle the SDK/NDK installation automatically
+        export PATH=$PATH:$HOME/.local/bin
         buildozer -v android debug
       env:
-        ANDROID_HOME: ${{ env.HOME }}/.buildozer/android/platform/android-sdk
-        ANDROID_NDK_HOME: ${{ env.HOME }}/.buildozer/android/platform/android-ndk
+        ANDROID_HOME: ${{ env.ANDROID_HOME }}
+        ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
     
     - name: Find and organize APK
       run: |
         mkdir -p release/android
         
-        # Search for APK
         echo "Searching for APK files..."
         find lab -name "*.apk" -type f
         
@@ -159,7 +131,7 @@ jobs:
         if [ -z "$APK_FILE" ]; then
           echo "ERROR: No APK found!"
           echo "Directory structure:"
-          ls -R lab/.buildozer/android/platform/build-*/dists/ 2>/dev/null || echo "Build dist not found"
+          find lab/.buildozer -type f -name "*.apk" 2>/dev/null || echo "No APK in .buildozer"
           exit 1
         fi
         
