@@ -14,24 +14,27 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
     
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.9'
+    
     - name: Copy project files to lab directory
       run: |
         # Copy core files to lab
-        cp keywords_db.json lab/ || echo "keywords_db.json not found"
-        cp domains.json lab/ || echo "domains.json not found"
-        cp klar.ico lab/ || echo "klar.ico not found"
+        cp keywords_db.json lab/ 2>/dev/null || echo "keywords_db.json not found"
+        cp domains.json lab/ 2>/dev/null || echo "domains.json not found"
+        cp klar.ico lab/ 2>/dev/null || echo "klar.ico not found"
         
         # Copy engine directory
         if [ -d "engine" ]; then
           cp -r engine lab/
-        else
-          echo "Warning: engine directory not found"
         fi
         
         # Copy algorithms if exists
@@ -44,44 +47,131 @@ jobs:
           cp -r core lab/
         fi
         
-        # List lab contents
         echo "Lab directory contents:"
         ls -la lab/
     
-    - name: Build APK with Buildozer
-      uses: ArtemSBulgakov/buildozer-action@v1
-      id: buildozer
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          git \
+          python3 \
+          python3-pip \
+          python3-setuptools \
+          libffi-dev \
+          libssl-dev \
+          automake \
+          autoconf \
+          libtool \
+          pkg-config \
+          libltdl-dev \
+          zip \
+          unzip \
+          openjdk-11-jdk \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          libtinfo5 \
+          cmake \
+          libffi-dev \
+          libssl-dev
+    
+    - name: Set up Java environment
+      run: |
+        echo "JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64" >> $GITHUB_ENV
+        echo "/usr/lib/jvm/java-11-openjdk-amd64/bin" >> $GITHUB_PATH
+    
+    - name: Install Buildozer
+      run: |
+        pip3 install --upgrade pip
+        pip3 install --upgrade setuptools wheel
+        pip3 install buildozer==1.5.0
+        pip3 install cython==0.29.36
+    
+    - name: Install Android SDK/NDK
+      run: |
+        # Create Android directories
+        mkdir -p $HOME/.buildozer/android/platform
+        
+        # Download and extract Android SDK command line tools
+        cd $HOME/.buildozer/android/platform
+        wget -q https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+        unzip -q commandlinetools-linux-8512546_latest.zip
+        mkdir -p cmdline-tools/latest
+        mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+        
+        # Set Android environment
+        export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+        mkdir -p $ANDROID_HOME
+        mv cmdline-tools $ANDROID_HOME/
+        
+        # Accept licenses and install components
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+        
+        # Download NDK
+        cd $HOME/.buildozer/android/platform
+        wget -q https://dl.google.com/android/repository/android-ndk-r25b-linux.zip
+        unzip -q android-ndk-r25b-linux.zip
+        mv android-ndk-r25b android-ndk
+        
+        echo "Android SDK and NDK installed"
+    
+    - name: Cache Buildozer global directory
+      uses: actions/cache@v4
       with:
-        workdir: lab
-        buildozer_version: stable
+        path: ~/.buildozer
+        key: ${{ runner.os }}-buildozer-global-${{ hashFiles('lab/buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-buildozer-global-
+    
+    - name: Cache Buildozer directory
+      uses: actions/cache@v4
+      with:
+        path: lab/.buildozer
+        key: ${{ runner.os }}-buildozer-local-${{ hashFiles('lab/buildozer.spec') }}
+        restore-keys: |
+          ${{ runner.os }}-buildozer-local-
+    
+    - name: Build APK
+      working-directory: ./lab
+      run: |
+        # Ensure buildozer is in path
+        export PATH=$PATH:$HOME/.local/bin
+        
+        # Build the APK
+        buildozer -v android debug
       env:
-        USER: runner
+        ANDROID_HOME: ${{ env.HOME }}/.buildozer/android/platform/android-sdk
+        ANDROID_NDK_HOME: ${{ env.HOME }}/.buildozer/android/platform/android-ndk
     
     - name: Find and organize APK
       run: |
-        # Create output directory
         mkdir -p release/android
         
-        # Find the built APK
+        # Search for APK
+        echo "Searching for APK files..."
+        find lab -name "*.apk" -type f
+        
         APK_FILE=$(find lab/.buildozer -name "*.apk" -type f 2>/dev/null | head -n 1)
         
         if [ -z "$APK_FILE" ]; then
-          echo "Error: No APK file found in .buildozer!"
-          echo "Searching for APK files everywhere:"
-          find lab -name "*.apk" -type f 2>/dev/null || echo "No APK files found"
-          echo "Lab directory structure:"
-          ls -la lab/ || true
-          echo "Buildozer directory:"
-          ls -la lab/.buildozer/ 2>/dev/null || echo ".buildozer not found"
+          echo "Trying alternate locations..."
+          APK_FILE=$(find lab -name "*.apk" -type f 2>/dev/null | head -n 1)
+        fi
+        
+        if [ -z "$APK_FILE" ]; then
+          echo "ERROR: No APK found!"
+          echo "Directory structure:"
+          ls -R lab/.buildozer/android/platform/build-*/dists/ 2>/dev/null || echo "Build dist not found"
           exit 1
         fi
         
         echo "Found APK: $APK_FILE"
-        
-        # Copy and rename APK
         cp "$APK_FILE" release/android/Klar-3.0-debug.apk
         
-        echo "APK copied to release/android/"
+        echo "APK Details:"
         ls -lh release/android/
     
     - name: Create Android README
@@ -92,61 +182,51 @@ jobs:
         ## Installation
 
         1. Download `Klar-3.0-debug.apk`
-        2. Enable "Install from Unknown Sources" in Android settings:
-           - Settings → Security → Unknown Sources (enable)
-           - OR Settings → Apps → Special Access → Install Unknown Apps
-        3. Open the downloaded APK file and tap Install
+        2. Enable "Install from Unknown Sources" in Android settings
+        3. Open the APK file and install
         4. Launch Klar from your app drawer
 
         ## Features
 
-        - Native Android app (Python-powered with Kivy)
-        - 111 Swedish domains built-in
-        - 700+ Swedish keywords database
-        - Dark mode Material Design interface
+        - Native Android app (Python + Kivy)
+        - 111 Swedish domains
+        - 700+ Swedish keywords
+        - Dark mode Material Design
         - Touch-optimized for mobile
-        - No tracking, no ads, no bloat
-        - Works completely offline (database embedded)
+        - No tracking or ads
 
         ## System Requirements
 
-        - Android 5.0 (Lollipop) or higher
+        - Android 5.0+ (Lollipop or higher)
         - ~100MB storage space
-        - Internet connection for web searches
+        - Internet connection
 
         ## First Launch
 
-        The app may take 10-20 seconds to start on first launch while
-        it extracts and initializes the Python runtime. Subsequent 
-        launches will be much faster (2-3 seconds).
+        May take 10-20 seconds on first launch.
+        Subsequent launches will be faster.
 
         ## Technical Details
 
-        - Built with: Python 3.11 + Kivy + KivyMD
+        - Python 3.9 + Kivy + KivyMD
         - Package: se.oscyra.klar
         - Version: 3.0.0
-        - Architecture: ARM64-v8a + ARMv7a (universal)
+        - Architecture: ARM64-v8a + ARMv7a
         - Min SDK: 21 (Android 5.0)
         - Target SDK: 33 (Android 13)
 
-        ## Note
-
-        This is a DEBUG build for testing purposes. It is not signed 
-        for production distribution via Google Play Store.
-
-        ## Support & Source Code
+        ## Support
 
         https://github.com/CKCHDX/klar
         EOF
     
-    - name: Generate APK checksum
+    - name: Generate checksum
       working-directory: ./release/android
       run: |
         sha256sum Klar-3.0-debug.apk > Klar-3.0-debug.apk.sha256
-        echo "SHA256:"
         cat Klar-3.0-debug.apk.sha256
     
-    - name: Upload APK artifact
+    - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: Klar-Android-APK
@@ -161,23 +241,7 @@ jobs:
         APK_SIZE=$(du -h release/android/Klar-3.0-debug.apk | cut -f1)
         echo "## 🎉 Android Build Complete!" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 📱 APK Details" >> $GITHUB_STEP_SUMMARY
+        echo "**APK File**: Klar-3.0-debug.apk" >> $GITHUB_STEP_SUMMARY
+        echo "**Size**: $APK_SIZE" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "| Property | Value |" >> $GITHUB_STEP_SUMMARY
-        echo "| -------- | ----- |" >> $GITHUB_STEP_SUMMARY
-        echo "| **File** | Klar-3.0-debug.apk |" >> $GITHUB_STEP_SUMMARY
-        echo "| **Size** | $APK_SIZE |" >> $GITHUB_STEP_SUMMARY
-        echo "| **Architecture** | ARM64-v8a + ARMv7a |" >> $GITHUB_STEP_SUMMARY
-        echo "| **Min Android** | 5.0 (API 21) |" >> $GITHUB_STEP_SUMMARY
-        echo "| **Target Android** | 13 (API 33) |" >> $GITHUB_STEP_SUMMARY
-        echo "| **Package** | se.oscyra.klar |" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 📥 Download" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Download the APK from the **Artifacts** section at the bottom of this page." >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### 🔐 SHA256 Checksum" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo '```' >> $GITHUB_STEP_SUMMARY
-        cat release/android/Klar-3.0-debug.apk.sha256 >> $GITHUB_STEP_SUMMARY
-        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "Download from Artifacts section below." >> $GITHUB_STEP_SUMMARY
