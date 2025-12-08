@@ -96,6 +96,7 @@ jobs:
           echo "✅ Build successful!"
 
       - name: Find and list APK
+        id: find_apk
         if: always()
         run: |
           echo "========== Searching for APK files =========="
@@ -122,22 +123,33 @@ jobs:
             echo "APK size: $(du -h $APK_FILE | cut -f1)"
             echo "APK_FOUND=true" >> $GITHUB_ENV
             echo "APK_FILE=$APK_FILE" >> $GITHUB_ENV
+            # Also set as output
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "apk_file=$APK_FILE" >> $GITHUB_OUTPUT
           else
             echo ""
             echo "❌ No APK file found!"
             echo "APK_FOUND=false" >> $GITHUB_ENV
+            echo "found=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Debug environment
+        run: |
+          echo "APK_FOUND env var: ${{ env.APK_FOUND }}"
+          echo "APK_FILE env var: ${{ env.APK_FILE }}"
+          echo "Step output found: ${{ steps.find_apk.outputs.found }}"
+          echo "Step output apk_file: ${{ steps.find_apk.outputs.apk_file }}"
+
       - name: Upload APK to artifacts
-        if: env.APK_FOUND == 'true'
+        if: steps.find_apk.outputs.found == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: klar-debug-apk
-          path: ${{ env.APK_FILE }}
+          path: ${{ steps.find_apk.outputs.apk_file }}
           retention-days: 30
 
       - name: Create release on success
-        if: env.APK_FOUND == 'true'
+        if: steps.find_apk.outputs.found == 'true'
         uses: softprops/action-gh-release@v1
         with:
           tag_name: v3.0.0-build${{ github.run_number }}
@@ -153,7 +165,7 @@ jobs:
             **Download:** See attached APK file below
             
             To install: Enable "Install from Unknown Sources" in Android settings
-          files: ${{ env.APK_FILE }}
+          files: ${{ steps.find_apk.outputs.apk_file }}
           draft: false
           prerelease: true
         env:
