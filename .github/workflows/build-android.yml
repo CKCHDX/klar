@@ -1,115 +1,148 @@
-name: Build Klar Android APK (Manual)
+name: Build Klar Android APK
 
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'lab/**'
-      - '.github/workflows/build-android.yml'
   pull_request:
     branches: [ main ]
-    paths:
-      - 'lab/**'
   workflow_dispatch:
 
 jobs:
-  build-android-manual:
+  build-android:
     runs-on: ubuntu-latest
+    timeout-minutes: 180
 
     steps:
-      - name: 1. Checkout Code
+      - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: 2. Prepare Build Workspace
-        run: |
-          echo "Creating isolated build directory..."
-          mkdir build_workspace
-          
-          # Copy source code from lab
-          echo "Copying lab files..."
-          if [ -d "lab" ]; then
-             cp -v lab/* build_workspace/
-          else
-             echo "ERROR: 'lab' directory not found."
-             exit 1
-          fi
-          
-          # Copy assets from root
-          echo "Copying assets..."
-          [ -f keywords_db.json ] && cp -v keywords_db.json build_workspace/
-          [ -f domains.json ] && cp -v domains.json build_workspace/
-          [ -f klar.ico ] && cp -v klar.ico build_workspace/
-          
-          # Copy engine package
-          if [ -d "engine" ]; then
-            echo "Copying engine module..."
-            cp -r engine build_workspace/
-          fi
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-          echo "Workspace contents:"
-          ls -R build_workspace/
-
-      - name: 3. Setup Python 3.9
+      - name: Setup Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
 
-      - name: 4. Install System Dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y \
             build-essential \
             git \
+            curl \
+            wget \
+            unzip \
+            openjdk-17-jdk \
             python3-pip \
-            python3-setuptools \
+            python3-dev \
             libffi-dev \
             libssl-dev \
             autoconf \
             libtool \
             pkg-config \
             zlib1g-dev \
-            openjdk-17-jdk \
-            unzip \
-            zip \
             libncurses5-dev \
             libncursesw5-dev \
-            cmake gettext
+            cmake \
+            gettext \
+            ccache
 
-      - name: 5. Install Buildozer & Dependencies
+      - name: Prepare Workspace
         run: |
-          pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          # Using specific versions known to be stable
-          pip install "buildozer==1.5.0" "cython==0.29.36"
+          mkdir -p ~/klar_build
+          cd ~/klar_build
           
-          echo "Buildozer version:"
-          buildozer --version
+          # Copy all necessary files
+          cp -r $GITHUB_WORKSPACE/lab . || { echo "lab directory not found"; exit 1; }
+          cp $GITHUB_WORKSPACE/keywords_db.json . || echo "keywords_db.json not found"
+          cp $GITHUB_WORKSPACE/domains.json . || echo "domains.json not found"
+          cp -r $GITHUB_WORKSPACE/engine . || echo "engine not found"
+          
+          echo "Build workspace ready:"
+          ls -la ~/klar_build/
 
-      - name: 6. Build APK (Step-by-Step)
-        working-directory: build_workspace
+      - name: Install Python Buildtools
         run: |
-          # Add local bin to path to find buildozer
-          export PATH=$PATH:$HOME/.local/bin
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install cython==0.29.37 buildozer==1.4.6 pycryptodome
+
+      - name: Create Android Build Directory
+        run: |
+          mkdir -p ~/.buildozer/android/platform/build-tools
+          mkdir -p ~/.buildozer/android/platform/ndk-bundle
+          export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
+
+      - name: Build APK
+        working-directory: ~/klar_build
+        run: |
+          set -e
+          export PATH=$PATH:~/.local/bin
+          export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
+          export PATH=$JAVA_HOME/bin:$PATH
           
-          echo "Starting Buildozer..."
-          # The 'yes' command automatically accepts the SDK license agreement prompts
-          yes | buildozer -v android debug
+          echo "=== Build Configuration ==="
+          echo "Working Directory: $(pwd)"
+          echo "Java Version:"
+          java -version
+          
+          echo "=== Files in build directory ==="
+          ls -la
+          
+          echo "=== Starting Buildozer ==="
+          buildozer android debug 2>&1 | tee build.log
+          
+          BUILD_RESULT=${PIPESTATUS[0]}
+          
+          if [ $BUILD_RESULT -eq 0 ]; then
+            echo "✓ Build successful"
+          else
+            echo "✗ Build failed with code $BUILD_RESULT"
+            echo ""
+            echo "=== Last 100 lines of build log ==="
+            tail -n 100 build.log || true
+          fi
+          
+          exit $BUILD_RESULT
         env:
-          # Explicitly set USER to fix permission issues seen in previous runs
           USER: runner
           HOME: /home/runner
 
-      - name: 7. Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: Klar-Android-APK
-          path: build_workspace/bin/*.apk
+      - name: Locate and Upload APK
+        if: always()
+        run: |
+          echo "=== Searching for APK files ==="
+          find ~/klar_build -name "*.apk" -type f
+          
+          if [ -f ~/klar_build/bin/klar-3.0.0-debug.apk ]; then
+            echo "✓ APK found!"
+            ls -lh ~/klar_build/bin/*.apk
+          else
+            echo "✗ APK not found in expected location"
+            echo "Checking .buildozer directory:"
+            find ~/klar_build/.buildozer -name "*.apk" -type f 2>/dev/null || echo "No APK in .buildozer"
+          fi
 
-      - name: 8. Upload Build Logs (On Failure)
+      - name: Upload APK Artifact
+        if: success()
         uses: actions/upload-artifact@v4
-        if: failure()
         with:
-          name: build-failure-logs
+          name: klar-android-apk
+          path: ~/klar_build/bin/*.apk
+          retention-days: 30
+
+      - name: Upload Build Logs on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-logs
           path: |
-            build_workspace/.buildozer/android/platform/build-*/dists/*/build.log
+            ~/klar_build/build.log
+            ~/klar_build/.buildozer/android/platform/build-*/dists/*/build.log
+          retention-days: 7
