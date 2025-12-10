@@ -1,8 +1,8 @@
 """
-KLAR - Domain Whitelist Security System
+KLAR - Domain Whitelist Security System (FIXED)
 Only allows access to whitelisted domains
-All other URLs are blocked with security warning
-Advanced users can bypass with explicit disclaimer acknowledgment
+Subdomains and subpages of whitelisted domains are automatically allowed
+No unnecessary blocking of legitimate content
 """
 
 import json
@@ -13,25 +13,25 @@ from urllib.parse import urlparse
 class DomainWhitelist:
     """
     Security layer: Enforce whitelist-only domain access.
-    Protects users from phishing, malware, and unwanted content.
-    Only domains in the JSON file are allowed.
-    Advanced users can bypass with explicit acknowledgment.
+    FIXED: Properly handles subdomains and subpages
+    - svt.se → allows svt.se, www.svt.se, svt.se/nyheter, nyheter.svt.se, etc.
+    - sv.wikipedia.org → allows sv.wikipedia.org and all subpages
     """
     
     def __init__(self, domains_file: str = "domains.json"):
-        self.whitelist: Set[str] = set()  # Only whitelisted domains allowed
-        self.bypass_tokens: Set[str] = set()  # Track users who acknowledged bypass
+        self.whitelist: Set[str] = set()  # Whitelisted base domains
         self.load_whitelist(domains_file)
         self.blocked_count = 0
         self.allowed_count = 0
-        self.bypass_count = 0
+        print(f"[Security] ✓ Loaded {len(self.whitelist)} whitelisted domains")
     
     def load_whitelist(self, domains_file: str):
         """Load whitelisted domains from JSON file"""
         try:
             with open(domains_file, 'r', encoding='utf-8') as f:
                 domains = json.load(f)
-                self.whitelist = set(domain.lower() for domain in domains)
+                # Normalize all domains to lowercase
+                self.whitelist = set(domain.lower().strip() for domain in domains)
                 print(f"[Security] ✓ Loaded {len(self.whitelist)} whitelisted domains")
         except FileNotFoundError:
             print(f"[Security] ⚠ Warning: {domains_file} not found")
@@ -42,122 +42,91 @@ class DomainWhitelist:
     
     def _extract_domain(self, url: str) -> str:
         """
-        Extract domain from URL, handling cases where URL doesn't have a scheme.
-        
-        Args:
-            url: URL string (may or may not have http:// prefix)
-        
-        Returns:
-            Domain name, or empty string if invalid
+        Extract CLEAN domain from URL.
+        - Removes 'www.' prefix
+        - Handles URLs with/without http scheme
+        - Returns just the domain (e.g., 'svt.se' from 'https://www.svt.se/nyheter')
         """
         url_lower = url.lower().strip()
         
         # Add scheme if missing for proper parsing
         if not url_lower.startswith(('http://', 'https://')):
-            # Check if it looks like a domain
-            if '.' in url_lower and not url_lower.startswith(' '):
-                # Looks like a domain, add https:// for parsing
+            if '.' in url_lower and '/' not in url_lower.split('.')[0]:
                 url_lower = 'https://' + url_lower
             else:
                 return ''
         
         try:
             parsed = urlparse(url_lower)
-            domain = parsed.netloc.replace('www.', '')
-            return domain if domain else ''
+            netloc = parsed.netloc
+            
+            # Remove 'www.' prefix if present
+            if netloc.startswith('www.'):
+                netloc = netloc[4:]
+            
+            return netloc if netloc else ''
         except:
             return ''
     
     def is_whitelisted(self, url: str) -> Tuple[bool, str]:
         """
-        Check if URL domain is whitelisted (ALLOWED).
+        Check if URL domain is whitelisted.
+        FIXED: Properly handles subdomains and subpages
         
         Args:
-            url: Full URL to check
+            url: Full URL to check (e.g., 'https://www.svt.se/nyheter', 'svt.se', 'www.svt.se/nyheter')
         
         Returns:
             (is_allowed: bool, reason: str)
         """
         try:
-            # Extract domain properly
+            # Extract domain from URL
             domain = self._extract_domain(url)
             
             if not domain:
-                # If we can't extract a domain, block it for safety
                 self.blocked_count += 1
-                return False, f"Invalid URL: no domain found"
+                return False, "Invalid URL: no domain found"
             
             domain_lower = domain.lower()
             
-            # Extract main domain intelligently
-            parts = domain_lower.split('.')
-            
-            # Handle .co.uk, .ac.uk, etc.
-            if len(parts) > 2 and parts[-2] in ['co', 'ac', 'gov']:
-                main_domain = '.'.join(parts[-3:])
-            else:
-                main_domain = '.'.join(parts[-2:]) if len(parts) > 1 else domain_lower
-            
-            # Check if domain is in WHITELIST (original logic)
+            # DIRECT MATCH: Is this exact domain whitelisted?
             if domain_lower in self.whitelist:
                 self.allowed_count += 1
+                print(f"[Security] ✓ Allowed (exact match): {domain_lower}")
                 return True, f"✓ {domain_lower} is whitelisted"
             
-            if main_domain in self.whitelist:
-                self.allowed_count += 1
-                return True, f"✓ {main_domain} is whitelisted"
-            
-            # Check if it's a subdomain of whitelisted domain
+            # SUBDOMAIN MATCH: Is this a subdomain of a whitelisted domain?
+            # Example: 'nyheter.svt.se' should match 'svt.se'
             for whitelisted in self.whitelist:
+                # If domain ends with '.whitelisted' it's a subdomain
                 if domain_lower.endswith('.' + whitelisted):
                     self.allowed_count += 1
+                    print(f"[Security] ✓ Allowed (subdomain): {domain_lower} is subdomain of {whitelisted}")
                     return True, f"✓ Subdomain of {whitelisted} is whitelisted"
+                
+                # If they're equal (handles www prefix removal)
+                if domain_lower == whitelisted:
+                    self.allowed_count += 1
+                    print(f"[Security] ✓ Allowed (after normalization): {domain_lower}")
+                    return True, f"✓ {whitelisted} is whitelisted"
             
-            # Not in whitelist = BLOCKED (original logic)
+            # NOT FOUND IN WHITELIST = BLOCKED
             self.blocked_count += 1
+            print(f"[Security] ✗ BLOCKED: '{domain_lower}' NOT in whitelist")
             return False, f"Domain '{domain_lower}' is NOT on the whitelisted domains list"
         
         except Exception as e:
             self.blocked_count += 1
+            print(f"[Security] ✗ Error checking domain: {str(e)}")
             return False, f"Invalid URL format: {str(e)}"
-    
-    def generate_bypass_token(self) -> str:
-        """
-        Generate a unique bypass token for this session.
-        Returns a token that user must confirm to bypass security.
-        """
-        import uuid
-        token = str(uuid.uuid4())
-        self.bypass_tokens.add(token)
-        return token
-    
-    def verify_bypass_acknowledgment(self, token: str) -> bool:
-        """
-        Verify that user has acknowledged the bypass disclaimer.
-        
-        Args:
-            token: Bypass token generated earlier
-        
-        Returns:
-            True if token is valid and acknowledged
-        """
-        if token in self.bypass_tokens:
-            self.bypass_tokens.remove(token)  # One-time use
-            self.bypass_count += 1
-            return True
-        return False
     
     def get_blocked_html(self, url: str, reason: str) -> str:
         """
         Generate HTML for blocked domain warning page.
-        Shows user-friendly security message in Swedish with bypass option.
+        Shows user-friendly security message in Swedish.
         """
-        bypass_token = self.generate_bypass_token()
-        
         # Escape URL for display
         display_url = url.replace('"', '&quot;').replace("'", '&#39;')
-        # JSON encode URL for JavaScript
-        display_url_json = json.dumps(display_url)
         
         return f"""
         <!DOCTYPE html>
@@ -237,9 +206,6 @@ class DomainWhitelist:
                     margin: 25px 0;
                     text-align: left;
                 }}
-                .reason strong {{
-                    color: #60a5fa;
-                }}
                 .info {{
                     background: rgba(34, 197, 94, 0.1);
                     border-left: 4px solid #22c55e;
@@ -249,78 +215,13 @@ class DomainWhitelist:
                     margin: 25px 0;
                     text-align: left;
                 }}
-                .info strong {{
-                    color: #4ade80;
+                .whitelisted-count {{
+                    display: inline-block;
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 8px 16px;
+                    border-radius: 6px;
+                    margin: 15px 0;
                 }}
-                
-                .bypass-section {{
-                    margin-top: 35px;
-                    padding-top: 25px;
-                    border-top: 1px solid rgba(59, 130, 246, 0.2);
-                }}
-                
-                .bypass-title {{
-                    font-size: 16px;
-                    font-weight: 600;
-                    color: #fbbf24;
-                    margin-bottom: 15px;
-                }}
-                
-                .disclaimer {{
-                    background: rgba(239, 68, 68, 0.05);
-                    border: 2px solid rgba(239, 68, 68, 0.3);
-                    padding: 20px;
-                    border-radius: 12px;
-                    margin: 20px 0;
-                    text-align: left;
-                }}
-                
-                .disclaimer-title {{
-                    color: #ef4444;
-                    font-weight: 700;
-                    margin-bottom: 12px;
-                }}
-                
-                .disclaimer-text {{
-                    font-size: 13px;
-                    color: #a0a8c0;
-                    line-height: 1.7;
-                }}
-                
-                .disclaimer-text strong {{
-                    color: #fca5a5;
-                }}
-                
-                .disclaimer-text ul {{
-                    margin: 12px 0 0 20px;
-                }}
-                
-                .disclaimer-text li {{
-                    margin: 6px 0;
-                }}
-                
-                .checkbox-container {{
-                    display: flex;
-                    align-items: flex-start;
-                    gap: 12px;
-                    margin: 20px 0;
-                    text-align: left;
-                }}
-                
-                .checkbox-container input[type="checkbox"] {{
-                    width: 20px;
-                    height: 20px;
-                    margin-top: 2px;
-                    cursor: pointer;
-                    accent-color: #ef4444;
-                }}
-                
-                .checkbox-label {{
-                    font-size: 14px;
-                    color: #a0a8c0;
-                    cursor: pointer;
-                }}
-                
                 .actions {{
                     margin-top: 30px;
                     display: flex;
@@ -341,21 +242,9 @@ class DomainWhitelist:
                     background: #3b82f6;
                     color: white;
                 }}
-                .btn-primary:hover:not(:disabled) {{
+                .btn-primary:hover {{
                     background: #60a5fa;
                     transform: translateY(-2px);
-                }}
-                .btn-danger {{
-                    background: #ef4444;
-                    color: white;
-                }}
-                .btn-danger:hover:not(:disabled) {{
-                    background: #f87171;
-                    transform: translateY(-2px);
-                }}
-                .btn:disabled {{
-                    opacity: 0.5;
-                    cursor: not-allowed;
                 }}
                 .btn-secondary {{
                     background: rgba(59, 130, 246, 0.2);
@@ -372,32 +261,13 @@ class DomainWhitelist:
                     font-size: 12px;
                     color: #6b7390;
                 }}
-                .whitelisted-count {{
-                    display: inline-block;
-                    background: rgba(59, 130, 246, 0.1);
-                    padding: 8px 16px;
-                    border-radius: 6px;
-                    margin: 15px 0;
-                }}
-                .status-message {{
-                    font-size: 13px;
-                    padding: 10px;
-                    margin: 10px 0;
-                    border-radius: 6px;
-                    display: none;
-                }}
-                .status-message.success {{
-                    background: rgba(34, 197, 94, 0.2);
-                    color: #86efac;
-                    display: block;
-                }}
             </style>
         </head>
         <body>
             <div class="container">
                 <div class="warning-icon">🔒</div>
                 <h1>Webbplats blockerad för säkerhet</h1>
-                <h2>Denna domän är inte godkänd för din säkerhet</h2>
+                <h2>Denna domän är inte godkänd</h2>
                 
                 <p>Du försökte komma åt en webbplats som inte finns på vår säkra domänlista.</p>
                 
@@ -410,80 +280,21 @@ class DomainWhitelist:
                 
                 <div class="info">
                     <strong>ℹ️ Om Klar-säkerhet:</strong><br>
-                    Klar är designad för att skydda dig och din familj. Vi tillåter endast godkända svenska webbplatser för att undvika nätfiske, malvara och olämpligt innehål. Det är en viktig del av din digitala säkerhet.
+                    Klar är designad för att skydda dig och din familj. Vi tillåter endast godkända svenska webbplatser för att undvika nätfiske, malvara och olämpligt innehål.
                 </div>
                 
                 <div class="whitelisted-count">
-                    ✓ 111 godkända svenska domäner tillgängliga
+                    ✓ 115 godkända svenska domäner tillgängliga
                 </div>
                 
-                <!-- BYPASS SECTION -->
-                <div class="bypass-section">
-                    <div class="bypass-title">⚠️ Avancerad användare? Åsidosätt säkerhet</div>
-                    
-                    <div class="disclaimer">
-                        <div class="disclaimer-title">⚠️ VIKTIGT ANSVARSBEFRIELSE</div>
-                        <div class="disclaimer-text">
-                            <p>
-                                <strong>Oscyra.solutions är INTE ansvarig</strong> för något som helst som sker när du besöker webbplatser utanför vår säkra domänlista.
-                            </p>
-                            <p style="margin-top: 12px;">
-                                Detta inkluderar men är inte begränsat till:
-                            </p>
-                            <ul>
-                                <li>Nätfiske, bedrägeri eller identitetsstöld</li>
-                                <li>Malvara, virus eller andra skadliga program</li>
-                                <li>Datainsamling eller integritetsintrång</li>
-                                <li>Olämpligt eller illegalt innehål</li>
-                                <li>Ekonomisk förlust eller skada</li>
-                                <li>Någon annan form av skada eller förlust</li>
-                            </ul>
-                            <p style="margin-top: 12px; font-weight: 700;">
-                                DU ANVÄNDER DESSA WEBBPLATSER PÅ DIN EGEN RISK.
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="acknowledgement" onchange="updateBypassButton()">
-                        <label for="acknowledgement" class="checkbox-label">
-                            Jag förstår och accepterar all risk. Jag vet att Oscyra.solutions inte är ansvarig för något som helst utanför den säkra domänlistan.
-                        </label>
-                    </div>
-                    
-                    <div id="statusMessage" class="status-message"></div>
-                    
-                    <div class="actions">
-                        <button class="btn btn-danger" id="bypassBtn" onclick="bypassSecurity('{bypass_token}', {display_url_json})" disabled>
-                            Åsidosätt säkerhet och besök webbplatsen
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="actions" style="margin-top: 20px;">
+                <div class="actions">
                     <button class="btn btn-primary" onclick="history.back()">← Gå tillbaka</button>
-                    <button class="btn btn-secondary" onclick="location.href='about:blank'">Hem</button>
                 </div>
                 
                 <div class="footer">
                     <p>Om du tror att denna webbplats bör vara tillgänglig, kontakta oss på oscyra.solutions</p>
                 </div>
             </div>
-            
-            <script>
-                function updateBypassButton() {{
-                    const checkbox = document.getElementById('acknowledgement');
-                    const button = document.getElementById('bypassBtn');
-                    button.disabled = !checkbox.checked;
-                }}
-                
-                function bypassSecurity(token, url) {{
-                    const checkbox = document.getElementById('acknowledgement');
-                    if (checkbox.checked) {{
-                        window.location.href = 'klar-bypass://' + token + '/' + encodeURIComponent(url);
-                    }}
-                }}
-            </script>
         </body>
         </html>
         """
@@ -494,6 +305,5 @@ class DomainWhitelist:
             "total_whitelisted": len(self.whitelist),
             "allowed_count": self.allowed_count,
             "blocked_count": self.blocked_count,
-            "bypass_count": self.bypass_count,
             "block_rate": self.blocked_count / max(1, self.allowed_count + self.blocked_count)
         }
