@@ -172,30 +172,6 @@ class SearchEngine:
         
         return categories
     
-    def _extract_wikipedia_topic(self, query: str) -> Optional[str]:
-        """
-        Extract the topic from a query for direct Wikipedia article lookup
-        Examples:
-        "vem ar Elon Musk" -> "Elon Musk"
-        "vad ar AI" -> "AI"
-        "Stockholm" -> "Stockholm"
-        """
-        query = query.strip()
-        query_lower = query.lower()
-        
-        # Remove question words
-        question_words = ['vem ar', 'vad ar', 'var ar', 'nar ar', 'hur manga',
-                         'who is', 'what is', 'where is', 'when is', 'how many']
-        
-        topic = query
-        for qword in question_words:
-            if query_lower.startswith(qword.lower()):
-                topic = query[len(qword):].strip()
-                break
-        
-        topic = topic.strip("?.,!").strip()
-        return topic if topic else None
-    
     def _get_wikipedia_article_url(self, topic: str, lang: str = 'sv') -> Optional[str]:
         """
         Find direct Wikipedia article URL using Wikipedia API
@@ -218,11 +194,19 @@ class SearchEngine:
                 print(f"[Security] Wikipedia ({wiki_domain}) not in whitelist, skipping")
                 return None
             
+            # Clean up topic - remove Swedish question words
+            topic_clean = topic.strip()
+            for qword in ['vem är', 'vad är', 'var är', 'när är', 'hur många']:
+                if topic_clean.lower().startswith(qword):
+                    topic_clean = topic_clean[len(qword):].strip()
+            
+            print(f"[Wikipedia] Searching for: {topic_clean}")
+            
             # Search for the article
             params = {
                 'action': 'query',
                 'format': 'json',
-                'titles': topic,
+                'titles': topic_clean,
                 'redirects': True,  # Follow redirects
             }
             
@@ -240,11 +224,11 @@ class SearchEngine:
                     if title:
                         # Build direct article URL
                         article_url = wiki_base + quote(title.replace(' ', '_'), safe='/')
-                        print(f"[Wikipedia] Found: {title}")
-                        print(f"[Wikipedia] URL: {article_url}")
+                        print(f"[Wikipedia] ✓ Found: {title}")
+                        print(f"[Wikipedia] Direct URL: {article_url}")
                         return article_url
             
-            print(f"[Wikipedia] Article not found: {topic}")
+            print(f"[Wikipedia] ✗ Article not found for: {topic_clean}")
             return None
         
         except Exception as e:
@@ -306,7 +290,7 @@ class SearchEngine:
         
         return False
     
-    def detect_query_intent(self, query: str) -> Tuple[List[str], List[str]]:
+    def detect_query_intent(self, query: str, sven_hints: Dict = None) -> Tuple[List[str], List[str]]:
         """Detect query intent with Wikipedia direct article search - WHITELIST ONLY"""
         query_lower = query.lower()
         detected_categories = []
@@ -317,77 +301,85 @@ class SearchEngine:
         is_encyclopedia = self._is_encyclopedia_topic(query)
         
         if is_factual or is_encyclopedia:
-            # PRIORITIZE WIKIPEDIA with DIRECT ARTICLE SEARCH
-            topic = self._extract_wikipedia_topic(query)
-            if topic:
-                # Try to find the direct article URL
-                sv_article = self._get_wikipedia_article_url(topic, lang='sv')
+            # CRITICAL FIX: Use SVEN entity detection instead of query parsing
+            entities = sven_hints.get('entities', []) if sven_hints else []
+            
+            if entities:
+                # Use detected entities for Wikipedia search
+                for entity_name, entity_type in entities:
+                    if entity_type in ['PERSON', 'LOCATION', 'ORGANIZATION']:
+                        print(f"[Wikipedia] Using SVEN entity: {entity_name} ({entity_type})")
+                        
+                        # Try Swedish Wikipedia first
+                        sv_article = self._get_wikipedia_article_url(entity_name, lang='sv')
+                        if sv_article:
+                            priority_domains.append(sv_article)
+                        
+                        # Try English Wikipedia as backup
+                        en_article = self._get_wikipedia_article_url(entity_name, lang='en')
+                        if en_article:
+                            priority_domains.append(en_article)
+            else:
+                # Fallback: Use original query processing if no entities detected
+                print(f"[Wikipedia] No entities detected, using query-based search")
+                sv_article = self._get_wikipedia_article_url(query, lang='sv')
                 if sv_article:
                     priority_domains.append(sv_article)
-                else:
-                    # Fallback to homepage if article not found
-                    if self._is_domain_whitelisted('sv.wikipedia.org'):
-                        priority_domains.append('https://sv.wikipedia.org')
-                        print(f"[Wikipedia] Added Swedish Wikipedia to priority domains")
                 
-                # Also add English Wikipedia as backup
-                en_article = self._get_wikipedia_article_url(topic, lang='en')
+                en_article = self._get_wikipedia_article_url(query, lang='en')
                 if en_article:
                     priority_domains.append(en_article)
-                else:
-                    if self._is_domain_whitelisted('wikipedia.org'):
-                        priority_domains.append('https://en.wikipedia.org')
-                        print(f"[Wikipedia] Added English Wikipedia to priority domains")
-            else:
+            
+            # Ensure Wikipedia homepage is fallback
+            if not priority_domains:
                 if self._is_domain_whitelisted('sv.wikipedia.org'):
                     priority_domains.append('https://sv.wikipedia.org')
                 if self._is_domain_whitelisted('wikipedia.org'):
-                    priority_domains.append('https://wikipedia.org')
+                    priority_domains.append('https://en.wikipedia.org')
         
-        # NEW: Use SVEN to expand query with semantic understanding
-        sven_hints = self.sven.generate_search_hints(query)
-        expanded_terms = sven_hints['expanded_terms']
-        
-        print(f"[SVEN] Expanded '{query}' to {len(expanded_terms)} terms")
-        
-        # Check expanded terms against keyword database
-        for expanded_term in expanded_terms:
-            expanded_lower = expanded_term.lower()
+        # Use SVEN to expand query with semantic understanding
+        if sven_hints:
+            expanded_terms = sven_hints['expanded_terms']
+            print(f"[SVEN] Expanded '{query}' to {len(expanded_terms)} terms")
             
-            # Check direct domain mappings
-            direct_mappings = self.keyword_db.get('direct_domain_mappings', {})
-            for keyword, domains in direct_mappings.items():
-                if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
-                    # SECURITY: Only add whitelisted domains
-                    for d in domains:
-                        if self._is_domain_whitelisted(d):
-                            base_d = d.split('/')[0].lower()
-                            if base_d not in priority_domains:
-                                priority_domains.append(base_d)
-            
-            # Check keyword mappings
-            for mapping_name, mapping_data in self.keyword_db.get('mappings', {}).items():
-                keywords = mapping_data.get('keywords', [])
-                category = mapping_data.get('category', 'general')
-                domains = mapping_data.get('priority_domains', [])
+            # Check expanded terms against keyword database
+            for expanded_term in expanded_terms:
+                expanded_lower = expanded_term.lower()
                 
-                for keyword in keywords:
+                # Check direct domain mappings
+                direct_mappings = self.keyword_db.get('direct_domain_mappings', {})
+                for keyword, domains in direct_mappings.items():
                     if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
-                        if category not in detected_categories:
-                            detected_categories.append(category)
-                        # SECURITY: Only include whitelisted domains
+                        # SECURITY: Only add whitelisted domains
                         for d in domains:
                             if self._is_domain_whitelisted(d):
                                 base_d = d.split('/')[0].lower()
                                 if base_d not in priority_domains:
                                     priority_domains.append(base_d)
-                        break
+                
+                # Check keyword mappings
+                for mapping_name, mapping_data in self.keyword_db.get('mappings', {}).items():
+                    keywords = mapping_data.get('keywords', [])
+                    category = mapping_data.get('category', 'general')
+                    domains = mapping_data.get('priority_domains', [])
+                    
+                    for keyword in keywords:
+                        if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
+                            if category not in detected_categories:
+                                detected_categories.append(category)
+                            # SECURITY: Only include whitelisted domains
+                            for d in domains:
+                                if self._is_domain_whitelisted(d):
+                                    base_d = d.split('/')[0].lower()
+                                    if base_d not in priority_domains:
+                                        priority_domains.append(base_d)
+                            break
         
         priority_domains = list(dict.fromkeys(priority_domains))
         
         return detected_categories, priority_domains
     
-    def get_relevant_domains(self, query: str, demographic: str = "general") -> List[str]:
+    def get_relevant_domains(self, query: str, demographic: str = "general", sven_hints: Dict = None) -> List[str]:
         """Get relevant domains - WHITELIST ONLY"""
         # SECURITY: Check if query is a domain that's whitelisted
         if '.' in query and ' ' not in query and len(query.split('.')) >= 2:
@@ -399,7 +391,7 @@ class SearchEngine:
                 print(f"[Security] Domain '{domain}' NOT in whitelist, returning empty")
                 return []
         
-        categories, priority_domains = self.detect_query_intent(query)
+        categories, priority_domains = self.detect_query_intent(query, sven_hints)
         relevant_domains = []
         
         # Add priority domains (Wikipedia articles come first)
@@ -492,8 +484,8 @@ class SearchEngine:
         if sven_hints['entities']:
             print(f"[SVEN] Entities: {sven_hints['entities']}")
         
-        relevant_domains = self.get_relevant_domains(query, demographic)
-        categories, priority_domains = self.detect_query_intent(query)
+        relevant_domains = self.get_relevant_domains(query, demographic, sven_hints)
+        categories, priority_domains = self.detect_query_intent(query, sven_hints)
         
         print(f"[Search] Detected: {', '.join(categories) if categories else 'general'}")
         print(f"[Search] Searching {len(relevant_domains)} domains")
