@@ -2,6 +2,7 @@
 Wikipedia Handler 1.0 - Specialized algorithm for Wikipedia searches
 Handles Swedish (sv.wikipedia) and English (en.wikipedia) Wikipedia
 Optimized for encyclopedia/factual/definition queries
+ENHANCED: Single-word topic detection, proper capitalization handling
 FEATURES:
   - Direct article URL retrieval via Wikipedia API
   - Search suggestion fallback
@@ -10,6 +11,7 @@ FEATURES:
   - Query normalization for Wikipedia API
   - Infobox data extraction
   - Disambiguation handling
+  - Smart single-word query detection
 """
 
 import requests
@@ -43,37 +45,109 @@ class WikipediaHandler:
         self.search_cache = {}  # topic -> (url, timestamp)
         self.cache_ttl = 3600  # 1 hour
         
+        # Common encyclopedia topics (for single-word detection)
+        self.wikipedia_topics = {
+            # Countries
+            'sverige', 'stockholm', 'göteborg', 'malmö', 'uppsala', 'uppsala', 'västerås',
+            'deutschland', 'germany', 'frankrike', 'france', 'italien', 'italy', 'japan', 'japan',
+            'usa', 'usa', 'australien', 'australia', 'brasilien', 'brazil', 'mexico', 'méxico',
+            'kanada', 'canada', 'indien', 'india', 'kina', 'china', 'spanien', 'spain',
+            'norge', 'norway', 'denmark', 'danmark', 'finland', 'finland', 'polen', 'poland',
+            
+            # Cities
+            'paris', 'london', 'tokyo', 'beijing', 'moscow', 'dubai', 'ny', 'new york',
+            'chicago', 'los angeles', 'toronto', 'vancouver', 'sydney', 'melbourne', 'auckland',
+            'berlin', 'rome', 'madrid', 'barcelona', 'amsterdam', 'istanbul', 'bangkok',
+            
+            # Technology/Science
+            'python', 'javascript', 'java', 'csharp', 'c++', 'rust', 'golang',
+            'quantum', 'dna', 'gravity', 'relativity', 'photosynthesis', 'evolution',
+            'ai', 'machine learning', 'neural network', 'algorithm', 'blockchain',
+            'electricity', 'magnetism', 'radioactivity', 'atom', 'molecule',
+            
+            # Famous people (partial list)
+            'einstein', 'newton', 'curie', 'tesla', 'darwin', 'hawking',
+            'einstein', 'galileo', 'newton', 'kepler', 'copernicus',
+            'shakespeare', 'dante', 'cervantes', 'tolstoy', 'dostoevsky',
+            
+            # Health/Medicine
+            'covid', 'vaccination', 'cancer', 'diabetes', 'alzheimer', 'autism',
+            'depression', 'schizophrenia', 'bipolar', 'anxiety', 'ocd',
+            'heart disease', 'stroke', 'pneumonia', 'influenza', 'measles',
+            
+            # History
+            'world war', 'second world war', 'first world war', 'french revolution',
+            'renaissance', 'enlightenment', 'industrial revolution', 'cold war',
+            'american revolution', 'crusades', 'black plague',
+            
+            # General concepts
+            'wikipedia', 'internet', 'computer', 'smartphone', 'television',
+            'music', 'art', 'literature', 'philosophy', 'religion',
+            'economics', 'politics', 'psychology', 'sociology', 'anthropology',
+        }
+        
         print("[Wikipedia Handler] Initialized - Swedish/English Wikipedia support")
         print("[Wikipedia Handler] Features: Direct URL retrieval, search fallback, disambiguation handling")
+        print("[Wikipedia Handler] ENHANCED: Single-word topic detection")
     
     def is_wikipedia_query(self, query: str) -> bool:
         """
         Detect if query is suitable for Wikipedia search
-        Examples: 'vem är X', 'vad är Y', 'var ligger Z', definitions, biographies
+        
+        Handles three patterns:
+        1. EXPLICIT FACTUAL: 'vem är X', 'vad är Y', 'var ligger Z', definitions
+        2. SINGLE-WORD TOPICS: Common encyclopedia topics (capitalized or known)
+        3. MULTI-WORD ENCYCLOPEDIA: Person names, place names, concepts with proper nouns
         """
         query_lower = query.lower().strip()
         
-        # Explicit factual question patterns
+        # Pattern 1: EXPLICIT FACTUAL QUESTIONS
         factual_patterns = [
-            r'^(vem|who)\s+(\u00e4r|is)',           # Who is
-            r'^(vad|what)\s+(\u00e4r|is)',          # What is
-            r'^(var|where)\s+(\u00e4r|is|ligger)',  # Where is/lies
-            r'^(n\u00e4r|when)\s+(\u00e4r|is|var)', # When is/was
-            r'^(hur|how)\s+(m\u00e5nga|many)',      # How many
-            r'biografi',                            # Biography
-            r'definition',                          # Definition
+            r'^(vem|who)\s+(är|is)',           # Who is
+            r'^(vad|what)\s+(är|is)',          # What is
+            r'^(var|where)\s+(är|is|ligger)',  # Where is/lies
+            r'^(när|when)\s+(är|is|var)',      # When is/was
+            r'^(hur|how)\s+(många|much|many)', # How many/much
+            r'biografi',                        # Biography
+            r'definition',                      # Definition
+            r'förklaring',                      # Explanation
         ]
         
         for pattern in factual_patterns:
             if re.search(pattern, query_lower):
+                print(f"[Wikipedia] Detected factual question pattern")
                 return True
         
-        # Dictionary/encyclopedia check - single/few words with capital letter
+        # Pattern 2: SINGLE-WORD TOPICS
         words = query.strip().split()
-        if 1 <= len(words) <= 3:
-            # If starts with capital letter or is known entity
-            if words[0] and (words[0][0].isupper() or self._is_encyclopedia_concept(query)):
+        if len(words) == 1:
+            word_lower = words[0].lower()
+            
+            # Check against known Wikipedia topics
+            if word_lower in self.wikipedia_topics:
+                print(f"[Wikipedia] Detected single-word topic: '{word_lower}'")
                 return True
+            
+            # Check if proper noun (starts with capital + length > 3)
+            if len(words[0]) > 3 and words[0][0].isupper():
+                print(f"[Wikipedia] Detected proper noun topic: '{words[0]}'")
+                return True
+        
+        # Pattern 3: MULTI-WORD TOPICS
+        # If contains capital letters (proper nouns) or known concepts
+        if len(words) >= 2:
+            # Check if has proper nouns (multiple capital letters)
+            capital_count = sum(1 for word in words if word and word[0].isupper())
+            if capital_count >= 1:  # At least one proper noun
+                print(f"[Wikipedia] Detected multi-word proper noun: '{query}'")
+                return True
+            
+            # Check against topic list
+            phrase_lower = query_lower
+            for topic in self.wikipedia_topics:
+                if topic in phrase_lower:
+                    print(f"[Wikipedia] Detected known topic in phrase: '{query}'")
+                    return True
         
         return False
     
@@ -82,18 +156,10 @@ class WikipediaHandler:
         Check if query is likely an encyclopedia topic
         (person, place, concept, event, technology, etc.)
         """
-        # Common Wikipedia topics
-        concepts = [
-            'stockholm', 'g\u00f6teborg', 'sverige', 'tokyo', 'paris',
-            'einstein', 'newton', 'curie', 'tesla',
-            'python', 'javascript', 'quantum', 'dna', 'photosynthesis',
-            'covid', 'vaccination', 'relativity',
-            'world war', 'french revolution', 'renaissance',
-        ]
-        
         query_lower = query.lower()
-        for concept in concepts:
-            if concept in query_lower:
+        
+        for topic in self.wikipedia_topics:
+            if topic in query_lower:
                 return True
         
         return False
@@ -101,7 +167,7 @@ class WikipediaHandler:
     def normalize_topic(self, topic: str) -> str:
         """
         Normalize topic for Wikipedia API
-        - Remove question words (vem \u00e4r, vad \u00e4r, var, etc.)
+        - Remove question words (vem är, vad är, var, etc.)
         - Clean punctuation
         - Trim whitespace
         - Capitalize first letter (Wikipedia convention)
@@ -110,9 +176,9 @@ class WikipediaHandler:
         
         # Remove Swedish question words
         question_words = [
-            'vem \u00e4r', 'vem', 'vad \u00e4r', 'vad', 
-            'var \u00e4r', 'var ligger', 'var',
-            'n\u00e4r \u00e4r', 'n\u00e4r', 'hur m\u00e5nga', 'hur',
+            'vem är', 'vem', 'vad är', 'vad', 
+            'var är', 'var ligger', 'var',
+            'när är', 'när', 'hur många', 'hur',
             'vilken', 'vilket',
         ]
         
@@ -128,7 +194,7 @@ class WikipediaHandler:
                 topic_clean = topic_clean[len(qword):].strip()
         
         # Remove punctuation
-        topic_clean = topic_clean.strip("?,!\"'•.;:-()[]{}")
+        topic_clean = topic_clean.strip("?,!\"'•.;:-()[]{}&")
         topic_clean = topic_clean.strip()
         
         # Wikipedia convention: capitalize first letter
@@ -213,7 +279,7 @@ class WikipediaHandler:
                 # Build direct URL
                 article_url = base_url + quote(title.replace(' ', '_'), safe='/')
                 
-                print(f"[Wikipedia] \u2713 Found article: '{title}'")
+                print(f"[Wikipedia] ✓ Found article: '{title}'")
                 print(f"[Wikipedia] URL: {article_url}")
                 
                 return article_url
@@ -323,7 +389,7 @@ class WikipediaHandler:
             return en_result
         
         # Both failed
-        print(f"[Wikipedia] \u2717 Article not found in Swedish or English Wikipedia: '{topic}'")
+        print(f"[Wikipedia] ✗ Article not found in Swedish or English Wikipedia: '{topic}'")
         return None
     
     def extract_infobox_data(self, topic: str, lang: str = 'sv') -> Optional[Dict]:
