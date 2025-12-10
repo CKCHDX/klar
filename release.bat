@@ -1,28 +1,33 @@
 @echo off
+
 setlocal enabledelayedexpansion
+
 cls
 
 echo.
 echo ========================================
-echo   Klar 3.0 - Single-File Build System
+echo Klar 3.0 - Single-File Build System
 echo ========================================
 echo.
 echo This will create a standalone single-file executable
-echo with all dependencies embedded (no external files needed)
+echo with all dependencies AND data files embedded
 echo.
 pause
 
 REM ============================================
 REM STEP 1: CHECK PYTHON
 REM ============================================
+
 echo.
-echo [1/9] Checking Python...
+echo [1/10] Checking Python...
+
 python --version >nul 2>&1
 if errorlevel 1 (
     echo ERROR: Python is not installed
     pause
     exit /b 1
 )
+
 for /f "tokens=*" %%i in ('python --version') do set PYTHON_VER=%%i
 echo OK: %PYTHON_VER% found
 timeout /t 1 >nul
@@ -30,8 +35,10 @@ timeout /t 1 >nul
 REM ============================================
 REM STEP 2: ACTIVATE VIRTUAL ENVIRONMENT
 REM ============================================
+
 echo.
-echo [2/9] Setting up virtual environment...
+echo [2/10] Setting up virtual environment...
+
 if not exist "venv" (
     echo Creating virtual environment...
     python -m venv venv
@@ -41,6 +48,7 @@ if not exist "venv" (
         exit /b 1
     )
 )
+
 call venv\Scripts\activate.bat
 echo OK: Virtual environment ready
 timeout /t 1 >nul
@@ -48,8 +56,9 @@ timeout /t 1 >nul
 REM ============================================
 REM STEP 3: CHECK FILE INTEGRITY
 REM ============================================
+
 echo.
-echo [3/9] Checking file integrity...
+echo [3/10] Checking file integrity...
 
 set ERROR_COUNT=0
 
@@ -57,20 +66,29 @@ if not exist "klar_browser.py" (
     echo ERROR: Missing klar_browser.py
     set /a ERROR_COUNT+=1
 )
+
 if not exist "keywords_db.json" (
     echo ERROR: Missing keywords_db.json
     set /a ERROR_COUNT+=1
 )
+
 if not exist "domains.json" (
     echo ERROR: Missing domains.json
     set /a ERROR_COUNT+=1
 )
+
 if not exist "engine\search_engine.py" (
     echo ERROR: Missing engine\search_engine.py
     set /a ERROR_COUNT+=1
 )
-if not exist "engine\results_page.py" (
-    echo ERROR: Missing engine\results_page.py
+
+if not exist "algorithms\wikipedia_handler.py" (
+    echo ERROR: Missing algorithms\wikipedia_handler.py
+    set /a ERROR_COUNT+=1
+)
+
+if not exist "engine\loki_system.py" (
+    echo ERROR: Missing engine\loki_system.py
     set /a ERROR_COUNT+=1
 )
 
@@ -98,372 +116,413 @@ if %ERROR_COUNT% GTR 0 (
     pause
     exit /b 1
 )
+
 echo OK: All files validated
 timeout /t 1 >nul
 
 REM ============================================
 REM STEP 4: INSTALL DEPENDENCIES
 REM ============================================
+
 echo.
-echo [4/9] Installing dependencies...
+echo [4/10] Installing dependencies...
+
 pip install --upgrade pip >nul 2>&1
 pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller pillow >nul 2>&1
+
 echo OK: Dependencies installed
 timeout /t 1 >nul
 
 REM ============================================
 REM STEP 5: CLEAN OLD BUILDS
 REM ============================================
+
 echo.
-echo [5/9] Cleaning old builds...
+echo [5/10] Cleaning old builds...
+
 if exist "dist" rmdir /s /q dist 2>nul
 if exist "build" rmdir /s /q build 2>nul
 if exist "release" rmdir /s /q release 2>nul
 if exist "klar.spec" del /q klar.spec 2>nul
+if exist "build_temp" rmdir /s /q build_temp 2>nul
+
 echo OK: Build directories cleaned
 timeout /t 1 >nul
 
 REM ============================================
-REM STEP 6: CREATE PYINSTALLER SPEC
+REM STEP 6: COPY DATA FILES TO PROJECT ROOT
 REM ============================================
-echo.
-echo [6/9] Creating single-file build configuration...
 
-(
-echo # -*- mode: python ; coding: utf-8 -*-
-echo import sys
-echo from pathlib import Path
 echo.
-echo block_cipher = None
-echo.
-echo a = Analysis^(
-echo     ['klar_browser.py'],
-echo     pathex=[],
-echo     binaries=[],
-echo     datas=[
-echo         ^('keywords_db.json', '.'^),
-echo         ^('domains.json', '.'^),
-echo         ^('engine/__init__.py', 'engine'^),
-echo         ^('engine/search_engine.py', 'engine'^),
-echo         ^('engine/results_page.py', 'engine'^)
-echo     ],
-echo     hiddenimports=[
-echo         'PyQt6.QtCore',
-echo         'PyQt6.QtGui',
-echo         'PyQt6.QtWidgets',
-echo         'PyQt6.QtWebEngineWidgets',
-echo         'PyQt6.QtWebEngineCore',
-echo         'PyQt6.sip',
-echo         'requests',
-echo         'bs4',
-echo         'lxml',
-echo         'urllib3',
-echo         'certifi'
-echo     ],
-echo     hookspath=[],
-echo     hooksconfig={},
-echo     runtime_hooks=[],
-echo     excludes=[],
-echo     win_no_prefer_redirects=False,
-echo     win_private_assemblies=False,
-echo     cipher=block_cipher,
-echo     noarchive=False,
-echo ^)
-echo.
-echo pyz = PYZ^(a.pure, a.zipped_data, cipher=block_cipher^)
-echo.
-echo exe = EXE^(
-echo     pyz,
-echo     a.scripts,
-echo     a.binaries,
-echo     a.zipfiles,
-echo     a.datas,
-echo     [],
-echo     name='Klar',
-echo     debug=False,
-echo     bootloader_ignore_signals=False,
-echo     strip=False,
-echo     upx=True,
-echo     upx_exclude=[],
-echo     runtime_tmpdir=None,
-echo     console=False,
-echo     disable_windowed_traceback=False,
-echo     argv_emulation=False,
-echo     target_arch=None,
-echo     codesign_identity=None,
-echo     entitlements_file=None,
-echo ^)
-) > klar.spec
+echo [6/10] Preparing data files for bundling...
 
-echo OK: Single-file configuration created
+REM Verify data files are in project root
+if not exist "domains.json" (
+    echo ERROR: domains.json not found in project root
+    pause
+    exit /b 1
+)
+
+if not exist "keywords_db.json" (
+    echo ERROR: keywords_db.json not found in project root
+    pause
+    exit /b 1
+)
+
+echo OK: Data files prepared
 timeout /t 1 >nul
 
 REM ============================================
-REM STEP 7: BUILD SINGLE-FILE EXECUTABLE
+REM STEP 7: CREATE PYINSTALLER SPEC FILE
 REM ============================================
-echo.
-echo [7/9] Building single-file Windows executable...
-echo This may take 3-7 minutes, please wait...
-echo.
 
-pyinstaller --clean --noconfirm klar.spec
+echo.
+echo [7/10] Creating PyInstaller configuration...
+
+REM CRITICAL FIX: Use Python to generate the spec file correctly
+REM This avoids batch file syntax issues with quotes and commas
+
+python -c ^
+"import os
+^
+spec_content = '''# -*- mode: python ; coding: utf-8 -*-
+import sys
+from pathlib import Path
+
+block_cipher = None
+
+a = Analysis(
+    ['klar_browser.py'],
+    pathex=[],
+    binaries=[],
+    datas=[
+        ('keywords_db.json', '.'),
+        ('domains.json', '.'),
+        ('engine', 'engine'),
+        ('algorithms', 'algorithms'),
+    ],
+    hiddenimports=[
+        'PyQt6.QtCore',
+        'PyQt6.QtGui',
+        'PyQt6.QtWidgets',
+        'PyQt6.QtWebEngineWidgets',
+        'PyQt6.QtWebEngineCore',
+        'PyQt6.sip',
+        'requests',
+        'bs4',
+        'lxml',
+        'urllib3',
+        'PIL',
+        'json',
+        're',
+        'os',
+        'sys',
+        'pathlib',
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludedimports=[],
+    win_no_prefer_redirects=False,
+    win_private_assemblies=False,
+    cipher=block_cipher,
+    noarchive=False,
+)
+
+pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.zipfiles,
+    a.datas,
+    [],
+    name='Klar',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=False,
+    disable_windowed_traceback=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+    icon=None,
+)
+'''
+
+with open('klar.spec', 'w') as f:
+    f.write(spec_content)
+print('OK: Spec file created')
+"^
 
 if errorlevel 1 (
-    echo.
-    echo ERROR: Build failed
-    echo Check the output above for errors
+    echo ERROR: Failed to create spec file
     pause
     exit /b 1
+)
+
+echo OK: PyInstaller spec created
+timeout /t 1 >nul
+
+REM ============================================
+REM STEP 8: BUILD EXECUTABLE WITH PYINSTALLER
+REM ============================================
+
+echo.
+echo [8/10] Building executable with PyInstaller...
+echo This may take 2-5 minutes, please wait...
+echo.
+
+REM Try using the spec file first
+pyinstaller klar.spec 2>nul
+
+if errorlevel 1 (
+    echo ERROR: Spec file build failed
+    echo Trying alternative build method with direct --add-data flags...
+    echo.
+    
+    REM Try direct command line approach (Windows uses semicolon separator)
+    pyinstaller --onefile --windowed --nonconsole ^
+        --add-data "domains.json;." ^
+        --add-data "keywords_db.json;." ^
+        --add-data "engine;engine" ^
+        --add-data "algorithms;algorithms" ^
+        --hidden-import=PyQt6.QtCore ^
+        --hidden-import=PyQt6.QtGui ^
+        --hidden-import=PyQt6.QtWidgets ^
+        --hidden-import=PyQt6.QtWebEngineWidgets ^
+        --hidden-import=PyQt6.QtWebEngineCore ^
+        --hidden-import=PyQt6.sip ^
+        --hidden-import=requests ^
+        --hidden-import=bs4 ^
+        --hidden-import=lxml ^
+        --hidden-import=urllib3 ^
+        --hidden-import=PIL ^
+        klar_browser.py 2>nul
+    
+    if errorlevel 1 (
+        echo.
+        echo CRITICAL ERROR: Both build methods failed
+        echo Please check:
+        echo 1. Python is 3.8 or higher
+        echo 2. All dependencies installed: pip list
+        echo 3. domains.json and keywords_db.json exist
+        echo 4. engine/ and algorithms/ folders exist
+        echo.
+        pause
+        exit /b 1
+    )
 )
 
 if not exist "dist\Klar.exe" (
-    echo.
     echo ERROR: Klar.exe was not created
+    echo Build might have failed silently
     pause
     exit /b 1
 )
 
-echo.
-echo OK: Single-file executable built successfully
-timeout /t 2 >nul
-
-REM ============================================
-REM STEP 8: CREATE RELEASE STRUCTURE
-REM ============================================
-echo.
-echo [8/9] Creating release packages...
-
-REM Create directories
-mkdir release 2>nul
-mkdir release\windows 2>nul
-mkdir release\linux 2>nul
-
-REM Copy Windows executable
-echo Packaging Windows release...
-copy "dist\Klar.exe" "release\windows\Klar.exe" >nul
-
-REM Get file size
-for %%F in ("release\windows\Klar.exe") do set FILESIZE=%%~zF
-
-REM Create Windows README
-(
-    echo ============================================
-    echo   Klar 3.0 - Swedish Browser
-    echo ============================================
-    echo.
-    echo STANDALONE SINGLE-FILE EXECUTABLE
-    echo No installation required!
-    echo.
-    echo Installation:
-    echo   1. Just run Klar.exe
-    echo   2. That's it!
-    echo.
-    echo File: Klar.exe (Single file, all-in-one^)
-    echo Size: %FILESIZE% bytes
-    echo.
-    echo System Requirements:
-    echo   - Windows 10 or Windows 11
-    echo   - 4GB RAM minimum
-    echo   - Internet connection for searches
-    echo.
-    echo Features:
-    echo   - 111 Swedish domains
-    echo   - 700+ keywords
-    echo   - No tracking or ads
-    echo   - Fast search engine
-    echo   - Dark mode interface
-    echo   - Completely standalone
-    echo   - No external files needed
-    echo.
-    echo First Run:
-    echo   - May take 5-10 seconds to start (unpacking^)
-    echo   - After first run, starts instantly
-    echo.
-    echo Support:
-    echo   https://github.com/CKCHDX/klar
-    echo.
-    echo Version: 3.0.0
-    echo Build Date: %date%
-    echo Build Type: Single-File Executable
-    echo.
-) > "release\windows\README.txt"
-
-REM Copy Linux files
-echo Packaging Linux release...
-copy "klar_browser.py" "release\linux\" >nul 2>&1
-copy "keywords_db.json" "release\linux\" >nul 2>&1
-copy "domains.json" "release\linux\" >nul 2>&1
-xcopy /E /I /Q "engine" "release\linux\engine\" >nul 2>&1
-
-REM Create Linux build script
-(
-    echo #!/bin/bash
-    echo echo "============================================"
-    echo echo "  Klar 3.0 - Linux Single-File Build"
-    echo echo "============================================"
-    echo echo
-    echo echo "[1/4] Creating virtual environment..."
-    echo python3 -m venv venv
-    echo source venv/bin/activate
-    echo echo
-    echo echo "[2/4] Installing dependencies..."
-    echo pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml
-    echo echo
-    echo echo "[3/4] Installing PyInstaller..."
-    echo pip install pyinstaller
-    echo echo
-    echo echo "[4/4] Building single-file executable..."
-    echo pyinstaller --onefile --windowed --add-data "keywords_db.json:." --add-data "domains.json:." --add-data "engine:engine" --name Klar klar_browser.py
-    echo echo
-    echo echo "============================================"
-    echo echo "  Build Complete!"
-    echo echo "============================================"
-    echo echo
-    echo echo "Single file created: ./dist/Klar"
-    echo echo "Run with: ./dist/Klar"
-    echo echo
-) > "release\linux\build_linux.sh"
-
-REM Create Linux README
-(
-    echo # Klar 3.0 - Swedish Browser (Linux Single-File^)
-    echo.
-    echo ## Build Instructions
-    echo.
-    echo 1. Make executable: `chmod +x build_linux.sh`
-    echo 2. Run build: `./build_linux.sh`
-    echo 3. Run Klar: `./dist/Klar`
-    echo.
-    echo This creates a single standalone file with everything embedded.
-    echo.
-    echo ## System Requirements
-    echo.
-    echo - Ubuntu 20.04+ / Debian 11+ / Fedora 35+
-    echo - Python 3.8+
-    echo - 4GB RAM minimum
-    echo.
-) > "release\linux\README.md"
-
-echo OK: Release packages created
+echo OK: Executable created successfully
 timeout /t 1 >nul
 
 REM ============================================
-REM STEP 9: GENERATE CHECKSUMS AND INFO
+REM STEP 9: VERIFY EXECUTABLE INTEGRITY
 REM ============================================
+
 echo.
-echo [9/9] Generating checksums and version info...
+echo [9/10] Verifying executable integrity...
 
-REM Generate checksum for Windows exe
-pushd release\windows
-certutil -hashfile "Klar.exe" SHA256 > "Klar.SHA256.txt" 2>nul
-popd
+REM Get file size in MB
+for /f "usebackq" %%A in (`powershell -Command "[math]::Round((Get-Item 'dist\Klar.exe').length / 1MB, 2)"`) do set FILESIZE_MB=%%A
 
-REM Create version file
+echo Executable size: %FILESIZE_MB% MB
+
+if %FILESIZE_MB% LSS 80 (
+    echo WARNING: Executable size (%FILESIZE_MB% MB) seems smaller than expected
+    echo Expected: 100+ MB ^(data files bundled^)
+    echo This might indicate data files weren't included
+)
+
+echo OK: Executable verified
+timeout /t 1 >nul
+
+REM ============================================
+REM STEP 10: CREATE RELEASE PACKAGE
+REM ============================================
+
+echo.
+echo [10/10] Creating release package...
+
+mkdir release\windows 2>nul
+mkdir release\linux 2>nul
+
+copy dist\Klar.exe release\windows\ >nul 2>&1
+if not exist "release\windows\Klar.exe" (
+    echo ERROR: Failed to copy Klar.exe to release folder
+    pause
+    exit /b 1
+)
+
+REM Create Windows README
+(
+    echo # Klar 3.0 - Swedish Search Browser
+    echo.
+    echo ## What is this?
+    echo Klar is a specialized search engine for Swedish websites
+    echo.
+    echo ## How to use
+    echo 1. Double-click Klar.exe
+    echo 2. Search for Swedish websites, Wikipedia topics, or general information
+    echo 3. That's it! No installation needed
+    echo.
+    echo ## System Requirements
+    echo - Windows 10/11 ^(64-bit^)
+    echo - Internet connection
+    echo - 500 MB free space
+    echo.
+    echo ## Features
+    echo - Search 113 whitelisted Swedish domains
+    echo - Wikipedia Handler with automatic language fallback
+    echo - Offline caching ^(LOKI System^)
+    echo - 700+ keyword phrases
+    echo - 12 search categories
+    echo.
+    echo ## Troubleshooting
+    echo.
+    echo Q: I get "Webbplats blockerad för säkerhet"
+    echo A: The domain isn't on the whitelist. Klar only searches approved Swedish domains.
+    echo.
+    echo Q: No search results?
+    echo A: Make sure you're searching Swedish websites or Wikipedia topics.
+    echo.
+    echo Q: Wikipedia search not working?
+    echo A: Try "vem är X" or just type a person/place name.
+    echo.
+    echo ## Version
+    echo Version: 3.0.0
+    echo Build: Single-file executable
+    echo All data embedded - no external files needed!
+) > "release\windows\README.txt"
+
+REM Create version info
 (
     echo ============================================
-    echo   Klar 3.0 - Release Information
+    echo Klar 3.0 - Release Information
     echo ============================================
     echo.
     echo Build Date: %date% %time%
     echo Version: 3.0.0
     echo Build Type: Single-File Executable
     echo.
-    echo Components:
-    echo   - Browser Engine: PyQt6-WebEngine
-    echo   - Search Engine: DOSSNA Algorithm
-    echo   - Swedish Domains: 111
-    echo   - Keywords Database: 700+ phrases
-    echo   - Categories: 12
+    echo Executable Details:
+    echo - File: Klar.exe
+    echo - Size: %FILESIZE_MB% MB
+    echo - Type: Standalone single-file
+    echo - Data Files Bundled: YES
+    echo   * domains.json: 113 whitelisted domains
+    echo   * keywords_db.json: 700+ keyword phrases
+    echo   * engine/: Search algorithms
+    echo   * algorithms/: Wikipedia Handler
     echo.
-    echo Windows Executable:
-    echo   - File: Klar.exe
-    echo   - Size: %FILESIZE% bytes
-    echo   - Type: Standalone single-file
-    echo   - No external files needed
-    echo   - All data embedded
+    echo Components:
+    echo - Browser Engine: PyQt6-WebEngine
+    echo - Search Engine: SVEN 3.2
+    echo - Wikipedia Handler: 1.0
+    echo - LOKI Cache System: Integrated
+    echo - Swedish Domains: 113
+    echo - Keywords Database: 700+ phrases
+    echo - Categories: 12
     echo.
     echo Platforms:
-    echo   - Windows 10/11 (64-bit^)
-    echo   - Linux (Ubuntu/Debian/Fedora^)
+    echo - Windows 10/11 ^(64-bit^)
+    echo - Linux ^(Ubuntu/Debian/Fedora^)
     echo.
     echo Build Information:
-    for /f "tokens=*" %%i in ('python --version') do echo   - %%i
-    for /f "tokens=*" %%i in ('python -c "import PyQt6.QtCore; print('PyQt6', PyQt6.QtCore.PYQT_VERSION_STR)"') do echo   - %%i
+    echo - %PYTHON_VER%
     echo.
 ) > "release\VERSION.txt"
 
 REM Create distribution ZIP
 echo Creating distribution archive...
-if exist "release\Klar-3.0-Windows-Standalone.zip" del /q "release\Klar-3.0-Windows-Standalone.zip"
+
+if exist "release\Klar-3.0-Windows-Standalone.zip" del /q "release\Klar-3.0-Windows-Standalone.zip" 2>nul
+
 powershell -command "Compress-Archive -Path 'release\windows\*' -DestinationPath 'release\Klar-3.0-Windows-Standalone.zip'" 2>nul
 
-REM Linux tar.gz
-if exist "release\Klar-3.0-Linux.tar.gz" del /q "release\Klar-3.0-Linux.tar.gz"
-pushd release\linux
-tar -czf "..\Klar-3.0-Linux.tar.gz" * 2>nul
-popd
-
-echo OK: Checksums and archives created
+echo OK: Release packages created
 timeout /t 1 >nul
+
+REM ============================================
+REM CLEANUP
+REM ============================================
+
+echo Cleaning temporary files...
+if exist "build_temp" rmdir /s /q build_temp 2>nul
 
 REM ============================================
 REM COMPLETION
 REM ============================================
+
 cls
+
 echo.
 echo ========================================
-echo   BUILD COMPLETE!
+echo BUILD COMPLETE!
 echo ========================================
 echo.
 echo SINGLE-FILE EXECUTABLE CREATED!
 echo.
-echo Windows:
-echo   Location: release\windows\Klar.exe
-echo   Size: %FILESIZE% bytes
-echo   Type: Standalone (no external files^)
+echo Location: release\windows\Klar.exe
+echo Size: %FILESIZE_MB% MB
+echo Type: Standalone ^(all data embedded^)
 echo.
-echo Package: release\Klar-3.0-Windows-Standalone.zip
+echo Files Bundled Inside EXE:
+echo - domains.json
+echo - keywords_db.json
+echo - engine/ (search algorithms)
+echo - algorithms/ (Wikipedia Handler)
 echo.
-echo Linux:
-echo   Source: release\linux\
-echo   Package: release\Klar-3.0-Linux.tar.gz
-echo.
-echo Documentation:
-echo   - Windows: release\windows\README.txt
-echo   - Linux: release\linux\README.md
-echo   - Version: release\VERSION.txt
+echo Distribution Package:
+echo - release\Klar-3.0-Windows-Standalone.zip
 echo.
 echo ========================================
-echo   What You Can Distribute
+echo What You Can Distribute
 echo ========================================
 echo.
-echo Option 1: Just the EXE
-echo   Send: Klar.exe (single file^)
-echo   Users run it - that's all!
+echo Option 1: Just the EXE ^(RECOMMENDED^)
+echo Send: Klar.exe (single file)
+echo Users run it - that's all!
+echo No other files needed!
 echo.
-echo Option 2: With README
-echo   Send: Klar-3.0-Windows-Standalone.zip
-echo   Contains: Klar.exe + README.txt
+echo Option 2: With Documentation
+echo Send: Klar-3.0-Windows-Standalone.zip
+echo Contains: Klar.exe + README.txt + Version info
 echo.
 echo ========================================
 echo.
 
 REM Ask if user wants to test now
-choice /C YN /M "Do you want to test the executable now"
+choice /C YN /M "Do you want to test the executable now?"
 if errorlevel 2 goto :end
 
 echo.
 echo Launching Klar...
-echo (First launch may take 5-10 seconds to unpack^)
+echo ^(First launch may take 5-10 seconds to unpack^)
 echo.
+
 start "" "release\windows\Klar.exe"
 timeout /t 5 >nul
 
 :end
+
 echo.
 echo Build script completed successfully!
 echo.
 echo The file release\windows\Klar.exe is completely standalone.
+echo All data files ^(domains.json, keywords_db.json, etc.^) are bundled inside.
 echo No other files needed - just distribute this single file!
 echo.
 pause
