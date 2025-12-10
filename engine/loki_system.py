@@ -2,6 +2,7 @@
 LOKI - Local Offline Knowledge Index
 Offline search system for Klar with automatic page caching and SQLite indexing
 NOW with support for specialized handlers (Wikipedia, etc.)
+INCLUDES: Database migration for backward compatibility
 """
 
 import sqlite3
@@ -32,7 +33,7 @@ class LOKISystem:
         # Load/create settings
         self.settings = self._load_settings()
         
-        # Initialize database
+        # Initialize database (includes migration)
         self._init_database()
         
         # Load sync log
@@ -97,11 +98,11 @@ class LOKISystem:
             json.dump(config, f, indent=2, ensure_ascii=False)
     
     def _init_database(self):
-        """Initialize SQLite database for offline search"""
+        """Initialize SQLite database for offline search with automatic migration"""
         conn = sqlite3.connect(str(self.db_path))
         cursor = conn.cursor()
         
-        # Create pages table
+        # Create pages table (with handler_type support)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS pages (
                 id INTEGER PRIMARY KEY,
@@ -146,7 +147,41 @@ class LOKISystem:
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_handler ON pages(handler_type)')
         
         conn.commit()
+        
+        # MIGRATION: Check if handler_type column exists (for backward compatibility)
+        self._migrate_database_schema(cursor)
+        
+        conn.commit()
         conn.close()
+    
+    def _migrate_database_schema(self, cursor: sqlite3.Cursor):
+        """Handle database schema migration for handler_type column"""
+        try:
+            # Check if handler_type column exists
+            cursor.execute("PRAGMA table_info(pages)")
+            columns = [col[1] for col in cursor.fetchall()]
+            
+            if 'handler_type' not in columns:
+                print("[LOKI] MIGRATION: Adding handler_type column to pages table")
+                cursor.execute('''
+                    ALTER TABLE pages ADD COLUMN handler_type TEXT DEFAULT 'regular'
+                ''')
+                print("[LOKI] MIGRATION: handler_type column added successfully")
+            
+            # Check search_history table for handler_used column
+            cursor.execute("PRAGMA table_info(search_history)")
+            columns = [col[1] for col in cursor.fetchall()]
+            
+            if 'handler_used' not in columns:
+                print("[LOKI] MIGRATION: Adding handler_used column to search_history table")
+                cursor.execute('''
+                    ALTER TABLE search_history ADD COLUMN handler_used TEXT
+                ''')
+                print("[LOKI] MIGRATION: handler_used column added successfully")
+        
+        except Exception as e:
+            print(f"[LOKI] MIGRATION: Warning - could not migrate schema: {e}")
+            print("[LOKI] MIGRATION: This is non-critical, continuing...")
     
     def _load_sync_log(self) -> Dict:
         """Load synchronization log"""
