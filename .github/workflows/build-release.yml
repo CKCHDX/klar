@@ -1,4 +1,5 @@
 name: Build Klar
+
 on:
   push:
     branches: [main]
@@ -10,32 +11,23 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v4
+    
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+    
+    - run: pip install --upgrade pip
+    
     - run: pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller pillow
-    - run: |
-        pyinstaller --onefile --windowed --name Klar --icon klar.ico `
-          --add-data "keywords_db.json;." `
-          --add-data "domains.json;." `
-          --add-data "engine;engine" `
-          --add-data "algorithms;algorithms" `
-          --add-data "core;core" `
-          --hidden-import PyQt6.QtCore `
-          --hidden-import PyQt6.QtGui `
-          --hidden-import PyQt6.QtWidgets `
-          --hidden-import PyQt6.QtWebEngineWidgets `
-          --hidden-import PyQt6.QtWebEngineCore `
-          --hidden-import requests `
-          --hidden-import bs4 `
-          --hidden-import lxml `
-          klar_browser.py
-    - run: mkdir release
-    - run: move dist\Klar.exe release\Klar.exe
+    
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --onefile --windowed --name Klar --icon klar.ico klar_browser.py
+    
     - uses: actions/upload-artifact@v4
       with:
         name: Klar-Windows
-        path: release/Klar.exe
+        path: dist/Klar.exe
         retention-days: 90
 
   build-linux:
@@ -43,18 +35,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    
     - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+    
     - run: sudo apt-get update && sudo apt-get install -y libxcb-xinerama0 libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-dev libfontconfig1
+    
+    - run: pip install --upgrade pip
+    
     - run: pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller pillow
-    - run: |
+    
+    - name: Build with PyInstaller
+      run: |
         pyinstaller --onefile --windowed --name Klar \
-          --add-data "keywords_db.json:." \
-          --add-data "domains.json:." \
-          --add-data "engine:engine" \
-          --add-data "algorithms:algorithms" \
-          --add-data "core:core" \
           --hidden-import PyQt6.QtCore \
           --hidden-import PyQt6.QtGui \
           --hidden-import PyQt6.QtWidgets \
@@ -64,9 +58,9 @@ jobs:
           --hidden-import bs4 \
           --hidden-import lxml \
           klar_browser.py
-    - run: mkdir -p release && mv dist/Klar release/Klar && chmod +x release/Klar
+    
     - uses: actions/upload-artifact@v4
       with:
         name: Klar-Linux
-        path: release/Klar
+        path: dist/Klar
         retention-days: 90
