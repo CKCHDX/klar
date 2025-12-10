@@ -20,19 +20,29 @@ class DomainWhitelist:
     
     def __init__(self, domains_file: str = "domains.json"):
         self.whitelist: Set[str] = set()  # Whitelisted base domains
+        self.whitelist_with_paths: Set[str] = set()  # Original entries (for reference)
         self.load_whitelist(domains_file)
         self.blocked_count = 0
         self.allowed_count = 0
-        print(f"[Security] ✓ Loaded {len(self.whitelist)} whitelisted domains")
+        print(f"[Security] ✓ Loaded {len(self.whitelist)} whitelisted domains (base domains)")
     
     def load_whitelist(self, domains_file: str):
         """Load whitelisted domains from JSON file"""
         try:
             with open(domains_file, 'r', encoding='utf-8') as f:
-                domains = json.load(f)
-                # Normalize all domains to lowercase
-                self.whitelist = set(domain.lower().strip() for domain in domains)
-                print(f"[Security] ✓ Loaded {len(self.whitelist)} whitelisted domains")
+                domains_raw = json.load(f)
+                
+                # CRITICAL FIX: Extract base domains from entries with paths
+                # e.g., "svt.se/nyheter" → "svt.se"
+                for domain_entry in domains_raw:
+                    domain_clean = domain_entry.lower().strip()
+                    # Extract base domain (remove path, query params, etc.)
+                    base_domain = domain_clean.split('/')[0]
+                    self.whitelist.add(base_domain)
+                    self.whitelist_with_paths.add(domain_clean)
+                
+                print(f"[Security] ✓ Loaded {len(self.whitelist)} base domains from {domains_file}")
+                print(f"[Security] ✓ Examples: {list(self.whitelist)[:5]}")
         except FileNotFoundError:
             print(f"[Security] ⚠ Warning: {domains_file} not found")
             self.whitelist = set()
@@ -50,7 +60,7 @@ class DomainWhitelist:
         url_lower = url.lower().strip()
         
         # Add scheme if missing for proper parsing
-        if not url_lower.startswith(('http://', 'https://')):
+        if not url_lower.startswith(('http://', 'https://', 'ftp://')):
             if '.' in url_lower and '/' not in url_lower.split('.')[0]:
                 url_lower = 'https://' + url_lower
             else:
@@ -71,7 +81,7 @@ class DomainWhitelist:
     def is_whitelisted(self, url: str) -> Tuple[bool, str]:
         """
         Check if URL domain is whitelisted.
-        FIXED: Properly handles subdomains and subpages
+        CRITICAL FIX: Properly handles base domain extraction
         
         Args:
             url: Full URL to check (e.g., 'https://www.svt.se/nyheter', 'svt.se', 'www.svt.se/nyheter')
@@ -85,14 +95,20 @@ class DomainWhitelist:
             
             if not domain:
                 self.blocked_count += 1
+                print(f"[Security] ✗ Invalid URL: no domain found - '{url}'")
                 return False, "Invalid URL: no domain found"
             
             domain_lower = domain.lower()
             
+            # CRITICAL FIX: Check base domain against whitelist
+            print(f"[Security] Checking domain: '{domain_lower}'")
+            print(f"[Security] Whitelist has {len(self.whitelist)} base domains")
+            print(f"[Security] First 5 whitelisted: {list(self.whitelist)[:5]}")
+            
             # DIRECT MATCH: Is this exact domain whitelisted?
             if domain_lower in self.whitelist:
                 self.allowed_count += 1
-                print(f"[Security] ✓ Allowed (exact match): {domain_lower}")
+                print(f"[Security] ✓ ALLOWED (exact match): {domain_lower}")
                 return True, f"✓ {domain_lower} is whitelisted"
             
             # SUBDOMAIN MATCH: Is this a subdomain of a whitelisted domain?
@@ -101,19 +117,20 @@ class DomainWhitelist:
                 # If domain ends with '.whitelisted' it's a subdomain
                 if domain_lower.endswith('.' + whitelisted):
                     self.allowed_count += 1
-                    print(f"[Security] ✓ Allowed (subdomain): {domain_lower} is subdomain of {whitelisted}")
+                    print(f"[Security] ✓ ALLOWED (subdomain): {domain_lower} is subdomain of {whitelisted}")
                     return True, f"✓ Subdomain of {whitelisted} is whitelisted"
                 
                 # If they're equal (handles www prefix removal)
                 if domain_lower == whitelisted:
                     self.allowed_count += 1
-                    print(f"[Security] ✓ Allowed (after normalization): {domain_lower}")
+                    print(f"[Security] ✓ ALLOWED (after normalization): {domain_lower}")
                     return True, f"✓ {whitelisted} is whitelisted"
             
             # NOT FOUND IN WHITELIST = BLOCKED
             self.blocked_count += 1
-            print(f"[Security] ✗ BLOCKED: '{domain_lower}' NOT in whitelist")
-            return False, f"Domain '{domain_lower}' is NOT on the whitelisted domains list"
+            reason = f"Domain '{domain_lower}' is NOT on the whitelisted domains list"
+            print(f"[Security] ✗ BLOCKED: {reason}")
+            return False, reason
         
         except Exception as e:
             self.blocked_count += 1
