@@ -278,7 +278,8 @@ class SearchWorker(QThread):
             results['confidence'] = self.metadata.get('all_scores', {})
             self.finished.emit(results)
         except Exception as e:
-            self.error.emit(str(e))
+            print(f"[SearchWorker] Error: {e}")
+            self.error.emit(f"Sökfel: {str(e)}")
 
 class KlarBrowser(QMainWindow):
     def __init__(self):
@@ -694,6 +695,29 @@ class KlarBrowser(QMainWindow):
         
         self.tabs.removeTab(i)
     
+    def is_url(self, text):
+        """Check if text is a URL - IMPROVED"""
+        text = text.strip()
+        
+        # Explicit protocols
+        if text.startswith(('http://', 'https://', 'ftp://', 'file://')):
+            return True
+        
+        # Has domain extension and no spaces
+        if '.' in text and ' ' not in text:
+            parts = text.split('/')
+            domain_part = parts[0].lower()
+            
+            # Must have at least 2 parts separated by dot
+            if domain_part.count('.') >= 1:
+                # Check if ends with valid TLD
+                tlds = ['se', 'com', 'org', 'net', 'edu', 'gov', 'co', 'uk', 'de', 'fr', 'it', 'es', 'nl', 'be', 'ch', 'at', 'no', 'fi', 'dk', 'pl', 'ru', 'cn', 'jp', 'kr', 'au', 'nz', 'za', 'br', 'mx', 'ca', 'us', 'io', 'ai', 'tv', 'cc', 'ws', 'pro', 'info', 'biz', 'name', 'mobi', 'asia']
+                last_part = domain_part.split('.')[-1]
+                if last_part in tlds or last_part.isdigit():  # .123 for IPs
+                    return True
+        
+        return False
+    
     def navigate_to_url(self):
         """Navigate to URL or perform search"""
         query = self.main_search_bar.text().strip()
@@ -711,20 +735,15 @@ class KlarBrowser(QMainWindow):
                 self.status.showMessage(f"⚠️ Domän blockerad för säkerhet", 5000)
                 print(f"[Security] Blocked: {query} - {reason}")
             else:
-                url = query if query.startswith('http') else 'https://' + query
+                url = query if query.startswith(('http://', 'https://', 'ftp://')) else 'https://' + query
+                print(f"[Navigation] Loading URL: {url}")
                 self.current_browser().setUrl(QUrl(url))
                 self.stacked_widget.setCurrentIndex(1)
+                self.status.showMessage(f"Laddar: {query}...", 2000)
                 print(f"[Security] Allowed: {query}")
         else:
+            print(f"[Search] Performing search for: {query}")
             self.perform_search(query)
-    
-    def is_url(self, text):
-        """Check if text is a URL"""
-        if text.startswith('http://') or text.startswith('https://'):
-            return True
-        if '.' in text and ' ' not in text and len(text.split('.')) >= 2:
-            return True
-        return False
     
     def perform_search(self, query):
         """Perform search"""
@@ -818,10 +837,51 @@ class KlarBrowser(QMainWindow):
         
         count = len(results.get('results', []))
         self.status.showMessage(f"Hittade {count} resultat för: {query}", 3000)
+        print(f"[SearchComplete] {count} results found")
     
     def on_search_error(self, error):
         """Handle search error"""
         self.is_searching = False
+        print(f"[SearchError] {error}")
+        
+        error_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{
+                    margin: 0;
+                    padding: 20px;
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    background: #0a0e1a;
+                    color: #e8eaf0;
+                }}
+                .error {{
+                    max-width: 600px;
+                    margin: 100px auto;
+                    padding: 30px;
+                    background: rgba(192, 21, 47, 0.1);
+                    border: 1px solid rgba(192, 21, 47, 0.3);
+                    border-radius: 12px;
+                    text-align: center;
+                }}
+                .error-icon {{ font-size: 48px; margin-bottom: 20px; }}
+                h2 {{ color: #e8eaf0; margin-bottom: 10px; }}
+                p {{ color: #a0a8c0; }}
+            </style>
+        </head>
+        <body>
+            <div class="error">
+                <div class="error-icon">⚠️</div>
+                <h2>Sökfel</h2>
+                <p>{error}</p>
+                <p>Försök igen eller kontrollera din internetanslutning</p>
+            </div>
+        </body>
+        </html>
+        """
+        self.current_browser().setHtml(error_html, QUrl("about:blank"))
         self.status.showMessage(f"Sökfel: {error}", 5000)
     
     def show_home_page(self):
