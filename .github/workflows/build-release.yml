@@ -13,7 +13,7 @@ on:
       - 'lab/**'
       - 'docs/**'
       - '*.md'
-  workflow_dispatch:  # Allows manual trigger from Actions tab
+  workflow_dispatch:
 
 jobs:
   verify:
@@ -89,7 +89,7 @@ jobs:
     - name: Verify executable
       run: |
         if (Test-Path dist/Klar.exe) {
-          Write-Host "✓ Executable created successfully"
+          Write-Host "Executable created successfully"
           Get-Item dist/Klar.exe | Select-Object Length
         } else {
           throw "Executable not found"
@@ -110,77 +110,51 @@ VERSION: 3.1 (Beta)
 BUILD DATE: $buildDate
 TYPE: Windows Standalone Executable
 
-🚀 QUICK START
+QUICK START
 1. Run Klar.exe
 2. Search for anything (no installation needed!)
 3. That's it!
 
-📋 SYSTEM REQUIREMENTS
+SYSTEM REQUIREMENTS
 - Windows 10 or Windows 11
 - 4GB RAM minimum (8GB recommended)
 - 200MB free disk space
 - Internet connection for searches
 
-✨ FEATURES
-✓ 115 Swedish whitelisted domains
-✓ Deep search within domains (articles, products, guides)
-✓ SVEN: Swedish Natural Language Processing
-✓ THOR: Intelligent ranking algorithm
-✓ Smart search URL generation per domain
-✓ Wikipedia article direct links
-✓ No tracking, no ads, no data collection
-✓ Fast dark-mode interface
-✓ Single-file executable (no installation)
-✓ All dependencies included
+FEATURES
+- 115 Swedish whitelisted domains
+- Deep search within domains (articles, products, guides)
+- SVEN: Swedish Natural Language Processing
+- THOR: Intelligent ranking algorithm
+- Smart search URL generation per domain
+- Wikipedia article direct links
+- No tracking, no ads, no data collection
+- Fast dark-mode interface
+- Single-file executable (no installation)
+- All dependencies included
 
-🔒 SECURITY
-✓ Only searches whitelisted Swedish domains
-✓ No external browser plugins
-✓ No telemetry or analytics
-✓ Offline-ready (LOKI caching)
+SECURITY
+- Only searches whitelisted Swedish domains
+- No external browser plugins
+- No telemetry or analytics
+- Offline-ready (LOKI caching)
 
-⚙️ WHAT'S NEW IN 3.1
-✓ FIXED: Domain whitelist security (now handles subdomains/subpages)
-✓ NEW: Deep crawling of search results
-✓ NEW: Smart search URLs per domain type
-✓ NEW: Wikipedia API integration
-✓ NEW: Result deduplication
-✓ IMPROVED: Parallel crawling with 4 workers
-✓ IMPROVED: Rate limiting (0.5s per domain)
+WHAT'S NEW IN 3.1
+- FIXED: Domain whitelist security (now handles subdomains/subpages)
+- NEW: Deep crawling of search results
+- NEW: Smart search URLs per domain type
+- NEW: Wikipedia API integration
+- NEW: Result deduplication
+- IMPROVED: Parallel crawling with 4 workers
+- IMPROVED: Rate limiting (0.5s per domain)
 
-📖 HOW TO USE
-1. Type in the search bar
-2. Klar finds results from 115 trusted domains
-3. Subpages and articles appear automatically
-
-EXAMPLES:
-- "sverige nyheter" → News articles from SVT, DN
-- "hur bäckar man fisk" → Cooking guides
-- "vem är greta thunberg" → Wikipedia article
-- "mobil under 5000 kr" → Product prices
-- "vad är diabetes" → Health information from 1177.se
-
-🔧 TROUBLESHOOTING
-If it doesn't start:
-- Try right-click → "Run as Administrator"
-- Check internet connection
-- Make sure you have .NET Framework or Visual C++ installed
-
-💬 SUPPORT
+SUPPORT
 GitHub: https://github.com/CKCHDX/klar
 Issues: https://github.com/CKCHDX/klar/issues
 Contact: oscyra.solutions
-
-📄 LICENSE
-Klar is free software. See LICENSE file for details.
-
-⭐ VERSION NOTES
-- This is a BETA release
-- Report bugs to GitHub Issues
-- Feedback is welcome!
 "@
         
-        Set-Content -Path release/windows/README.txt -Value $readme
+        Set-Content -Path release/windows/README.txt -Value `$readme
     
     - name: Generate checksum
       shell: cmd
@@ -257,10 +231,10 @@ Klar is free software. See LICENSE file for details.
     - name: Verify executable
       run: |
         if [ -f dist/Klar ]; then
-          echo "✓ Executable created successfully"
+          echo "Executable created successfully"
           ls -lh dist/Klar
         else
-          echo "✗ Executable not found"
+          echo "Executable not found"
           exit 1
         fi
     
@@ -270,86 +244,43 @@ Klar is free software. See LICENSE file for details.
         cp dist/Klar release/linux/
         chmod +x release/linux/Klar
         
-        cat > release/linux/README.md << 'EOF'
-# Klar 3.1 - Official Swedish Search Engine (Linux)
-
-**Version:** 3.1 (Beta)  
-**Type:** Linux Standalone Executable
-
-## 🚀 Quick Start
-
-```bash
-chmod +x Klar
-./Klar
-```
-
-## 📋 System Requirements
-
-- Ubuntu 20.04+ / Debian 11+ / Fedora 35+
-- 4GB RAM minimum (8GB recommended)
-- 200MB free disk space
-- X11 or Wayland display server
-- Internet connection for searches
-
-## ✨ Features
-
-✓ 115 Swedish whitelisted domains
-✓ Deep search within domains (articles, products, guides)
-✓ SVEN: Swedish Natural Language Processing
-✓ THOR: Intelligent ranking algorithm
-✓ Wikipedia article direct links
-✓ No tracking, no ads
-✓ Fast dark-mode interface
-✓ All dependencies included
-✓ Single executable (no installation needed)
-
-## 🔒 Security
-
-✓ Only searches whitelisted Swedish domains
-✓ No external browser plugins
-✓ No telemetry or analytics
-✓ Completely standalone
-
-## ⚙️ What's New in 3.1
-
-✓ FIXED: Domain whitelist (subdomains/subpages now work)
-✓ NEW: Deep crawling of search results
-✓ NEW: Smart search URLs per domain type
-✓ NEW: Wikipedia API integration
-✓ NEW: Result deduplication
-✓ IMPROVED: Parallel crawling with 4 workers
-
-## 📖 Examples
-
-```
-"sverige nyheter" → News articles from SVT, DN
-"hur bäckar man fisk" → Cooking guides
-"vem är greta thunberg" → Wikipedia article
-"mobil under 5000 kr" → Product prices
-"vad är diabetes" → Health info from 1177.se
-```
-
-## 🔧 Troubleshooting
-
-If executable won't run:
-```bash
-# Make sure it's executable
-chmod +x Klar
-
-# Run with verbose output
-./Klar --verbose
-
-# Check dependencies
-ldd ./Klar
-```
-
-## 💬 Support
-
-- GitHub: https://github.com/CKCHDX/klar
-- Issues: https://github.com/CKCHDX/klar/issues
-- Contact: oscyra.solutions
-
-EOF
+        cat > release/linux/README.md << 'READMEEOF'
+        # Klar 3.1 - Official Swedish Search Engine (Linux)
+        
+        **Version:** 3.1 (Beta)
+        **Type:** Linux Standalone Executable
+        
+        ## Quick Start
+        
+        ```bash
+        chmod +x Klar
+        ./Klar
+        ```
+        
+        ## System Requirements
+        
+        - Ubuntu 20.04+ / Debian 11+ / Fedora 35+
+        - 4GB RAM minimum (8GB recommended)
+        - 200MB free disk space
+        - X11 or Wayland display server
+        - Internet connection for searches
+        
+        ## Features
+        
+        - 115 Swedish whitelisted domains
+        - Deep search within domains (articles, products, guides)
+        - SVEN: Swedish Natural Language Processing
+        - THOR: Intelligent ranking algorithm
+        - Wikipedia article direct links
+        - No tracking, no ads
+        - Fast dark-mode interface
+        - All dependencies included
+        
+        ## Support
+        
+        - GitHub: https://github.com/CKCHDX/klar
+        - Issues: https://github.com/CKCHDX/klar/issues
+        READMEEOF
     
     - name: Generate checksum
       run: |
@@ -391,193 +322,43 @@ EOF
     
     - name: Generate Release Notes
       run: |
-        cat > RELEASE_NOTES_3.1.md << 'EOF'
-# Klar 3.1 Release Notes
-
-**Release Date:** $(date -u +"%Y-%m-%d %H:%M:%S UTC")
-**Status:** BETA (Ready for Testing)
-**Build:** Automated via GitHub Actions
-
-## 🎯 Overview
-
-Klar 3.1 is the penultimate beta release before the official Klar 1.0 consumer launch. This release focuses on:
-
-1. **Security Fixes** - Domain whitelist now properly handles subdomains and subpages
-2. **Search Quality** - Deep crawling finds actual content (articles, products) not just homepages
-3. **Reliability** - Parallel crawling with proper rate limiting
-
-## ✨ What's New
-
-### 🔧 Technical Improvements
-
-#### Domain Whitelist Fix
-- Fixed: Domains were being incorrectly blocked
-- Fixed: Subdomains (e.g., nyheter.svt.se) didn't work
-- Fixed: Subpages (e.g., svt.se/nyheter) were blocked
-- Result: All 115 domains now work with subdomains and subpages
-
-#### Deep Crawling System
-- New: Smart search URL generation (25+ domain-specific templates)
-- New: Parallel crawling with 4 concurrent workers
-- New: Extraction of article/product links from search results
-- New: Wikipedia API integration for direct article links
-- New: Result deduplication
-- Improved: Rate limiting (0.5s between requests per domain)
-
-#### Crawler Enhancements
-- New: Domain-specific search templates (news, shopping, Wikipedia)
-- New: Result filtering and relevance checking
-- Improved: Error handling and logging
-- Improved: Support for subdomains
-
-### 📊 Performance
-
-**Search Times (Approximate):**
-- Wikipedia search: 1-2 seconds
-- News search: 2-3 seconds
-- Shopping search: 2-3 seconds
-- Multi-domain search: 3-5 seconds
-
-**Resource Usage:**
-- 4 parallel crawler threads
-- ~100MB RAM cached results
-- ~2-5 outbound requests per search
-
-## 🐛 Bug Fixes
-
-- Fixed: "url blocked" errors for valid whitelisted domains
-- Fixed: Search results only showing homepages
-- Fixed: Subdomain and subpage handling
-- Fixed: Domain verification logic
-
-## 📥 Downloads
-
-### Windows
-- `Klar-3.1-Windows-Standalone.zip` - Single executable + README
-- Size: ~100MB
-- Requirements: Windows 10+, 4GB RAM
-
-### Linux
-- `Klar-3.1-Linux-Standalone.tar.gz` - Single executable + README
-- Size: ~110MB
-- Requirements: Ubuntu 20.04+ / Debian 11+ / Fedora 35+, 4GB RAM
-
-## 🧪 Testing Checklist
-
-### News Searches
-- [ ] "sverige nyheter" → Returns news articles from SVT, DN, Aftonbladet
-- [ ] "stockholm" → Returns news + info about Stockholm
-- [ ] "senaste nyheterna" → Returns recent news
-
-### How-To Searches
-- [ ] "hur bäckar man fisk" → Returns cooking guides
-- [ ] "hur gör man pannkakor" → Returns recipes
-
-### Person Lookups
-- [ ] "vem är greta thunberg" → Returns Wikipedia article
-- [ ] "donald trump" → Returns Wikipedia + news
-
-### Shopping Searches
-- [ ] "mobil under 5000 kr" → Returns products from prisjakt.nu, inet.se
-- [ ] "bästa kamera" → Returns products + comparisons
-
-### Medical Searches
-- [ ] "vad är diabetes" → Returns info from 1177.se, folkhälsomyndigheten.se
-- [ ] "symptom på covid" → Returns health information
-
-### Wikipedia Searches
-- [ ] "sverige" → Returns Wikipedia article
-- [ ] "stockholm sevärdheter" → Returns tourist information
-
-## 📝 Known Limitations
-
-1. **No offline index:** Searches require internet connection
-   - Future: Add LOKI offline indexing for instant searches
-
-2. **Live crawling latency:** Searches take 2-5 seconds
-   - Future: Add result caching (1 hour TTL)
-
-3. **Limited deep crawling:** Only fetches top 10 results per page
-   - Future: Increase after performance testing
-
-4. **No knowledge panels:** Person queries don't show info cards yet
-   - Future: Add knowledge panels in 1.0.2
-
-## 🔒 Security Notes
-
-- ✓ Only searches 115 whitelisted Swedish domains
-- ✓ No external plugins or extensions
-- ✓ No telemetry or analytics
-- ✓ No user tracking
-- ✓ All dependencies embedded
-- ✓ Cryptographic checksums provided (SHA256)
-
-## 📋 System Requirements
-
-### Windows
-- Windows 10 or Windows 11
-- 4GB RAM minimum (8GB recommended)
-- 200MB free disk space
-- Internet connection
-
-### Linux
-- Ubuntu 20.04+ / Debian 11+ / Fedora 35+
-- 4GB RAM minimum (8GB recommended)
-- 200MB free disk space
-- X11 or Wayland display server
-- Internet connection
-
-## 🚀 What's Next (Klar 1.0 Official)
-
-### Critical Before Release
-- [ ] User testing with 20+ non-technical Swedish users
-- [ ] Fix top 10 bugs from user testing
-- [ ] Performance testing under load
-- [ ] Security audit
-
-### Important (1.0.1)
-- [ ] Offline index building
-- [ ] 1-hour result caching
-- [ ] LOKI instant answers (top 50 queries)
-- [ ] THOR domain tier classification
-
-### Nice-to-Have (1.0.2+)
-- [ ] Knowledge panels for person queries
-- [ ] Freshness signals for news
-- [ ] Advanced filtering/facets
-- [ ] User preferences
-
-## 💬 Feedback
-
-This is a BETA release. Please report issues:
-- GitHub Issues: https://github.com/CKCHDX/klar/issues
-- Email: oscyra.solutions
-
-## 📄 Commits
-
-1. `fd1e71b` - Fix domain whitelist: properly handle subdomains and subpages
-2. `77bdde3` - Implement deep crawling for search results
-3. `87af45e` - Update crawler with smart search
-4. `eb0084e` - Add comprehensive release documentation
-
-## ✅ Version Summary
-
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Domain Whitelist | ✅ Fixed | All 115 domains work |
-| Deep Crawling | ✅ Implemented | Smart search URLs |
-| Wikipedia | ✅ Integrated | Direct article links |
-| Parallel Crawling | ✅ Working | 4 concurrent workers |
-| Rate Limiting | ✅ Implemented | 0.5s per domain |
-| Result Dedup | ✅ Working | Removes duplicates |
-| Offline Search | ⏳ Planned | LOKI for 1.0.1 |
-| Caching | ⏳ Planned | 1-hour TTL for 1.0.1 |
-| Instant Answers | ⏳ Planned | LOKI for 1.0.1 |
-
----
-
-**Thank you for testing Klar 3.1!** Your feedback is crucial for the official 1.0 release.
-EOF
+        RELEASE_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+        
+        cat > RELEASE_NOTES_3.1.md << NOTESEOF
+        # Klar 3.1 Release Notes
+        
+        **Release Date:** ${RELEASE_DATE}
+        **Status:** BETA (Ready for Testing)
+        **Build:** Automated via GitHub Actions
+        
+        ## Overview
+        
+        Klar 3.1 focuses on security fixes and search quality improvements.
+        
+        ## What's New
+        
+        - Fixed: Domain whitelist now handles subdomains and subpages
+        - New: Deep crawling of search results
+        - New: Smart search URL generation per domain type
+        - New: Wikipedia API integration
+        - New: Result deduplication
+        - Improved: Parallel crawling with 4 workers
+        
+        ## Downloads
+        
+        - Windows: Klar-3.1-Windows-ZIP (~100MB)
+        - Linux: Klar-3.1-Linux-TAR (~110MB)
+        
+        ## System Requirements
+        
+        **Windows:** Windows 10+, 4GB RAM
+        **Linux:** Ubuntu 20.04+, 4GB RAM
+        
+        ## Support
+        
+        - GitHub: https://github.com/CKCHDX/klar
+        - Issues: https://github.com/CKCHDX/klar/issues
+        NOTESEOF
         
         cat RELEASE_NOTES_3.1.md
     
@@ -597,21 +378,15 @@ EOF
     steps:
     - name: Check Build Results
       run: |
-        echo "🎉 Klar 3.1 Build Complete!"
+        echo "Klar 3.1 Build Complete!"
         echo ""
-        echo "📦 Artifacts Generated:"
-        echo "  ✓ Klar-3.1-Windows-Standalone (EXE + README + SHA256)"
-        echo "  ✓ Klar-3.1-Windows-ZIP (Compressed archive)"
-        echo "  ✓ Klar-3.1-Linux-Standalone (ELF + README + SHA256)"
-        echo "  ✓ Klar-3.1-Linux-TAR (Compressed archive)"
-        echo "  ✓ Release-Notes (RELEASE_NOTES_3.1.md)"
+        echo "Artifacts Generated:"
+        echo "  - Klar-3.1-Windows-Standalone (EXE + README + SHA256)"
+        echo "  - Klar-3.1-Windows-ZIP (Compressed archive)"
+        echo "  - Klar-3.1-Linux-Standalone (ELF + README + SHA256)"
+        echo "  - Klar-3.1-Linux-TAR (Compressed archive)"
+        echo "  - Release-Notes (RELEASE_NOTES_3.1.md)"
         echo ""
-        echo "📊 Build Status: ${{ job.status }}"
+        echo "Build Status: ${{ job.status }}"
         echo ""
-        echo "🔗 Download from: Actions tab → Artifacts"
-        echo ""
-        echo "Next Steps:"
-        echo "  1. Download artifacts from Actions"
-        echo "  2. Test with non-technical users"
-        echo "  3. Report bugs on GitHub Issues"
-        echo "  4. Prepare for Klar 1.0 official release"
+        echo "Download from: Actions tab -> Artifacts"
