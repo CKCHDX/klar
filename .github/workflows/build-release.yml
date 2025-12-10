@@ -1,75 +1,20 @@
-name: Build Klar 3.1 Release
-
+name: Build Klar
 on:
   push:
-    branches: [ main ]
-    paths-ignore:
-      - 'lab/**'
-      - 'docs/**'
-      - '*.md'
-  pull_request:
-    branches: [ main ]
-    paths-ignore:
-      - 'lab/**'
-      - 'docs/**'
-      - '*.md'
+    branches: [main]
   workflow_dispatch:
 
 jobs:
-  verify:
-    name: Verify Build Requirements
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-    
-    - name: Verify JSON files
-      run: |
-        python -c "import json; data = json.load(open('keywords_db.json', encoding='utf-8')); print(f'Keywords DB: {len(data.get(\"mappings\", {}))} categories')"
-        python -c "import json; data = json.load(open('domains.json', encoding='utf-8')); print(f'Domains: {len(data)} whitelisted domains')"
-    
-    - name: Verify Python syntax
-      run: |
-        python -m py_compile klar_browser.py
-        python -m py_compile engine/search_engine.py
-        python -m py_compile engine/domain_whitelist.py
-        python -m py_compile core/crawler.py
-        python -m py_compile algorithms/sven.py
-        python -m py_compile algorithms/thor.py
-    
-    - name: Check dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pillow
-        python -c "import PyQt6; import PyQt6.QtWebEngineWidgets; import requests; import bs4; print('All dependencies available')"
-
   build-windows:
-    name: Build Windows Executable
-    needs: verify
+    name: Build Windows
     runs-on: windows-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller pillow
-    
-    - name: Build with PyInstaller
-      run: |
+    - run: pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller pillow
+    - run: |
         pyinstaller --onefile --windowed --name Klar --icon klar.ico `
           --add-data "keywords_db.json;." `
           --add-data "domains.json;." `
@@ -85,133 +30,25 @@ jobs:
           --hidden-import bs4 `
           --hidden-import lxml `
           klar_browser.py
-    
-    - name: Verify executable
-      run: |
-        if (Test-Path dist/Klar.exe) {
-          Write-Host "Executable created successfully"
-          Get-Item dist/Klar.exe | Select-Object Length
-        } else {
-          throw "Executable not found"
-        }
-    
-    - name: Create Windows Release Package
-      shell: pwsh
-      run: |
-        New-Item -ItemType Directory -Force -Path release/windows | Out-Null
-        Copy-Item dist/Klar.exe release/windows/Klar.exe
-        
-        $buildDate = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'
-        $readme = @"
-KLAR 3.1 - Official Swedish Search Engine
-=========================================
-
-VERSION: 3.1 (Beta)
-BUILD DATE: $buildDate
-TYPE: Windows Standalone Executable
-
-QUICK START
-1. Run Klar.exe
-2. Search for anything (no installation needed!)
-3. That's it!
-
-SYSTEM REQUIREMENTS
-- Windows 10 or Windows 11
-- 4GB RAM minimum (8GB recommended)
-- 200MB free disk space
-- Internet connection for searches
-
-FEATURES
-- 115 Swedish whitelisted domains
-- Deep search within domains (articles, products, guides)
-- SVEN: Swedish Natural Language Processing
-- THOR: Intelligent ranking algorithm
-- Smart search URL generation per domain
-- Wikipedia article direct links
-- No tracking, no ads, no data collection
-- Fast dark-mode interface
-- Single-file executable (no installation)
-- All dependencies included
-
-SECURITY
-- Only searches whitelisted Swedish domains
-- No external browser plugins
-- No telemetry or analytics
-- Offline-ready (LOKI caching)
-
-WHAT'S NEW IN 3.1
-- FIXED: Domain whitelist security (now handles subdomains/subpages)
-- NEW: Deep crawling of search results
-- NEW: Smart search URLs per domain type
-- NEW: Wikipedia API integration
-- NEW: Result deduplication
-- IMPROVED: Parallel crawling with 4 workers
-- IMPROVED: Rate limiting (0.5s per domain)
-
-SUPPORT
-GitHub: https://github.com/CKCHDX/klar
-Issues: https://github.com/CKCHDX/klar/issues
-Contact: oscyra.solutions
-"@
-        
-        Set-Content -Path release/windows/README.txt -Value `$readme
-    
-    - name: Generate checksum
-      shell: cmd
-      run: |
-        cd release\windows
-        certutil -hashfile Klar.exe SHA256 > Klar.SHA256.txt
-        type Klar.SHA256.txt
-    
-    - name: Upload Windows Artifact
-      uses: actions/upload-artifact@v4
+    - run: mkdir release
+    - run: move dist\Klar.exe release\Klar.exe
+    - uses: actions/upload-artifact@v4
       with:
-        name: Klar-3.1-Windows-Standalone
-        path: |
-          release/windows/Klar.exe
-          release/windows/README.txt
-          release/windows/Klar.SHA256.txt
-        retention-days: 90
-    
-    - name: Create Windows ZIP
-      shell: pwsh
-      run: |
-        Compress-Archive -Path release/windows/* -DestinationPath Klar-3.1-Windows-Standalone.zip
-        Get-Item Klar-3.1-Windows-Standalone.zip | Select-Object Length
-    
-    - name: Upload Windows ZIP
-      uses: actions/upload-artifact@v4
-      with:
-        name: Klar-3.1-Windows-ZIP
-        path: Klar-3.1-Windows-Standalone.zip
+        name: Klar-Windows
+        path: release/Klar.exe
         retention-days: 90
 
   build-linux:
-    name: Build Linux Executable
-    needs: verify
+    name: Build Linux
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-    
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libxcb-xinerama0 libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-dev libfontconfig1
-    
-    - name: Install Python dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller pillow
-    
-    - name: Build with PyInstaller
-      run: |
+    - run: sudo apt-get update && sudo apt-get install -y libxcb-xinerama0 libxcb-cursor0 libxkbcommon-x11-0 libgl1-mesa-dev libfontconfig1
+    - run: pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller pillow
+    - run: |
         pyinstaller --onefile --windowed --name Klar \
           --add-data "keywords_db.json:." \
           --add-data "domains.json:." \
@@ -227,166 +64,9 @@ Contact: oscyra.solutions
           --hidden-import bs4 \
           --hidden-import lxml \
           klar_browser.py
-    
-    - name: Verify executable
-      run: |
-        if [ -f dist/Klar ]; then
-          echo "Executable created successfully"
-          ls -lh dist/Klar
-        else
-          echo "Executable not found"
-          exit 1
-        fi
-    
-    - name: Create Linux Release Package
-      run: |
-        mkdir -p release/linux
-        cp dist/Klar release/linux/
-        chmod +x release/linux/Klar
-        
-        cat > release/linux/README.md << 'READMEEOF'
-        # Klar 3.1 - Official Swedish Search Engine (Linux)
-        
-        **Version:** 3.1 (Beta)
-        **Type:** Linux Standalone Executable
-        
-        ## Quick Start
-        
-        ```bash
-        chmod +x Klar
-        ./Klar
-        ```
-        
-        ## System Requirements
-        
-        - Ubuntu 20.04+ / Debian 11+ / Fedora 35+
-        - 4GB RAM minimum (8GB recommended)
-        - 200MB free disk space
-        - X11 or Wayland display server
-        - Internet connection for searches
-        
-        ## Features
-        
-        - 115 Swedish whitelisted domains
-        - Deep search within domains (articles, products, guides)
-        - SVEN: Swedish Natural Language Processing
-        - THOR: Intelligent ranking algorithm
-        - Wikipedia article direct links
-        - No tracking, no ads
-        - Fast dark-mode interface
-        - All dependencies included
-        
-        ## Support
-        
-        - GitHub: https://github.com/CKCHDX/klar
-        - Issues: https://github.com/CKCHDX/klar/issues
-        READMEEOF
-    
-    - name: Generate checksum
-      run: |
-        cd release/linux
-        sha256sum Klar > Klar.SHA256.txt
-        cat Klar.SHA256.txt
-    
-    - name: Upload Linux Artifact
-      uses: actions/upload-artifact@v4
+    - run: mkdir -p release && mv dist/Klar release/Klar && chmod +x release/Klar
+    - uses: actions/upload-artifact@v4
       with:
-        name: Klar-3.1-Linux-Standalone
-        path: |
-          release/linux/Klar
-          release/linux/README.md
-          release/linux/Klar.SHA256.txt
+        name: Klar-Linux
+        path: release/Klar
         retention-days: 90
-    
-    - name: Create Linux TAR.GZ
-      run: |
-        cd release/linux
-        tar -czf ../../Klar-3.1-Linux-Standalone.tar.gz Klar README.md Klar.SHA256.txt
-        ls -lh ../../Klar-3.1-Linux-Standalone.tar.gz
-    
-    - name: Upload Linux TAR.GZ
-      uses: actions/upload-artifact@v4
-      with:
-        name: Klar-3.1-Linux-TAR
-        path: Klar-3.1-Linux-Standalone.tar.gz
-        retention-days: 90
-
-  create-release-notes:
-    name: Create Release Notes
-    needs: [build-windows, build-linux]
-    runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Generate Release Notes
-      run: |
-        RELEASE_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
-        
-        cat > RELEASE_NOTES_3.1.md << NOTESEOF
-        # Klar 3.1 Release Notes
-        
-        **Release Date:** ${RELEASE_DATE}
-        **Status:** BETA (Ready for Testing)
-        **Build:** Automated via GitHub Actions
-        
-        ## Overview
-        
-        Klar 3.1 focuses on security fixes and search quality improvements.
-        
-        ## What's New
-        
-        - Fixed: Domain whitelist now handles subdomains and subpages
-        - New: Deep crawling of search results
-        - New: Smart search URL generation per domain type
-        - New: Wikipedia API integration
-        - New: Result deduplication
-        - Improved: Parallel crawling with 4 workers
-        
-        ## Downloads
-        
-        - Windows: Klar-3.1-Windows-ZIP (~100MB)
-        - Linux: Klar-3.1-Linux-TAR (~110MB)
-        
-        ## System Requirements
-        
-        **Windows:** Windows 10+, 4GB RAM
-        **Linux:** Ubuntu 20.04+, 4GB RAM
-        
-        ## Support
-        
-        - GitHub: https://github.com/CKCHDX/klar
-        - Issues: https://github.com/CKCHDX/klar/issues
-        NOTESEOF
-        
-        cat RELEASE_NOTES_3.1.md
-    
-    - name: Upload Release Notes
-      uses: actions/upload-artifact@v4
-      with:
-        name: Release-Notes
-        path: RELEASE_NOTES_3.1.md
-        retention-days: 90
-
-  summary:
-    name: Build Summary
-    needs: [build-windows, build-linux, create-release-notes]
-    runs-on: ubuntu-latest
-    if: always()
-    
-    steps:
-    - name: Check Build Results
-      run: |
-        echo "Klar 3.1 Build Complete!"
-        echo ""
-        echo "Artifacts Generated:"
-        echo "  - Klar-3.1-Windows-Standalone (EXE + README + SHA256)"
-        echo "  - Klar-3.1-Windows-ZIP (Compressed archive)"
-        echo "  - Klar-3.1-Linux-Standalone (ELF + README + SHA256)"
-        echo "  - Klar-3.1-Linux-TAR (Compressed archive)"
-        echo "  - Release-Notes (RELEASE_NOTES_3.1.md)"
-        echo ""
-        echo "Build Status: ${{ job.status }}"
-        echo ""
-        echo "Download from: Actions tab -> Artifacts"
