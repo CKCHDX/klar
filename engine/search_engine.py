@@ -49,10 +49,10 @@ class SearchEngine:
                 print(f"[DEBUG] Loaded {len(self.domains)} domains")
             except Exception as e:
                 print(f"[ERROR] Failed to load domains.json: {e}")
-                self.domains = []
+                self.domains = self._get_default_domains()
         else:
             print(f"[ERROR] domains.json not found at: {domains_file}")
-            self.domains = []
+            self.domains = self._get_default_domains()
         
         # Load keyword database using resource path
         keywords_file = get_resource_path("keywords_db.json")
@@ -75,7 +75,7 @@ class SearchEngine:
         
         self.session = requests.Session()
         self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         })
         
         total_keywords = sum(len(v.get('keywords', [])) for v in self.keyword_db.get('mappings', {}).values())
@@ -85,6 +85,21 @@ class SearchEngine:
         print(f"[Klar] Categories: {len(self.domain_categories)}")
         print(f"[Klar] Wikipedia prioritization: ENABLED (direct article search)")
 
+    def _get_default_domains(self) -> dict:
+        """Fallback default domains if file loading fails"""
+        return {
+            "sv.wikipedia.org": {"name": "Wikipedia (Svenska)", "category": "encyclopedia"},
+            "wikipedia.org": {"name": "Wikipedia", "category": "encyclopedia"},
+            "svt.se": {"name": "SVT", "category": "news"},
+            "dn.se": {"name": "Dagens Nyheter", "category": "news"},
+            "aftonbladet.se": {"name": "Aftonbladet", "category": "news"},
+            "1177.se": {"name": "1177 Vårdguiden", "category": "health"},
+            "hemnet.se": {"name": "Hemnet", "category": "realestate"},
+            "ica.se": {"name": "ICA", "category": "shopping"},
+            "arbetsformedlingen.se": {"name": "Arbetsförmedlingen", "category": "jobs"},
+            "folkhalsomyndigheten.se": {"name": "Folkhälsomyndigheten", "category": "health"},
+            "google.com": {"name": "Google", "category": "search"},
+        }
     
     def _load_keyword_database(self) -> Dict:
         """Load keyword database from JSON"""
@@ -101,7 +116,7 @@ class SearchEngine:
         """Categorize domains"""
         categories = {}
         
-        for mapping_name, mapping_data in self.keyword_db['mappings'].items():
+        for mapping_name, mapping_data in self.keyword_db.get('mappings', {}).items():
             category = mapping_data.get('category', 'general')
             domains = mapping_data.get('priority_domains', [])
             
@@ -264,19 +279,19 @@ class SearchEngine:
                     priority_domains.append(sv_article)
                 else:
                     # Fallback to homepage if article not found
-                    priority_domains.append('sv.wikipedia.org')
+                    priority_domains.append('https://sv.wikipedia.org')
                 
                 # Also add English Wikipedia as backup
                 en_article = self._get_wikipedia_article_url(topic, lang='en')
                 if en_article:
                     priority_domains.append(en_article)
                 else:
-                    priority_domains.append('wikipedia.org')
+                    priority_domains.append('https://en.wikipedia.org')
                 
                 print(f"[Wikipedia] Direct article search complete for: '{topic}'")
             else:
-                priority_domains.append('sv.wikipedia.org')
-                priority_domains.append('wikipedia.org')
+                priority_domains.append('https://sv.wikipedia.org')
+                priority_domains.append('https://en.wikipedia.org')
         
         # NEW: Use SVEN to expand query with semantic understanding
         sven_hints = self.sven.generate_search_hints(query)
@@ -295,7 +310,7 @@ class SearchEngine:
                     priority_domains.extend(domains)
             
             # Check keyword mappings
-            for mapping_name, mapping_data in self.keyword_db['mappings'].items():
+            for mapping_name, mapping_data in self.keyword_db.get('mappings', {}).items():
                 keywords = mapping_data.get('keywords', [])
                 category = mapping_data.get('category', 'general')
                 domains = mapping_data.get('priority_domains', [])
@@ -313,10 +328,12 @@ class SearchEngine:
     
     def get_relevant_domains(self, query: str, demographic: str = "general") -> List[str]:
         """Get relevant domains with Wikipedia direct article priority"""
-        if '.' in query and ' ' not in query:
+        if '.' in query and ' ' not in query and len(query.split('.')) >= 2:
             domain = query.lower().replace('www.', '')
             if domain in self.domains:
                 return [domain]
+            # Return as-is if it looks like a domain even if not in list
+            return [domain]
         
         categories, priority_domains = self.detect_query_intent(query)
         relevant_domains = []
@@ -347,6 +364,10 @@ class SearchEngine:
             if domain.startswith('http'):
                 result.append(domain)  # Direct URL
             elif domain not in seen and domain in self.domains:
+                seen.add(domain)
+                result.append(domain)
+            elif domain not in seen:
+                # Add even if not in domains list (fallback)
                 seen.add(domain)
                 result.append(domain)
         
@@ -418,6 +439,7 @@ class SearchEngine:
         
         print(f"[Search] Detected: {', '.join(categories) if categories else 'general'}")
         print(f"[Search] Searching {len(relevant_domains)} domains")
+        print(f"[Search] Domains: {relevant_domains}")
         
         results = []
         
@@ -428,29 +450,34 @@ class SearchEngine:
             future_to_domain = {}
             
             for domain in relevant_domains:
-                # Handle direct Wikipedia URLs
-                if domain.startswith('http'):
-                    future = executor.submit(self.fetch_and_parse, domain, query, sven_hints)
-                elif is_phrase:
-                    future = executor.submit(self.search_domain_deeply, domain, query, sven_hints)
-                else:
-                    url = f"https://www.{domain}" if not domain.startswith('sv.wikipedia') else f"https://{domain}"
-                    future = executor.submit(self.fetch_and_parse, url, query, sven_hints)
-                
-                future_to_domain[future] = domain
+                try:
+                    # Handle direct Wikipedia URLs
+                    if domain.startswith('http'):
+                        future = executor.submit(self.fetch_and_parse, domain, query, sven_hints)
+                    elif is_phrase:
+                        # For phrases, try deeper search
+                        future = executor.submit(self.search_domain_deeply, domain, query, sven_hints)
+                    else:
+                        # Single word - construct proper URL
+                        url = f"https://www.{domain}" if not domain.startswith(('wikipedia', 'sv.', 'en.')) else f"https://{domain}"
+                        future = executor.submit(self.fetch_and_parse, url, query, sven_hints)
+                    
+                    future_to_domain[future] = domain
+                except Exception as e:
+                    print(f"  ✗ {domain}: {e}")
             
-            for future in as_completed(future_to_domain, timeout=10):
+            for future in as_completed(future_to_domain, timeout=15):
                 domain = future_to_domain[future]
                 try:
-                    result = future.result()
+                    result = future.result(timeout=10)
                     if result:
                         if isinstance(result, list):
                             results.extend(result)
                         else:
                             results.append(result)
                         print(f"  ✓ {domain}")
-                except:
-                    print(f"  ✗ {domain}")
+                except Exception as e:
+                    print(f"  ✗ {domain}: {str(e)[:50]}")
         
         # Rank results
         ranked_results = self.rank_results(results, query, priority_domains, demographic, sven_hints)
@@ -458,6 +485,11 @@ class SearchEngine:
         # Get demographic hints for result limiting
         hints = self.get_demographic_hints(demographic)
         result_count = hints['result_count']
+        
+        # Ensure we have results
+        if not ranked_results:
+            print(f"[Search] WARNING: No results found, creating default results")
+            ranked_results = self.create_default_results(query, relevant_domains)
         
         return {
             'query': query,
@@ -471,6 +503,23 @@ class SearchEngine:
             'wikipedia_prioritized': any('wikipedia' in str(d).lower() for d in priority_domains)
         }
     
+    def create_default_results(self, query: str, domains: List[str]) -> List[Dict]:
+        """Create default results when search fails"""
+        results = []
+        for domain in domains[:5]:
+            # Extract clean domain name
+            clean_domain = domain.replace('www.', '').replace('https://', '').split('/')[0]
+            results.append({
+                'url': f"https://{clean_domain}" if clean_domain.startswith(('wikipedia', 'sv.')) else f"https://www.{clean_domain}",
+                'title': f"Sök '{query}' på {clean_domain}",
+                'description': f"Hitta information om '{query}' på {clean_domain}",
+                'domain': clean_domain,
+                'relevance': 0.5,
+                'images': [],
+                'verified': False
+            })
+        return results
+    
     def search_domain_deeply(self, domain: str, query: str, sven_hints: Dict) -> List[Dict]:
         """
         Deep search within a domain to find specific subpages
@@ -481,12 +530,12 @@ class SearchEngine:
         
         try:
             # Start with homepage
-            if domain.startswith('sv.wikipedia') or domain.startswith('wikipedia'):
+            if domain.startswith('sv.wikipedia') or domain.startswith('wikipedia') or domain.startswith('en.'):
                 base_url = f"https://{domain}"
             else:
                 base_url = f"https://www.{domain}"
             
-            response = self.session.get(base_url, timeout=(2, 5))
+            response = self.session.get(base_url, timeout=(3, 8))
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
@@ -511,8 +560,8 @@ class SearchEngine:
             if homepage_result and homepage_result['relevance'] > 0.1:
                 results.append(homepage_result)
         
-        except:
-            pass
+        except Exception as e:
+            print(f"[DeepSearch] Error for {domain}: {e}")
         
         return results
     
@@ -520,13 +569,16 @@ class SearchEngine:
         """Extract internal links from page"""
         links = []
         
-        for a_tag in soup.find_all('a', href=True):
-            href = a_tag['href']
-            full_url = urljoin(base_url, href)
-            
-            # Only internal links
-            if domain in urlparse(full_url).netloc:
-                links.append(full_url)
+        try:
+            for a_tag in soup.find_all('a', href=True):
+                href = a_tag['href']
+                full_url = urljoin(base_url, href)
+                
+                # Only internal links
+                if domain in urlparse(full_url).netloc:
+                    links.append(full_url)
+        except:
+            pass
         
         return list(set(links))[:50]  # Limit to 50 links
     
@@ -564,13 +616,20 @@ class SearchEngine:
     def fetch_and_parse(self, url: str, query: str, sven_hints: Dict = None) -> Dict:
         """Fetch and parse single page"""
         try:
-            response = self.session.get(url, timeout=(2, 5), allow_redirects=True)
+            response = self.session.get(url, timeout=(3, 8), allow_redirects=True)
             response.raise_for_status()
             
             soup = BeautifulSoup(response.content, 'html.parser')
             return self.parse_page(soup, response.url, query, sven_hints)
             
-        except:
+        except requests.exceptions.Timeout:
+            print(f"[Fetch] Timeout: {url}")
+            return None
+        except requests.exceptions.ConnectionError:
+            print(f"[Fetch] Connection error: {url}")
+            return None
+        except Exception as e:
+            print(f"[Fetch] Error: {url} - {str(e)[:50]}")
             return None
     
     def parse_page(self, soup: BeautifulSoup, url: str, query: str, sven_hints: Dict = None) -> Dict:
@@ -643,12 +702,15 @@ class SearchEngine:
     def extract_images(self, soup: BeautifulSoup, base_url: str) -> List[str]:
         """Extract images"""
         images = []
-        for img in soup.find_all('img', limit=5):
-            src = img.get('src') or img.get('data-src')
-            if src:
-                full_url = urljoin(base_url, src)
-                if full_url.startswith('http'):
-                    images.append(full_url)
+        try:
+            for img in soup.find_all('img', limit=5):
+                src = img.get('src') or img.get('data-src')
+                if src:
+                    full_url = urljoin(base_url, src)
+                    if full_url.startswith('http'):
+                        images.append(full_url)
+        except:
+            pass
         return images
     
     def calculate_relevance(self, query: str, title: str, description: str,
