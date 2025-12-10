@@ -2,6 +2,7 @@
 Enhanced search with phrase matching, subpage discovery, demographic optimization
 and SVEN (Swedish Enhanced Vocabulary and Entity Normalization)
 Wikipedia is prioritized for factual/encyclopedia queries with DIRECT article URLs
+SECURITY: Only searches whitelisted domains from domains.json
 """
 import requests
 from bs4 import BeautifulSoup
@@ -45,14 +46,20 @@ class SearchEngine:
         if os.path.exists(domains_file):
             try:
                 with open(domains_file, 'r', encoding='utf-8') as f:
-                    self.domains = json.load(f)
-                print(f"[DEBUG] Loaded {len(self.domains)} domains")
+                    domains_list = json.load(f)
+                # Store as both list and dict for compatibility
+                self.domains = {d: {"name": d, "category": "whitelisted"} for d in domains_list}
+                self.domains_list = domains_list
+                print(f"[DEBUG] Loaded {len(self.domains)} WHITELISTED domains")
+                print(f"[Security] WHITELIST MODE ACTIVE - Only these {len(self.domains)} domains allowed")
             except Exception as e:
                 print(f"[ERROR] Failed to load domains.json: {e}")
-                self.domains = self._get_default_domains()
+                self.domains = {}
+                self.domains_list = []
         else:
             print(f"[ERROR] domains.json not found at: {domains_file}")
-            self.domains = self._get_default_domains()
+            self.domains = {}
+            self.domains_list = []
         
         # Load keyword database using resource path
         keywords_file = get_resource_path("keywords_db.json")
@@ -80,26 +87,12 @@ class SearchEngine:
         
         total_keywords = sum(len(v.get('keywords', [])) for v in self.keyword_db.get('mappings', {}).values())
         print(f"[Klar] Search engine initialized")
-        print(f"[Klar] Domains: {len(self.domains)}")
+        print(f"[Klar] Whitelisted domains: {len(self.domains)}")
         print(f"[Klar] Keywords: {total_keywords}")
         print(f"[Klar] Categories: {len(self.domain_categories)}")
         print(f"[Klar] Wikipedia prioritization: ENABLED (direct article search)")
+        print(f"[Security] ⚠️  STRICT WHITELIST MODE - Only whitelisted domains will be searched")
 
-    def _get_default_domains(self) -> dict:
-        """Fallback default domains if file loading fails"""
-        return {
-            "sv.wikipedia.org": {"name": "Wikipedia (Svenska)", "category": "encyclopedia"},
-            "wikipedia.org": {"name": "Wikipedia", "category": "encyclopedia"},
-            "svt.se": {"name": "SVT", "category": "news"},
-            "dn.se": {"name": "Dagens Nyheter", "category": "news"},
-            "aftonbladet.se": {"name": "Aftonbladet", "category": "news"},
-            "1177.se": {"name": "1177 Vårdguiden", "category": "health"},
-            "hemnet.se": {"name": "Hemnet", "category": "realestate"},
-            "ica.se": {"name": "ICA", "category": "shopping"},
-            "arbetsformedlingen.se": {"name": "Arbetsförmedlingen", "category": "jobs"},
-            "folkhalsomyndigheten.se": {"name": "Folkhälsomyndigheten", "category": "health"},
-            "google.com": {"name": "Google", "category": "search"},
-        }
     
     def _load_keyword_database(self) -> Dict:
         """Load keyword database from JSON"""
@@ -113,17 +106,20 @@ class SearchEngine:
             return {'version': '1.0', 'mappings': {}, 'direct_domain_mappings': {}}
     
     def _categorize_domains(self) -> Dict[str, List[str]]:
-        """Categorize domains"""
+        """Categorize domains - only from whitelist"""
         categories = {}
         
         for mapping_name, mapping_data in self.keyword_db.get('mappings', {}).items():
             category = mapping_data.get('category', 'general')
             domains = mapping_data.get('priority_domains', [])
             
-            if category not in categories:
+            # SECURITY: Only include domains from whitelist
+            whitelisted_domains = [d for d in domains if d in self.domains_list]
+            
+            if whitelisted_domains and category not in categories:
                 categories[category] = []
             
-            categories[category].extend(domains)
+            categories[category].extend(whitelisted_domains)
         
         for category in categories:
             categories[category] = list(set(categories[category]))
@@ -167,9 +163,16 @@ class SearchEngine:
             if lang == 'sv':
                 api_url = "https://sv.wikipedia.org/w/api.php"
                 wiki_base = "https://sv.wikipedia.org/wiki/"
+                wiki_domain = 'sv.wikipedia.org'
             else:
                 api_url = "https://en.wikipedia.org/w/api.php"
                 wiki_base = "https://en.wikipedia.org/wiki/"
+                wiki_domain = 'wikipedia.org'
+            
+            # SECURITY: Check if Wikipedia is whitelisted
+            if wiki_domain not in self.domains_list and 'wikipedia.org' not in self.domains_list and 'sv.wikipedia.org' not in self.domains_list:
+                print(f"[Security] Wikipedia not in whitelist, skipping article search")
+                return None
             
             # Search for the article
             params = {
@@ -260,7 +263,7 @@ class SearchEngine:
         return False
     
     def detect_query_intent(self, query: str) -> Tuple[List[str], List[str]]:
-        """Detect query intent with Wikipedia direct article search"""
+        """Detect query intent with Wikipedia direct article search - WHITELIST ONLY"""
         query_lower = query.lower()
         detected_categories = []
         priority_domains = []
@@ -279,19 +282,23 @@ class SearchEngine:
                     priority_domains.append(sv_article)
                 else:
                     # Fallback to homepage if article not found
-                    priority_domains.append('https://sv.wikipedia.org')
+                    if 'sv.wikipedia.org' in self.domains_list:
+                        priority_domains.append('https://sv.wikipedia.org')
                 
                 # Also add English Wikipedia as backup
                 en_article = self._get_wikipedia_article_url(topic, lang='en')
                 if en_article:
                     priority_domains.append(en_article)
                 else:
-                    priority_domains.append('https://en.wikipedia.org')
+                    if 'wikipedia.org' in self.domains_list:
+                        priority_domains.append('https://en.wikipedia.org')
                 
                 print(f"[Wikipedia] Direct article search complete for: '{topic}'")
             else:
-                priority_domains.append('https://sv.wikipedia.org')
-                priority_domains.append('https://en.wikipedia.org')
+                if 'sv.wikipedia.org' in self.domains_list:
+                    priority_domains.append('https://sv.wikipedia.org')
+                if 'wikipedia.org' in self.domains_list:
+                    priority_domains.append('https://wikipedia.org')
         
         # NEW: Use SVEN to expand query with semantic understanding
         sven_hints = self.sven.generate_search_hints(query)
@@ -307,7 +314,9 @@ class SearchEngine:
             direct_mappings = self.keyword_db.get('direct_domain_mappings', {})
             for keyword, domains in direct_mappings.items():
                 if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
-                    priority_domains.extend(domains)
+                    # SECURITY: Only add whitelisted domains
+                    whitelisted_domains = [d for d in domains if d in self.domains_list]
+                    priority_domains.extend(whitelisted_domains)
             
             # Check keyword mappings
             for mapping_name, mapping_data in self.keyword_db.get('mappings', {}).items():
@@ -315,11 +324,14 @@ class SearchEngine:
                 category = mapping_data.get('category', 'general')
                 domains = mapping_data.get('priority_domains', [])
                 
+                # SECURITY: Only include whitelisted domains
+                whitelisted_domains = [d for d in domains if d in self.domains_list]
+                
                 for keyword in keywords:
                     if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
                         if category not in detected_categories:
                             detected_categories.append(category)
-                        priority_domains.extend(domains)
+                        priority_domains.extend(whitelisted_domains)
                         break
         
         priority_domains = list(dict.fromkeys(priority_domains))
@@ -327,13 +339,16 @@ class SearchEngine:
         return detected_categories, priority_domains
     
     def get_relevant_domains(self, query: str, demographic: str = "general") -> List[str]:
-        """Get relevant domains with Wikipedia direct article priority"""
+        """Get relevant domains - WHITELIST ONLY"""
+        # SECURITY: Check if query is a domain that's whitelisted
         if '.' in query and ' ' not in query and len(query.split('.')) >= 2:
-            domain = query.lower().replace('www.', '')
-            if domain in self.domains:
+            domain = query.lower().replace('www.', '').split('/')[0]
+            # Only allow if in whitelist
+            if domain in self.domains_list:
                 return [domain]
-            # Return as-is if it looks like a domain even if not in list
-            return [domain]
+            else:
+                print(f"[Security] Domain '{domain}' NOT in whitelist, returning empty")
+                return []
         
         categories, priority_domains = self.detect_query_intent(query)
         relevant_domains = []
@@ -346,16 +361,9 @@ class SearchEngine:
                 relevant_domains.extend(self.domain_categories[category])
         
         if not relevant_domains:
-            # NEW: Default domains based on demographic
-            defaults = {
-                'seniors_65plus': ['sv.wikipedia.org', '1177.se', 'svt.se', 'folkhalsomyndigheten.se'],
-                'women_general': ['sv.wikipedia.org', 'hemnet.se', 'ica.se', 'svt.se'],
-                'men_general': ['sv.wikipedia.org', 'webhallen.com', 'inet.se', 'svt.se'],
-                'teens_10to20': ['sv.wikipedia.org', '1177.se', 'svt.se', 'dn.se'],
-                'young_adults_20to40': ['sv.wikipedia.org', 'dn.se', 'aftonbladet.se', 'arbetsformedlingen.se'],
-                'general': ['sv.wikipedia.org', 'svt.se', 'dn.se', 'aftonbladet.se']
-            }
-            relevant_domains = defaults.get(demographic, defaults['general'])
+            # DEFAULT: Use ALL whitelisted domains
+            relevant_domains = self.domains_list[:]
+            print(f"[Search] No category match, using all {len(relevant_domains)} whitelisted domains")
         
         seen = set()
         result = []
@@ -363,14 +371,11 @@ class SearchEngine:
             # Handle both full URLs and domain names
             if domain.startswith('http'):
                 result.append(domain)  # Direct URL
-            elif domain not in seen and domain in self.domains:
-                seen.add(domain)
-                result.append(domain)
-            elif domain not in seen:
-                # Add even if not in domains list (fallback)
+            elif domain not in seen and domain in self.domains_list:
                 seen.add(domain)
                 result.append(domain)
         
+        print(f"[Security] Searching {len(result)} WHITELISTED domains")
         return result[:12]
     
     def get_demographic_hints(self, demographic: str) -> Dict:
@@ -423,9 +428,10 @@ class SearchEngine:
         return hints.get(demographic, hints['general'])
     
     def search(self, query: str, demographic: str = "general") -> Dict:
-        """Main search with direct Wikipedia article links"""
+        """Main search - WHITELIST ONLY"""
         print(f"\n[Search] Query: {query}")
         print(f"[Search] Demographic: {demographic}")
+        print(f"[Security] WHITELIST MODE - Only searching {len(self.domains_list)} approved domains")
         
         # Get SVEN hints for enhanced searching
         sven_hints = self.sven.generate_search_hints(query)
@@ -500,11 +506,12 @@ class SearchEngine:
             'demographic': demographic,
             'demographic_hints': hints,
             'sven_expanded': len(sven_hints['expanded_terms']),
-            'wikipedia_prioritized': any('wikipedia' in str(d).lower() for d in priority_domains)
+            'wikipedia_prioritized': any('wikipedia' in str(d).lower() for d in priority_domains),
+            'whitelist_mode': True
         }
     
     def create_default_results(self, query: str, domains: List[str]) -> List[Dict]:
-        """Create default results when search fails"""
+        """Create default results when search fails - WHITELIST ONLY"""
         results = []
         for domain in domains[:5]:
             # Extract clean domain name
