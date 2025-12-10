@@ -1,8 +1,8 @@
 """
 Enhanced search with phrase matching, subpage discovery, demographic optimization
 and SVEN 3.2 (Swedish Enhanced Vocabulary and Entity Normalization)
-Wikipedia is prioritized for factual/encyclopedia queries with DIRECT article URLs
-DYNAMIC Wikipedia search - ANY topic supported, NOT limited to hardcoded entities
+Wikipedia handled by DEDICATED ALGORITHM (Wikipedia Handler 1.0)
+Wikipedia NOT treated like regular domains - has explicit/separate search logic
 DEFAULT: sv.wikipedia (Swedish), fallback to en.wikipedia (English)
 SECURITY: Only searches whitelisted domains from domains.json
 RANKING: Advanced BM25+TF-IDF algorithms for 8-9/10 precision
@@ -24,6 +24,7 @@ from collections import Counter
 
 # Import SVEN from algorithms folder
 from algorithms.sven import SVEN
+from algorithms.wikipedia_handler import WikipediaHandler
 
 def get_resource_path(relative_path):
     """Get absolute path to resource - works for dev and PyInstaller"""
@@ -42,7 +43,11 @@ class SearchEngine:
         
         # Initialize SVEN for enhanced search
         self.sven = SVEN()
-        print("[Klar] SVEN 3.2 initialized - Dynamic Wikipedia search + BM25/TF-IDF active")
+        print("[Klar] SVEN 3.2 initialized - Dynamic query expansion + BM25/TF-IDF active")
+        
+        # Initialize Wikipedia Handler (separate algorithm)
+        self.wikipedia_handler = WikipediaHandler()
+        print("[Klar] Wikipedia Handler 1.0 initialized - Dedicated Wikipedia algorithm")
         
         # Load domains using resource path for PyInstaller
         domains_file = get_resource_path("domains.json")
@@ -110,7 +115,7 @@ class SearchEngine:
         print(f"[Klar] Whitelisted domains: {len(self.domains_list)}")
         print(f"[Klar] Keywords: {total_keywords}")
         print(f"[Klar] Categories: {len(self.domain_categories)}")
-        print(f"[Klar] Wikipedia: DYNAMIC search for ANY topic (sv.wikipedia default, en fallback)")
+        print(f"[Klar] Wikipedia: Dedicated algorithm (NOT treated as regular domain)")
         print(f"[Klar] Advanced ranking: BM25 + TF-IDF + Contextual weighting")
         print(f"[Security] STRICT WHITELIST MODE - Searching {len(self.domains_list)} approved domains")
 
@@ -174,173 +179,31 @@ class SearchEngine:
         
         return categories
     
-    def _get_wikipedia_article_url(self, topic: str, lang: str = 'sv') -> Optional[str]:
-        """
-        DYNAMIC: Find direct Wikipedia article URL using Wikipedia API
-        Works for ANY topic - no hardcoded entity limits
-        lang: 'sv' for Swedish, 'en' for English
-        Returns: Direct Wikipedia article URL or None
-        """
-        try:
-            # Build Wikipedia API URL
-            if lang == 'sv':
-                api_url = "https://sv.wikipedia.org/w/api.php"
-                wiki_base = "https://sv.wikipedia.org/wiki/"
-                wiki_domain = 'sv.wikipedia.org'
-                lang_name = "Swedish Wikipedia"
-            else:
-                api_url = "https://en.wikipedia.org/w/api.php"
-                wiki_base = "https://en.wikipedia.org/wiki/"
-                wiki_domain = 'wikipedia.org'
-                lang_name = "English Wikipedia"
-            
-            # SECURITY: Check if Wikipedia is whitelisted
-            if not self._is_domain_whitelisted(wiki_domain):
-                print(f"[Security] Wikipedia ({wiki_domain}) not in whitelist, skipping")
-                return None
-            
-            # Clean up topic - remove Swedish question words
-            topic_clean = topic.strip()
-            for qword in ['vem är', 'vad är', 'var är', 'när är', 'hur många']:
-                if topic_clean.lower().startswith(qword):
-                    topic_clean = topic_clean[len(qword):].strip()
-            
-            topic_clean = topic_clean.strip("?,!\"'.;:-").strip()
-            
-            if not topic_clean or len(topic_clean) < 2:
-                print(f"[Wikipedia] Topic too short or empty after cleanup")
-                return None
-            
-            print(f"[Wikipedia] Searching {lang_name} for: '{topic_clean}'")
-            
-            # Search for the article using Wikipedia API
-            params = {
-                'action': 'query',
-                'format': 'json',
-                'titles': topic_clean,
-                'redirects': True,  # Follow redirects automatically
-                'formatversion': 2,
-            }
-            
-            response = self.session.get(api_url, params=params, timeout=5)
-            response.raise_for_status()
-            data = response.json()
-            
-            pages = data.get('query', {}).get('pages', [])
-            
-            if not pages:
-                print(f"[Wikipedia] No results found for: '{topic_clean}'")
-                return None
-            
-            # Find the first valid article (Wikipedia API returns array in v2 format)
-            for page in pages:
-                page_id = page.get('id')
-                # Check if article exists (id is present and not -1 in v1 format)
-                if page_id and page_id != -1:
-                    title = page.get('title')
-                    if title:
-                        # Build direct article URL
-                        article_url = wiki_base + quote(title.replace(' ', '_'), safe='/')
-                        print(f"[Wikipedia] ✓ Found: '{title}'")
-                        print(f"[Wikipedia] URL: {article_url}")
-                        return article_url
-            
-            print(f"[Wikipedia] ✗ Article not found for: '{topic_clean}'")
-            return None
-        
-        except Exception as e:
-            print(f"[Wikipedia] Error searching {lang_name}: {e}")
-            return None
-    
-    def _is_factual_query(self, query: str) -> bool:
-        """
-        Detect if query is asking for facts/definitions
-        Examples: 'vem ar', 'what is', 'vad ar', 'hur manga'
-        """
-        factual_patterns = [
-            r'^(vem|who)\s+(ar|is)',           # Who is
-            r'^(vad|what)\s+(ar|is)',          # What is
-            r'^(hur|how)\s+(manga|much|old)', # How many/much/old
-            r'^(var|where)\s+(ar|is)',         # Where is
-            r'^(nar|when)',                     # When
-            r'definition',
-            r'forklara',                        # Explain
-            r'biography',
-            r'biografi',
-            r'meaning',
-            r'betydelse',
-        ]
-        
-        query_lower = query.lower().strip()
-        for pattern in factual_patterns:
-            if re.search(pattern, query_lower):
-                print(f"[Wikipedia] Factual query detected: '{query}'")
-                return True
-        
-        return False
-    
-    def _is_encyclopedia_topic(self, query: str) -> bool:
-        """
-        Detect if query is about a person, place, concept, or event
-        that would have a Wikipedia article
-        """
-        encyclopedia_patterns = [
-            r'\b(Stockholm|Sverige|Sverige|Goteborg|Malmo)\b',
-            r'\b(Einstein|Darwin|Newton|Marie Curie)\b',
-            r'\b(Elon Musk|Greta Thunberg|Zlatan|Tesla|SpaceX)\b',
-            r'\b(World War|Cold War|French Revolution)\b',
-            r'\b(Climate|Evolution|Quantum|DNA)\b',
-            r'\b(Python|JavaScript|Computer|Internet)\b',
-        ]
-        
-        query_lower = query.lower()
-        for pattern in encyclopedia_patterns:
-            if re.search(pattern, query_lower, re.IGNORECASE):
-                return True
-        
-        # Check if it's a single word or proper noun (likely encyclopedia topic)
-        words = query.strip().split()
-        if len(words) <= 3:
-            # Check if first word is capitalized (proper noun)
-            if words[0] and words[0][0].isupper():
-                return True
-        
-        return False
-    
     def detect_query_intent(self, query: str, sven_hints: Dict = None) -> Tuple[List[str], List[str]]:
-        """Detect query intent with DYNAMIC Wikipedia search - WHITELIST ONLY"""
+        """
+        Detect query intent with EXPLICIT Wikipedia handling
+        Wikipedia is handled by dedicated algorithm (WikipediaHandler)
+        NOT mixed with regular domain searches
+        """
         query_lower = query.lower()
         detected_categories = []
         priority_domains = []
         
-        # NEW: Check if this is a factual/encyclopedia query
-        is_factual = self._is_factual_query(query)
-        is_encyclopedia = self._is_encyclopedia_topic(query)
-        
-        if is_factual or is_encyclopedia:
-            # DYNAMIC: Use search_topic from SVEN instead of hardcoded aliases
+        # EXPLICIT CHECK: Use Wikipedia Handler to detect and search Wikipedia
+        if self.wikipedia_handler.is_wikipedia_query(query):
+            print(f"[Search Intent] Wikipedia query detected - using dedicated algorithm")
             search_topic = sven_hints.get('search_topic', query) if sven_hints else query
             
-            print(f"[Wikipedia] Dynamic topic extraction: '{search_topic}'")
+            # Use Wikipedia Handler to search
+            wikipedia_url = self.wikipedia_handler.search_with_fallback(search_topic)
             
-            # Try Swedish Wikipedia first (DEFAULT)
-            sv_article = self._get_wikipedia_article_url(search_topic, lang='sv')
-            if sv_article:
-                priority_domains.append(sv_article)
-            
-            # Try English Wikipedia as fallback
-            en_article = self._get_wikipedia_article_url(search_topic, lang='en')
-            if en_article:
-                priority_domains.append(en_article)
-            
-            # If no direct article found, add Wikipedia homepage as fallback
-            if not priority_domains:
-                if self._is_domain_whitelisted('sv.wikipedia.org'):
-                    priority_domains.append('https://sv.wikipedia.org')
-                if self._is_domain_whitelisted('wikipedia.org'):
-                    priority_domains.append('https://en.wikipedia.org')
+            if wikipedia_url:
+                priority_domains.append(wikipedia_url)
+                print(f"[Search Intent] Wikipedia result added to priority domains")
+            else:
+                print(f"[Search Intent] Wikipedia search failed, continuing with regular domains")
         
-        # Use SVEN to expand query with semantic understanding
+        # Use SVEN to expand query with semantic understanding (for non-Wikipedia domains)
         if sven_hints:
             expanded_terms = sven_hints['expanded_terms']
             print(f"[SVEN] Expanded '{query}' to {len(expanded_terms)} terms")
@@ -383,7 +246,7 @@ class SearchEngine:
         return detected_categories, priority_domains
     
     def get_relevant_domains(self, query: str, demographic: str = "general", sven_hints: Dict = None) -> List[str]:
-        """Get relevant domains - WHITELIST ONLY"""
+        """Get relevant domains - WHITELIST ONLY (excludes Wikipedia, handled separately)"""
         # SECURITY: Check if query is a domain that's whitelisted
         if '.' in query and ' ' not in query and len(query.split('.')) >= 2:
             domain = query.lower().replace('www.', '').split('/')[0]
@@ -397,7 +260,7 @@ class SearchEngine:
         categories, priority_domains = self.detect_query_intent(query, sven_hints)
         relevant_domains = []
         
-        # Add priority domains (Wikipedia articles come first)
+        # Add priority domains (Wikipedia comes first if found)
         relevant_domains.extend(priority_domains)
         
         for category in categories:
@@ -414,7 +277,7 @@ class SearchEngine:
         for domain in relevant_domains:
             # Handle both full URLs and domain names
             if domain.startswith('http'):
-                result.append(domain)  # Direct URL
+                result.append(domain)  # Direct URL (Wikipedia)
             elif domain not in seen:
                 # Extract base domain for checking
                 base_domain = domain.split('/')[0].lower()
@@ -422,7 +285,7 @@ class SearchEngine:
                     seen.add(domain)
                     result.append(base_domain)
         
-        print(f"[Search] Searching {len(result)} domains (priority first)")
+        print(f"[Search] Searching {len(result)} regular domains")
         return result[:12]
     
     def get_demographic_hints(self, demographic: str) -> Dict:
@@ -475,7 +338,7 @@ class SearchEngine:
         return hints.get(demographic, hints['general'])
     
     def search(self, query: str, demographic: str = "general") -> Dict:
-        """Main search - WHITELIST ONLY"""
+        """Main search - WHITELIST ONLY, Wikipedia handled separately"""
         print(f"\n[Search] Query: {query}")
         print(f"[Search] Demographic: {demographic}")
         print(f"[Security] WHITELIST MODE - Only searching {len(self.domains_list)} approved domains")
@@ -492,7 +355,8 @@ class SearchEngine:
         categories, priority_domains = self.detect_query_intent(query, sven_hints)
         
         print(f"[Search] Detected: {', '.join(categories) if categories else 'general'}")
-        print(f"[Search] Searching {len(relevant_domains)} domains")
+        print(f"[Search] Searching {len(relevant_domains)} regular domains")
+        print(f"[Search] Priority domains (Wikipedia): {len([d for d in priority_domains if d.startswith('http')])}")
         print(f"[Search] Domains: {relevant_domains}")
         
         results = []
@@ -554,9 +418,10 @@ class SearchEngine:
             'demographic': demographic,
             'demographic_hints': hints,
             'sven_expanded': len(sven_hints['expanded_terms']),
-            'wikipedia_prioritized': any('wikipedia' in str(d).lower() for d in priority_domains),
+            'wikipedia_prioritized': any(d.startswith('http') and 'wikipedia' in d for d in priority_domains),
             'whitelist_mode': True,
-            'ranking_algorithm': 'BM25+TF-IDF+Contextual'
+            'ranking_algorithm': 'BM25+TF-IDF+Contextual',
+            'wikipedia_algorithm': 'Dedicated WikipediaHandler 1.0'
         }
     
     def create_default_results(self, query: str, domains: List[str]) -> List[Dict]:
@@ -880,12 +745,10 @@ class SearchEngine:
                     auth_score = value
                     break
             
-            # MASSIVE BOOST for Wikipedia on factual queries
+            # BOOST for Wikipedia (found via dedicated algorithm)
             wikipedia_boost = 0.0
-            if 'wikipedia' in domain.lower() and self._is_factual_query(query):
-                wikipedia_boost = 0.4  # 40% boost for Wikipedia on factual queries
-            elif 'wikipedia' in domain.lower():
-                wikipedia_boost = 0.2  # 20% boost for Wikipedia on any query
+            if 'wikipedia' in domain.lower():
+                wikipedia_boost = 0.3  # Priority boost for Wikipedia results
             
             priority_boost = 0.5 if any(domain in str(pd).lower() for pd in priority_domains) else 0.0
             
@@ -911,7 +774,7 @@ class SearchEngine:
                 (priority_boost * 0.10) +
                 (demographic_boost * 0.08) +
                 (contextual_boost * 0.05) +
-                (wikipedia_boost * 0.12)  # Wikipedia boost when relevant
+                (wikipedia_boost * 0.12)  # Wikipedia boost
             )
         
         return sorted(results, key=lambda x: x['final_score'], reverse=True)
