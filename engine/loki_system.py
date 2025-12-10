@@ -1,6 +1,7 @@
 """
 LOKI - Local Offline Knowledge Index
 Offline search system for Klar with automatic page caching and SQLite indexing
+NOW with support for specialized handlers (Wikipedia, etc.)
 """
 
 import sqlite3
@@ -14,7 +15,7 @@ from urllib.parse import urlparse
 
 
 class LOKISystem:
-    """Offline search and caching system"""
+    """Offline search and caching system with specialized handler support"""
     
     def __init__(self, storage_path: str):
         self.storage_path = Path(storage_path)
@@ -22,6 +23,7 @@ class LOKISystem:
         self.db_path = self.storage_path / "loki" / "search_index.db"
         self.settings_path = self.storage_path / "loki" / "settings.json"
         self.sync_log_path = self.storage_path / "loki" / "sync_log.json"
+        self.handlers_config_path = self.storage_path / "loki" / "handlers_config.json"
         
         # Create directories
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -35,6 +37,11 @@ class LOKISystem:
         
         # Load sync log
         self.sync_log = self._load_sync_log()
+        
+        # Load handlers configuration
+        self.handlers_config = self._load_handlers_config()
+        
+        print("[LOKI] Initialized with specialized handler support")
     
     def _load_settings(self) -> Dict:
         """Load LOKI settings"""
@@ -63,6 +70,32 @@ class LOKISystem:
         with open(self.settings_path, 'w', encoding='utf-8') as f:
             json.dump(settings, f, indent=2, ensure_ascii=False)
     
+    def _load_handlers_config(self) -> Dict:
+        """Load specialized handlers configuration"""
+        if self.handlers_config_path.exists():
+            with open(self.handlers_config_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        
+        # Default handlers configuration
+        defaults = {
+            'wikipedia': {
+                'enabled': True,
+                'cache_articles': True,
+                'languages': ['sv', 'en'],
+                'timeout': 5.0,
+                'retry_attempts': 2,
+            },
+            'custom_handlers': {}
+        }
+        
+        self._save_handlers_config(defaults)
+        return defaults
+    
+    def _save_handlers_config(self, config: Dict):
+        """Save handlers configuration"""
+        with open(self.handlers_config_path, 'w', encoding='utf-8') as f:
+            json.dump(config, f, indent=2, ensure_ascii=False)
+    
     def _init_database(self):
         """Initialize SQLite database for offline search"""
         conn = sqlite3.connect(str(self.db_path))
@@ -75,6 +108,7 @@ class LOKISystem:
                 url TEXT UNIQUE,
                 title TEXT,
                 domain TEXT,
+                handler_type TEXT DEFAULT 'regular',
                 content_hash TEXT,
                 timestamp DATETIME,
                 cached_size INTEGER,
@@ -100,7 +134,8 @@ class LOKISystem:
                 query TEXT,
                 timestamp DATETIME,
                 results_count INTEGER,
-                online INTEGER DEFAULT 1
+                online INTEGER DEFAULT 1,
+                handler_used TEXT
             )
         ''')
         
@@ -108,6 +143,7 @@ class LOKISystem:
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_domain ON pages(domain)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_keyword ON keywords(keyword)')
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON pages(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_handler ON pages(handler_type)')
         
         conn.commit()
         conn.close()
@@ -117,15 +153,20 @@ class LOKISystem:
         if self.sync_log_path.exists():
             with open(self.sync_log_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
-        return {'entries': [], 'last_sync': None, 'offline_queries': []}
+        return {'entries': [], 'last_sync': None, 'offline_queries': [], 'handler_requests': []}
     
     def _save_sync_log(self):
         """Save synchronization log"""
         with open(self.sync_log_path, 'w', encoding='utf-8') as f:
             json.dump(self.sync_log, f, indent=2, ensure_ascii=False)
     
-    def cache_page(self, page_data: Dict) -> bool:
-        """Cache a page for offline access"""
+    def cache_page(self, page_data: Dict, handler_type: str = 'regular') -> bool:
+        """Cache a page for offline access
+        
+        Args:
+            page_data: Dictionary with 'url', 'title', 'content'
+            handler_type: 'regular', 'wikipedia', or custom handler name
+        """
         if not self.settings.get('enabled', False):
             return False
         
@@ -147,9 +188,9 @@ class LOKISystem:
             
             cursor.execute('''
                 INSERT OR REPLACE INTO pages 
-                (url, title, domain, content_hash, timestamp, cached_size, last_accessed)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (url, title, domain, content_hash, timestamp, cached_size, timestamp))
+                (url, title, domain, handler_type, content_hash, timestamp, cached_size, last_accessed)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (url, title, domain, handler_type, content_hash, timestamp, cached_size, timestamp))
             
             page_id = cursor.lastrowid
             
@@ -162,13 +203,15 @@ class LOKISystem:
                 ''', (page_id, keyword, frequency))
             
             # Save page cache as JSON
-            cache_file = self.cache_dir / domain / f"page_{page_id}.json"
+            cache_dir_handler = self.cache_dir / handler_type / domain
+            cache_file = cache_dir_handler / f"page_{page_id}.json"
             cache_file.parent.mkdir(parents=True, exist_ok=True)
             
             cache_data = {
                 'url': url,
                 'title': title,
                 'domain': domain,
+                'handler_type': handler_type,
                 'content': content[:5000],  # Store first 5000 chars
                 'timestamp': timestamp,
                 'size_bytes': cached_size
@@ -180,6 +223,7 @@ class LOKISystem:
             # Log sync
             self.sync_log['entries'].append({
                 'url': url,
+                'handler_type': handler_type,
                 'timestamp': timestamp,
                 'action': 'cached',
                 'size': cached_size
@@ -192,6 +236,7 @@ class LOKISystem:
             # Manage storage
             self._manage_storage()
             
+            print(f"[LOKI] Cached page via {handler_type}: {title}")
             return True
         
         except Exception as e:
@@ -213,8 +258,14 @@ class LOKISystem:
         sorted_words = sorted(words.items(), key=lambda x: x[1], reverse=True)
         return dict(sorted_words[:max_keywords])
     
-    def offline_search(self, query: str, limit: int = 10) -> List[Dict]:
-        """Search offline cache"""
+    def offline_search(self, query: str, limit: int = 10, handler_filter: str = None) -> List[Dict]:
+        """Search offline cache
+        
+        Args:
+            query: Search query
+            limit: Maximum results
+            handler_filter: Filter by handler type (e.g., 'wikipedia', 'regular')
+        """
         try:
             query_lower = query.lower()
             query_words = set(query_lower.split())
@@ -226,13 +277,21 @@ class LOKISystem:
             results = {}
             for word in query_words:
                 if len(word) > 2:
-                    cursor.execute('''
-                        SELECT p.id, p.url, p.title, p.domain, p.timestamp, k.frequency
+                    sql = '''
+                        SELECT p.id, p.url, p.title, p.domain, p.timestamp, p.handler_type, k.frequency
                         FROM pages p
                         JOIN keywords k ON p.id = k.page_id
                         WHERE k.keyword LIKE ?
-                        ORDER BY k.frequency DESC
-                    ''', (f'%{word}%',))
+                    '''
+                    params = [f'%{word}%']
+                    
+                    if handler_filter:
+                        sql += ' AND p.handler_type = ?'
+                        params.append(handler_filter)
+                    
+                    sql += ' ORDER BY k.frequency DESC'
+                    
+                    cursor.execute(sql, params)
                     
                     for row in cursor.fetchall():
                         page_id = row[0]
@@ -242,10 +301,11 @@ class LOKISystem:
                                 'title': row[2],
                                 'domain': row[3],
                                 'timestamp': row[4],
+                                'handler_type': row[5],
                                 'relevance_score': 0,
                                 'source': 'offline_cache'
                             }
-                        results[page_id]['relevance_score'] += row[5]
+                        results[page_id]['relevance_score'] += row[6]
             
             # Sort by relevance
             sorted_results = sorted(
@@ -255,10 +315,11 @@ class LOKISystem:
             )[:limit]
             
             # Update search history
+            handler_used = handler_filter or 'offline'
             cursor.execute('''
-                INSERT INTO search_history (query, timestamp, results_count, online)
-                VALUES (?, ?, ?, ?)
-            ''', (query, datetime.now().isoformat(), len(sorted_results), 0))
+                INSERT INTO search_history (query, timestamp, results_count, online, handler_used)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (query, datetime.now().isoformat(), len(sorted_results), 0, handler_used))
             
             conn.commit()
             conn.close()
@@ -268,6 +329,28 @@ class LOKISystem:
         except Exception as e:
             print(f"[LOKI] Offline search error: {e}")
             return []
+    
+    def get_handler_config(self, handler_name: str) -> Dict:
+        """Get configuration for a specific handler"""
+        return self.handlers_config.get(handler_name, {})
+    
+    def enable_handler(self, handler_name: str) -> bool:
+        """Enable a specialized handler"""
+        if handler_name in self.handlers_config:
+            self.handlers_config[handler_name]['enabled'] = True
+            self._save_handlers_config(self.handlers_config)
+            print(f"[LOKI] Handler '{handler_name}' enabled")
+            return True
+        return False
+    
+    def disable_handler(self, handler_name: str) -> bool:
+        """Disable a specialized handler"""
+        if handler_name in self.handlers_config:
+            self.handlers_config[handler_name]['enabled'] = False
+            self._save_handlers_config(self.handlers_config)
+            print(f"[LOKI] Handler '{handler_name}' disabled")
+            return True
+        return False
     
     def _manage_storage(self):
         """Manage cache storage size"""
@@ -335,6 +418,13 @@ class LOKISystem:
             cursor.execute('SELECT SUM(cached_size) FROM pages')
             total_size = cursor.fetchone()[0] or 0
             
+            # Count by handler
+            cursor.execute('''
+                SELECT handler_type, COUNT(*) FROM pages
+                GROUP BY handler_type
+            ''')
+            handler_stats = {row[0]: row[1] for row in cursor.fetchall()}
+            
             conn.close()
             
             return {
@@ -342,7 +432,9 @@ class LOKISystem:
                 'page_count': page_count,
                 'domain_count': domain_count,
                 'cache_size_mb': total_size / 1024 / 1024,
-                'storage_path': str(self.storage_path)
+                'handler_stats': handler_stats,
+                'storage_path': str(self.storage_path),
+                'handlers_enabled': [h for h, cfg in self.handlers_config.items() if cfg.get('enabled', False)]
             }
         
         except Exception as e:
@@ -372,4 +464,37 @@ class LOKISystem:
         
         except Exception as e:
             print(f"[LOKI] Error clearing cache: {e}")
+            return False
+    
+    def clear_handler_cache(self, handler_type: str) -> bool:
+        """Clear cache for a specific handler"""
+        try:
+            conn = sqlite3.connect(str(self.db_path))
+            cursor = conn.cursor()
+            
+            # Get all page IDs for this handler
+            cursor.execute('SELECT id FROM pages WHERE handler_type = ?', (handler_type,))
+            page_ids = [row[0] for row in cursor.fetchall()]
+            
+            # Delete keywords
+            for page_id in page_ids:
+                cursor.execute('DELETE FROM keywords WHERE page_id = ?', (page_id,))
+            
+            # Delete pages
+            cursor.execute('DELETE FROM pages WHERE handler_type = ?', (handler_type,))
+            
+            conn.commit()
+            conn.close()
+            
+            # Delete cache directory
+            import shutil
+            handler_cache_dir = self.cache_dir / handler_type
+            if handler_cache_dir.exists():
+                shutil.rmtree(handler_cache_dir)
+            
+            print(f"[LOKI] Cache cleared for handler: {handler_type}")
+            return True
+        
+        except Exception as e:
+            print(f"[LOKI] Error clearing handler cache: {e}")
             return False
