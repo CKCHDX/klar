@@ -1,6 +1,6 @@
 """
 Klar Setup Wizard
-First-run configuration for local search mode and data directory
+First-run configuration for local search mode, Wikipedia Handler, and data directory
 """
 
 import json
@@ -8,7 +8,8 @@ import os
 from pathlib import Path
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QLabel, QRadioButton, QButtonGroup,
-    QPushButton, QLineEdit, QFileDialog, QCheckBox, QWidget, QProgressBar
+    QPushButton, QLineEdit, QFileDialog, QCheckBox, QWidget, QProgressBar,
+    QTabWidget
 )
 from PyQt6.QtCore import Qt, QTimer
 from PyQt6.QtGui import QFont, QIcon
@@ -17,13 +18,16 @@ from PyQt6.QtGui import QFont, QIcon
 class SetupWizard(QDialog):
     """
     First-run setup wizard for Klar browser.
-    Configures offline search and data directory preferences.
+    Configures:
+    - Offline search (LOKI)
+    - Wikipedia Handler (dedicated algorithm)
+    - Data directory preferences
     """
     
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Klar Setup Wizard')
-        self.setGeometry(100, 100, 600, 500)
+        self.setGeometry(100, 100, 700, 550)
         self.config = {}
         self.current_step = 0
         self.setup_ui()
@@ -95,15 +99,17 @@ class SetupWizard(QDialog):
         elif step == 1:
             self.show_offline_mode()
         elif step == 2:
-            self.show_data_location()
+            self.show_wikipedia_handler()
         elif step == 3:
+            self.show_data_location()
+        elif step == 4:
             self.show_completion()
         
         # Update buttons
         self.prev_btn.setEnabled(step > 0)
-        self.prev_btn.setVisible(step < 3)
-        self.next_btn.setVisible(step < 2)
-        self.finish_btn.setVisible(step >= 2)
+        self.prev_btn.setVisible(step < 4)
+        self.next_btn.setVisible(step < 3)
+        self.finish_btn.setVisible(step >= 3)
     
     def show_welcome(self):
         """Welcome step"""
@@ -111,6 +117,7 @@ class SetupWizard(QDialog):
             'Welcome to Klar 3.0 - The Swedish Browser\n\n'
             'This setup wizard will help you configure:\n'
             '• Offline search mode (LOKI)\n'
+            '• Wikipedia Handler (dedicated algorithm)\n'
             '• Custom data directory for cached pages\n\n'
             'You can skip these settings and use online mode only.'
         )
@@ -159,6 +166,75 @@ class SetupWizard(QDialog):
         self.config['offline_mode'] = True
         self.offline_yes.toggled.connect(lambda checked: self.config.update({'offline_mode': checked}))
     
+    def show_wikipedia_handler(self):
+        """Wikipedia Handler configuration step"""
+        label = QLabel('Enable Wikipedia Handler?')
+        label_font = QFont()
+        label_font.setBold(True)
+        label.setFont(label_font)
+        self.content_layout.addWidget(label)
+        
+        info = QLabel(
+            'Wikipedia Handler is a dedicated algorithm for searching Wikipedia.\n\n'
+            'Features:\n'
+            '• Automatic Swedish/English Wikipedia search\n'
+            '• Direct article URL retrieval via Wikipedia API\n'
+            '• Smart topic normalization\n'
+            '• Fallback search if article not found\n'
+            '• Infobox data extraction\n\n'
+            'Wikipedia is treated as a specialized domain with its own algorithm\n'
+            '(not mixed with regular domain searches).'
+        )
+        info.setWordWrap(True)
+        info.setStyleSheet('color: #666; font-size: 11px;')
+        self.content_layout.addWidget(info)
+        
+        self.content_layout.addSpacing(20)
+        
+        self.wikipedia_group = QButtonGroup()
+        self.wikipedia_yes = QRadioButton('Yes, enable Wikipedia Handler')
+        self.wikipedia_yes.setChecked(True)
+        self.wikipedia_no = QRadioButton('No, treat Wikipedia as regular domain')
+        
+        self.wikipedia_group.addButton(self.wikipedia_yes)
+        self.wikipedia_group.addButton(self.wikipedia_no)
+        
+        self.content_layout.addWidget(self.wikipedia_yes)
+        self.content_layout.addWidget(self.wikipedia_no)
+        
+        # Wikipedia language options
+        self.content_layout.addSpacing(15)
+        
+        lang_label = QLabel('Preferred Wikipedia languages:')
+        lang_label.setStyleSheet('font-weight: bold; color: #333;')
+        self.content_layout.addWidget(lang_label)
+        
+        self.wikipedia_sv = QCheckBox('Swedish (sv.wikipedia.org) - Primary')
+        self.wikipedia_sv.setChecked(True)
+        self.content_layout.addWidget(self.wikipedia_sv)
+        
+        self.wikipedia_en = QCheckBox('English (en.wikipedia.org) - Fallback')
+        self.wikipedia_en.setChecked(True)
+        self.content_layout.addWidget(self.wikipedia_en)
+        
+        self.content_layout.addStretch()
+        
+        self.config['wikipedia_handler'] = True
+        self.config['wikipedia_languages'] = ['sv', 'en']
+        
+        self.wikipedia_yes.toggled.connect(lambda checked: self.config.update({'wikipedia_handler': checked}))
+        self.wikipedia_sv.toggled.connect(self.update_wikipedia_languages)
+        self.wikipedia_en.toggled.connect(self.update_wikipedia_languages)
+    
+    def update_wikipedia_languages(self):
+        """Update Wikipedia languages configuration"""
+        languages = []
+        if self.wikipedia_sv.isChecked():
+            languages.append('sv')
+        if self.wikipedia_en.isChecked():
+            languages.append('en')
+        self.config['wikipedia_languages'] = languages if languages else ['sv']
+    
     def show_data_location(self):
         """Data directory configuration step"""
         label = QLabel('Select Data Directory')
@@ -172,6 +248,7 @@ class SetupWizard(QDialog):
             'Default: ~/.klar/klar_data/\n'
             'This folder will contain:\n'
             '• Cached website pages (LOKI database)\n'
+            '• Wikipedia cache (separate handler)\n'
             '• Search index\n'
             '• Browsing history\n\n'
             f'Current: {self.get_default_data_path()}'
@@ -228,13 +305,20 @@ class SetupWizard(QDialog):
         label.setFont(label_font)
         self.content_layout.addWidget(label)
         
-        summary = QLabel(
-            f'Your Klar configuration:\n\n'
-            f'Offline Search (LOKI): '
-            f'{"Enabled" if self.config.get("offline_mode") else "Disabled"}\n\n'
-            f'Data Directory: {self.config.get("data_path", self.get_default_data_path())}\n\n\n'
-            f'You can change these settings anytime in Preferences.'
-        )
+        summary_text = f'''Your Klar configuration:
+
+
+Offline Search (LOKI): {"Enabled" if self.config.get("offline_mode") else "Disabled"}
+
+Wikipedia Handler: {"Enabled" if self.config.get("wikipedia_handler") else "Disabled"}
+Languages: {', '.join([lang.upper() for lang in self.config.get("wikipedia_languages", [])])}
+
+Data Directory: {self.config.get("data_path", self.get_default_data_path())}
+
+
+You can change these settings anytime in Preferences.'''
+        
+        summary = QLabel(summary_text)
         summary.setWordWrap(True)
         summary.setStyleSheet('font-size: 12px; line-height: 1.8;')
         self.content_layout.addWidget(summary)
@@ -253,7 +337,7 @@ class SetupWizard(QDialog):
     
     def update_progress(self):
         """Update progress bar"""
-        progress = int((self.current_step / 3) * 100)
+        progress = int((self.current_step / 4) * 100)
         self.progress.setValue(progress)
     
     def previous_step(self):
@@ -263,7 +347,7 @@ class SetupWizard(QDialog):
     
     def next_step(self):
         """Go to next step"""
-        if self.current_step < 3:
+        if self.current_step < 4:
             self.show_step(self.current_step + 1)
     
     def finish(self):
@@ -281,6 +365,8 @@ class SetupWizard(QDialog):
         
         config_data = {
             'offline_mode': self.config.get('offline_mode', True),
+            'wikipedia_handler': self.config.get('wikipedia_handler', True),
+            'wikipedia_languages': self.config.get('wikipedia_languages', ['sv', 'en']),
             'data_path': str(self.config.get('data_path', self.get_default_data_path())),
             'setup_complete': True,
         }
@@ -290,6 +376,8 @@ class SetupWizard(QDialog):
         
         print(f'[Setup] Configuration saved to {config_path}')
         print(f'[Setup] Offline mode: {config_data["offline_mode"]}')
+        print(f'[Setup] Wikipedia Handler: {config_data["wikipedia_handler"]}')
+        print(f'[Setup] Wikipedia languages: {config_data["wikipedia_languages"]}')
         print(f'[Setup] Data directory: {config_data["data_path"]}')
     
     @staticmethod
@@ -322,6 +410,8 @@ class SetupWizard(QDialog):
                 pass
         return {
             'offline_mode': True,
+            'wikipedia_handler': True,
+            'wikipedia_languages': ['sv', 'en'],
             'data_path': SetupWizard.get_default_data_path(),
             'setup_complete': False,
         }
