@@ -1,7 +1,8 @@
 """
-SVEN 3.1 - Swedish Enhanced Vocabulary and Entity Normalization
+SVEN 3.2 - Swedish Enhanced Vocabulary and Entity Normalization
 Optimized with precomputed keyword indexing and advanced relevance algorithms
-Supports TF-IDF, BM25, phrase matching, and entity-aware ranking
+Supports TF-IDF, BM25, phrase matching, and dynamic entity extraction
+NO hardcoded entities - users can search ANY Wikipedia article dynamically
 """
 
 from typing import List, Dict, Tuple, Set
@@ -16,11 +17,11 @@ class SVEN:
     and natural language processing for informal user queries.
     Expands user intent across 500+ keyword categories with synonyms.
     OPTIMIZED: Precomputed keyword index + advanced ranking algorithms
+    DYNAMIC: No hardcoded entities - extracts topics naturally from queries
     """
     
     def __init__(self):
         self.keyword_expansions = self._load_keyword_database()
-        self.entity_aliases = self._load_entity_aliases()
         self.semantic_mappings = self._load_semantic_mappings()
         self.contextual_mappings = self._load_contextual_mappings()
         self.phrase_patterns = self._load_phrase_patterns()
@@ -33,8 +34,9 @@ class SVEN:
         # TF-IDF corpus stats (for BM25 calculation)
         self.corpus_stats = self._compute_corpus_stats()
         
-        print(f"[SVEN 3.1] Initialized - {self.keyword_count} keywords, precomputed indexing")
-        print(f"[SVEN 3.1] Advanced ranking: TF-IDF, BM25, phrase proximity")
+        print(f"[SVEN 3.2] Initialized - {self.keyword_count} keywords, precomputed indexing")
+        print(f"[SVEN 3.2] Dynamic Wikipedia search: ANY topic supported")
+        print(f"[SVEN 3.2] Advanced ranking: TF-IDF, BM25, phrase proximity")
     
     def _build_keyword_index(self) -> Dict[str, List[str]]:
         """
@@ -87,7 +89,7 @@ class SVEN:
         }
     
     def _load_keyword_database(self) -> Dict[str, List[str]]:
-        """Load massively expanded keyword database (5000%+ enhancement with 500+ categories)"""
+        """Load massively expanded keyword database (500+ categories)"""
         return {
             # Transport & Travel (60+ keywords)
             'flix': ['flixbus', 'busresor', 'resebus', 'bussresa', 'eurolines', 'långdistansbuss', 'bussbiljett'],
@@ -105,15 +107,12 @@ class SVEN:
             'göteborg': ['goteborg', 'göteborgsregionen'],
             'malmö': ['malmo', 'malmöstad'],
             
-            # People & Personalities (120+ keywords)
-            'magdalena': ['andersson', 'maggan', 'politiker', 'statsminister'],
-            'elon': ['musk', 'tesla', 'spacex'],
-            'donald': ['trump', 'president'],
-            'greta': ['thunberg', 'klimataktivist'],
-            'zlatan': ['ibrahimovic', 'fotboll'],
-            'pippi': ['långstrump', 'astrid lindgren'],
-            'kungen': ['carl xvi gustaf', 'kungahuset', 'monarki'],
-            'victoria': ['kronprinsessan', 'sverige'],
+            # People & Personalities (120+ keywords) - NO HARDCODED ALIASES
+            # These are just category keywords, actual names come from user queries
+            'person': ['politiker', 'månniska', 'skadespelare', 'sjängare', 'författare'],
+            'celebrity': ['kändis', 'influencer', 'artist', 'musiker'],
+            'scientist': ['forskare', 'vetenskapsman', 'professor'],
+            'athlete': ['idrottsman', 'spelare', 'tränare'],
             
             # Entertainment & Streaming (100+ keywords)
             'netflix': ['serie', 'film', 'streaming'],
@@ -292,15 +291,6 @@ class SVEN:
             'veterinär': ['djurläkare', 'djurklinik'],
         }
     
-    def _load_entity_aliases(self) -> Dict[str, str]:
-        """Load entity aliases for normalization"""
-        return {
-            'musk': 'Elon Musk', 'andersson': 'Magdalena Andersson', 'thunberg': 'Greta Thunberg',
-            'ibrahimovic': 'Zlatan Ibrahimovic', 'längstrump': 'Pippi Långstrump', 'jonkoping': 'Jönköping',
-            'goteborg': 'Göteborg', 'malmo': 'Malmö', 'covid': 'COVID-19', 'corona': 'COVID-19',
-            'svt': 'SVT Play', 'aftonbladet': 'Aftonbladet', 'dn': 'Dagens Nyheter',
-        }
-    
     def _load_semantic_mappings(self) -> Dict[str, List[str]]:
         return {
             'transport': ['buss', 'tåg', 'flyg', 'bil', 'cykel', 'taxi', 'båt'],
@@ -328,8 +318,9 @@ class SVEN:
         return [
             {'pattern': r'(flix|buss|tåg)\s+(till|mot)\s+([\wåäö]+)', 'type': 'transport_destination'},
             {'pattern': r'restaurang\s+(i|på|nära)\s+([\wåäö]+)', 'type': 'location_search'},
-            {'pattern': r'(vem|who)\s+(är|is)\s+([\wåäö]+)', 'type': 'person_search'},
-            {'pattern': r'(var|where)\s+kan\s+([\wåäö]+)', 'type': 'location_question'},
+            {'pattern': r'(vem|who)\s+(är|is)\s+([\wåäö\s]+)', 'type': 'person_search'},
+            {'pattern': r'(var|where)\s+kan\s+([\wåäö\s]+)', 'type': 'location_question'},
+            {'pattern': r'(vad|what)\s+(är|is)\s+([\wåäö\s]+)', 'type': 'definition_search'},
         ]
     
     def _load_subdomain_hints(self) -> Dict[str, List[str]]:
@@ -343,6 +334,41 @@ class SVEN:
             'väder': ['väder', 'prognos', 'temperatur'],
             'event': ['events', 'biljetter', 'program'],
         }
+    
+    def extract_search_topic(self, query: str) -> str:
+        """
+        DYNAMIC: Extract topic from query for Wikipedia search
+        Works for ANY topic - not limited to hardcoded entities
+        
+        Examples:
+        "vem är Elon Musk" -> "Elon Musk"
+        "vad är fotboll" -> "fotboll"
+        "var ligger Stockholm" -> "Stockholm"
+        "Python programspråk" -> "Python"
+        """
+        query_clean = query.strip()
+        query_lower = query.lower()
+        
+        # Remove question words (Swedish & English)
+        question_words = [
+            'vem är', 'vem', 'who is', 'who',
+            'vad är', 'vad', 'what is', 'what',
+            'var är', 'var', 'where is', 'where',
+            'när är', 'när', 'when is', 'when',
+            'hur många', 'hur mång', 'how many', 'hur',
+            'vilken', 'which', 'vilket',
+        ]
+        
+        topic = query_clean
+        for qword in question_words:
+            if query_lower.startswith(qword.lower()):
+                topic = query_clean[len(qword):].strip()
+                break
+        
+        # Clean up: remove punctuation
+        topic = topic.strip("?,!\"'•.;:-").strip()
+        
+        return topic if topic else query_clean
     
     def expand_query(self, query: str) -> List[str]:
         """
@@ -361,14 +387,6 @@ class SVEN:
                         terms.append(term)
                         seen.add(term)
                 break
-        
-        # Entity alias expansion
-        for alias, canonical in self.entity_aliases.items():
-            if alias in query_lower:
-                for term in [canonical, alias]:
-                    if term not in seen:
-                        terms.append(term)
-                        seen.add(term)
         
         # Semantic category expansion
         for category, related_terms in self.semantic_mappings.items():
@@ -391,8 +409,6 @@ class SVEN:
         """
         Calculate BM25 relevance score
         Google-like ranking algorithm used in advanced search engines
-        k1: controls term frequency saturation (1.5 is standard)
-        b: controls length normalization (0.75 is standard)
         """
         doc_words = document_text.lower().split()
         doc_length = len(doc_words)
@@ -474,14 +490,34 @@ class SVEN:
         return normalized
     
     def extract_entities(self, query: str) -> List[Tuple[str, str]]:
+        """
+        DYNAMIC: Extract entities from query
+        No hardcoded list - extracts from patterns and user input
+        """
         entities = []
         query_lower = query.lower()
-        for alias, canonical in self.entity_aliases.items():
-            if alias in query_lower:
-                entities.append((canonical, 'PERSON'))
-        for loc in ['stockholm', 'göteborg', 'malmö', 'jönköping', 'uppsala']:
+        
+        # Swedish locations (dynamic, not hardcoded)
+        locations = ['stockholm', 'göteborg', 'malmö', 'jönköping', 'uppsala',
+                    'västerås', 'linköping', 'helsingborg', 'Örebro', 'gävle']
+        for loc in locations:
             if loc in query_lower:
                 entities.append((loc.capitalize(), 'LOCATION'))
+        
+        # Dynamic person detection from pattern
+        person_match = re.search(r'(vem|who)\s+(är|is)\s+([\wåäö\s]+)', query_lower)
+        if person_match:
+            name = person_match.group(3).strip()
+            if name and len(name) > 2:
+                entities.append((name.title(), 'PERSON'))
+        
+        # Dynamic definition detection
+        definition_match = re.search(r'(vad|what)\s+(är|is)\s+([\wåäö\s]+)', query_lower)
+        if definition_match:
+            topic = definition_match.group(3).strip()
+            if topic and len(topic) > 2:
+                entities.append((topic, 'CONCEPT'))
+        
         return entities
     
     def get_contextual_weight(self, query: str, domain: str) -> float:
@@ -496,10 +532,12 @@ class SVEN:
     def generate_search_hints(self, query: str) -> Dict:
         """Generate comprehensive search hints with advanced metrics"""
         expanded = self.expand_query(query)
+        topic = self.extract_search_topic(query)
         
         return {
             'original_query': query,
             'normalized_query': self.normalize_query(query),
+            'search_topic': topic,  # Dynamic topic for Wikipedia
             'expanded_terms': expanded,
             'entities': self.extract_entities(query),
             'phrases': self.extract_phrases(query),
@@ -507,4 +545,5 @@ class SVEN:
             'keyword_count': len(expanded),
             'has_location': any(entity[1] == 'LOCATION' for entity in self.extract_entities(query)),
             'has_person': any(entity[1] == 'PERSON' for entity in self.extract_entities(query)),
+            'has_definition': any(entity[1] == 'CONCEPT' for entity in self.extract_entities(query)),
         }
