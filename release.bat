@@ -145,6 +145,7 @@ if exist "build" rmdir /s /q build 2>nul
 if exist "release" rmdir /s /q release 2>nul
 if exist "klar.spec" del /q klar.spec 2>nul
 if exist "build_temp" rmdir /s /q build_temp 2>nul
+if exist "_temp_spec_gen.py" del /q _temp_spec_gen.py 2>nul
 
 echo OK: Build directories cleaned
 timeout /t 1 >nul
@@ -179,91 +180,100 @@ REM ============================================
 echo.
 echo [7/10] Creating PyInstaller configuration...
 
-REM CRITICAL FIX: Use Python to generate the spec file correctly
-REM This avoids batch file syntax issues with quotes and commas
+REM Create temporary Python script to generate spec file
+(
+echo # Temporary script to generate PyInstaller spec file
+echo spec_content = """# -*- mode: python ; coding: utf-8 -*-
+echo import sys
+echo from pathlib import Path
+echo.
+echo block_cipher = None
+echo.
+echo a = Analysis(
+echo     ['klar_browser.py'],
+echo     pathex=[],
+echo     binaries=[],
+echo     datas=[
+echo         ('keywords_db.json', '.'^),
+echo         ('domains.json', '.'^),
+echo         ('engine', 'engine'^),
+echo         ('algorithms', 'algorithms'^),
+echo     ],
+echo     hiddenimports=[
+echo         'PyQt6.QtCore',
+echo         'PyQt6.QtGui',
+echo         'PyQt6.QtWidgets',
+echo         'PyQt6.QtWebEngineWidgets',
+echo         'PyQt6.QtWebEngineCore',
+echo         'PyQt6.sip',
+echo         'requests',
+echo         'bs4',
+echo         'lxml',
+echo         'urllib3',
+echo         'PIL',
+echo         'json',
+echo         're',
+echo         'os',
+echo         'sys',
+echo         'pathlib',
+echo     ],
+echo     hookspath=[],
+echo     hooksconfig={},
+echo     runtime_hooks=[],
+echo     excludedimports=[],
+echo     win_no_prefer_redirects=False,
+echo     win_private_assemblies=False,
+echo     cipher=block_cipher,
+echo     noarchive=False,
+echo ^)
+echo.
+echo pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher^)
+echo.
+echo exe = EXE(
+echo     pyz,
+echo     a.scripts,
+echo     a.binaries,
+echo     a.zipfiles,
+echo     a.datas,
+echo     [],
+echo     name='Klar',
+echo     debug=False,
+echo     bootloader_ignore_signals=False,
+echo     strip=False,
+echo     upx=True,
+echo     upx_exclude=[],
+echo     runtime_tmpdir=None,
+echo     console=False,
+echo     disable_windowed_traceback=False,
+echo     target_arch=None,
+echo     codesign_identity=None,
+echo     entitlements_file=None,
+echo     icon=None,
+echo ^)
+ echo """
+echo.
+echo with open('klar.spec', 'w'^) as f:
+echo     f.write(spec_content^)
+echo print('OK: Spec file created'^)
+) > _temp_spec_gen.py
 
-python -c ^
-"import os
-^
-spec_content = '''# -*- mode: python ; coding: utf-8 -*-
-import sys
-from pathlib import Path
-
-block_cipher = None
-
-a = Analysis(
-    ['klar_browser.py'],
-    pathex=[],
-    binaries=[],
-    datas=[
-        ('keywords_db.json', '.'),
-        ('domains.json', '.'),
-        ('engine', 'engine'),
-        ('algorithms', 'algorithms'),
-    ],
-    hiddenimports=[
-        'PyQt6.QtCore',
-        'PyQt6.QtGui',
-        'PyQt6.QtWidgets',
-        'PyQt6.QtWebEngineWidgets',
-        'PyQt6.QtWebEngineCore',
-        'PyQt6.sip',
-        'requests',
-        'bs4',
-        'lxml',
-        'urllib3',
-        'PIL',
-        'json',
-        're',
-        'os',
-        'sys',
-        'pathlib',
-    ],
-    hookspath=[],
-    hooksconfig={},
-    runtime_hooks=[],
-    excludedimports=[],
-    win_no_prefer_redirects=False,
-    win_private_assemblies=False,
-    cipher=block_cipher,
-    noarchive=False,
-)
-
-pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
-
-exe = EXE(
-    pyz,
-    a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    [],
-    name='Klar',
-    debug=False,
-    bootloader_ignore_signals=False,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    runtime_tmpdir=None,
-    console=False,
-    disable_windowed_traceback=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    icon=None,
-)
-'''
-
-with open('klar.spec', 'w') as f:
-    f.write(spec_content)
-print('OK: Spec file created')
-"^
+REM Run the Python script to generate spec file
+python _temp_spec_gen.py
 
 if errorlevel 1 (
     echo ERROR: Failed to create spec file
     pause
     exit /b 1
 )
+
+if not exist "klar.spec" (
+    echo ERROR: klar.spec was not created
+    pause
+    exit /b 1
+)
+
+REM Clean up temp file
+del /q _temp_spec_gen.py 2>nul
 
 echo OK: PyInstaller spec created
 timeout /t 1 >nul
@@ -286,7 +296,7 @@ if errorlevel 1 (
     echo.
     
     REM Try direct command line approach (Windows uses semicolon separator)
-    pyinstaller --onefile --windowed --nonconsole ^
+    pyinstaller --onefile --windowed --noconsole ^
         --add-data "domains.json;." ^
         --add-data "keywords_db.json;." ^
         --add-data "engine;engine" ^
@@ -461,6 +471,7 @@ REM ============================================
 
 echo Cleaning temporary files...
 if exist "build_temp" rmdir /s /q build_temp 2>nul
+if exist "_temp_spec_gen.py" del /q _temp_spec_gen.py 2>nul
 
 REM ============================================
 REM COMPLETION
