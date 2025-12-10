@@ -46,12 +46,27 @@ class SearchEngine:
         if os.path.exists(domains_file):
             try:
                 with open(domains_file, 'r', encoding='utf-8') as f:
-                    domains_list = json.load(f)
+                    domains_list_raw = json.load(f)
+                
+                # CRITICAL FIX: Extract base domains from entries with paths
+                # e.g., "svt.se/nyheter" -> "svt.se"
+                self.domains_list = []
+                for domain_entry in domains_list_raw:
+                    # Remove paths, query strings, etc.
+                    base_domain = domain_entry.split('/')[0].lower().strip()
+                    if base_domain:
+                        self.domains_list.append(base_domain)
+                
+                # Remove duplicates
+                self.domains_list = list(set(self.domains_list))
+                self.domains_list.sort()
+                
                 # Store as both list and dict for compatibility
-                self.domains = {d: {"name": d, "category": "whitelisted"} for d in domains_list}
-                self.domains_list = domains_list
-                print(f"[DEBUG] Loaded {len(self.domains)} WHITELISTED domains")
-                print(f"[Security] WHITELIST MODE ACTIVE - Only these {len(self.domains)} domains allowed")
+                self.domains = {d: {"name": d, "category": "whitelisted"} for d in self.domains_list}
+                
+                print(f"[DEBUG] Loaded {len(self.domains_list)} WHITELISTED base domains")
+                print(f"[Security] WHITELIST MODE ACTIVE - Only these {len(self.domains_list)} domains allowed")
+                print(f"[Debug] Domains: {self.domains_list[:10]}... (showing first 10)")
             except Exception as e:
                 print(f"[ERROR] Failed to load domains.json: {e}")
                 self.domains = {}
@@ -87,11 +102,11 @@ class SearchEngine:
         
         total_keywords = sum(len(v.get('keywords', [])) for v in self.keyword_db.get('mappings', {}).values())
         print(f"[Klar] Search engine initialized")
-        print(f"[Klar] Whitelisted domains: {len(self.domains)}")
+        print(f"[Klar] Whitelisted domains: {len(self.domains_list)}")
         print(f"[Klar] Keywords: {total_keywords}")
         print(f"[Klar] Categories: {len(self.domain_categories)}")
-        print(f"[Klar] Wikipedia prioritization: ENABLED (direct article search)")
-        print(f"[Security] ⚠️  STRICT WHITELIST MODE - Only whitelisted domains will be searched")
+        print(f"[Klar] Wikipedia prioritization: ENABLED")
+        print(f"[Security] STRICT WHITELIST MODE - Searching {len(self.domains_list)} approved domains")
 
     
     def _load_keyword_database(self) -> Dict:
@@ -105,6 +120,27 @@ class SearchEngine:
             print("[Warning] keywords_db.json not found")
             return {'version': '1.0', 'mappings': {}, 'direct_domain_mappings': {}}
     
+    def _is_domain_whitelisted(self, domain: str) -> bool:
+        """Check if a domain (or base domain) is whitelisted"""
+        domain_lower = domain.lower().strip()
+        
+        # Direct match
+        if domain_lower in self.domains_list:
+            return True
+        
+        # Remove www. prefix
+        if domain_lower.startswith('www.'):
+            domain_lower = domain_lower[4:]
+            if domain_lower in self.domains_list:
+                return True
+        
+        # Extract base domain from full URL if needed
+        base_domain = domain_lower.split('/')[0]
+        if base_domain in self.domains_list:
+            return True
+        
+        return False
+    
     def _categorize_domains(self) -> Dict[str, List[str]]:
         """Categorize domains - only from whitelist"""
         categories = {}
@@ -114,12 +150,18 @@ class SearchEngine:
             domains = mapping_data.get('priority_domains', [])
             
             # SECURITY: Only include domains from whitelist
-            whitelisted_domains = [d for d in domains if d in self.domains_list]
+            whitelisted_domains = []
+            for d in domains:
+                if self._is_domain_whitelisted(d):
+                    # Extract base domain
+                    base_d = d.split('/')[0].lower()
+                    if base_d not in whitelisted_domains:
+                        whitelisted_domains.append(base_d)
             
-            if whitelisted_domains and category not in categories:
-                categories[category] = []
-            
-            categories[category].extend(whitelisted_domains)
+            if whitelisted_domains:
+                if category not in categories:
+                    categories[category] = []
+                categories[category].extend(whitelisted_domains)
         
         for category in categories:
             categories[category] = list(set(categories[category]))
@@ -155,8 +197,6 @@ class SearchEngine:
         Find direct Wikipedia article URL using Wikipedia API
         lang: 'sv' for Swedish, 'en' for English
         Returns: Direct Wikipedia article URL or None
-        
-        Example: "Elon Musk" -> "https://sv.wikipedia.org/wiki/Elon_Musk"
         """
         try:
             # Build Wikipedia API URL
@@ -170,8 +210,8 @@ class SearchEngine:
                 wiki_domain = 'wikipedia.org'
             
             # SECURITY: Check if Wikipedia is whitelisted
-            if wiki_domain not in self.domains_list and 'wikipedia.org' not in self.domains_list and 'sv.wikipedia.org' not in self.domains_list:
-                print(f"[Security] Wikipedia not in whitelist, skipping article search")
+            if not self._is_domain_whitelisted(wiki_domain):
+                print(f"[Security] Wikipedia ({wiki_domain}) not in whitelist, skipping")
                 return None
             
             # Search for the article
@@ -282,22 +322,22 @@ class SearchEngine:
                     priority_domains.append(sv_article)
                 else:
                     # Fallback to homepage if article not found
-                    if 'sv.wikipedia.org' in self.domains_list:
+                    if self._is_domain_whitelisted('sv.wikipedia.org'):
                         priority_domains.append('https://sv.wikipedia.org')
+                        print(f"[Wikipedia] Added Swedish Wikipedia to priority domains")
                 
                 # Also add English Wikipedia as backup
                 en_article = self._get_wikipedia_article_url(topic, lang='en')
                 if en_article:
                     priority_domains.append(en_article)
                 else:
-                    if 'wikipedia.org' in self.domains_list:
+                    if self._is_domain_whitelisted('wikipedia.org'):
                         priority_domains.append('https://en.wikipedia.org')
-                
-                print(f"[Wikipedia] Direct article search complete for: '{topic}'")
+                        print(f"[Wikipedia] Added English Wikipedia to priority domains")
             else:
-                if 'sv.wikipedia.org' in self.domains_list:
+                if self._is_domain_whitelisted('sv.wikipedia.org'):
                     priority_domains.append('https://sv.wikipedia.org')
-                if 'wikipedia.org' in self.domains_list:
+                if self._is_domain_whitelisted('wikipedia.org'):
                     priority_domains.append('https://wikipedia.org')
         
         # NEW: Use SVEN to expand query with semantic understanding
@@ -315,8 +355,11 @@ class SearchEngine:
             for keyword, domains in direct_mappings.items():
                 if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
                     # SECURITY: Only add whitelisted domains
-                    whitelisted_domains = [d for d in domains if d in self.domains_list]
-                    priority_domains.extend(whitelisted_domains)
+                    for d in domains:
+                        if self._is_domain_whitelisted(d):
+                            base_d = d.split('/')[0].lower()
+                            if base_d not in priority_domains:
+                                priority_domains.append(base_d)
             
             # Check keyword mappings
             for mapping_name, mapping_data in self.keyword_db.get('mappings', {}).items():
@@ -324,14 +367,16 @@ class SearchEngine:
                 category = mapping_data.get('category', 'general')
                 domains = mapping_data.get('priority_domains', [])
                 
-                # SECURITY: Only include whitelisted domains
-                whitelisted_domains = [d for d in domains if d in self.domains_list]
-                
                 for keyword in keywords:
                     if expanded_lower in keyword.lower() or keyword.lower() in expanded_lower:
                         if category not in detected_categories:
                             detected_categories.append(category)
-                        priority_domains.extend(whitelisted_domains)
+                        # SECURITY: Only include whitelisted domains
+                        for d in domains:
+                            if self._is_domain_whitelisted(d):
+                                base_d = d.split('/')[0].lower()
+                                if base_d not in priority_domains:
+                                    priority_domains.append(base_d)
                         break
         
         priority_domains = list(dict.fromkeys(priority_domains))
@@ -344,7 +389,7 @@ class SearchEngine:
         if '.' in query and ' ' not in query and len(query.split('.')) >= 2:
             domain = query.lower().replace('www.', '').split('/')[0]
             # Only allow if in whitelist
-            if domain in self.domains_list:
+            if self._is_domain_whitelisted(domain):
                 return [domain]
             else:
                 print(f"[Security] Domain '{domain}' NOT in whitelist, returning empty")
@@ -371,9 +416,12 @@ class SearchEngine:
             # Handle both full URLs and domain names
             if domain.startswith('http'):
                 result.append(domain)  # Direct URL
-            elif domain not in seen and domain in self.domains_list:
-                seen.add(domain)
-                result.append(domain)
+            elif domain not in seen:
+                # Extract base domain for checking
+                base_domain = domain.split('/')[0].lower()
+                if self._is_domain_whitelisted(base_domain):
+                    seen.add(domain)
+                    result.append(base_domain)
         
         print(f"[Security] Searching {len(result)} WHITELISTED domains")
         return result[:12]
