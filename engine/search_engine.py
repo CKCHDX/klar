@@ -1,7 +1,9 @@
 """
 Enhanced search with phrase matching, subpage discovery, demographic optimization
-and SVEN 3.1 (Swedish Enhanced Vocabulary and Entity Normalization)
+and SVEN 3.2 (Swedish Enhanced Vocabulary and Entity Normalization)
 Wikipedia is prioritized for factual/encyclopedia queries with DIRECT article URLs
+DYNAMIC Wikipedia search - ANY topic supported, NOT limited to hardcoded entities
+DEFAULT: sv.wikipedia (Swedish), fallback to en.wikipedia (English)
 SECURITY: Only searches whitelisted domains from domains.json
 RANKING: Advanced BM25+TF-IDF algorithms for 8-9/10 precision
 """
@@ -40,7 +42,7 @@ class SearchEngine:
         
         # Initialize SVEN for enhanced search
         self.sven = SVEN()
-        print("[Klar] SVEN 3.1 initialized - Precomputed indexing + BM25/TF-IDF active")
+        print("[Klar] SVEN 3.2 initialized - Dynamic Wikipedia search + BM25/TF-IDF active")
         
         # Load domains using resource path for PyInstaller
         domains_file = get_resource_path("domains.json")
@@ -108,7 +110,7 @@ class SearchEngine:
         print(f"[Klar] Whitelisted domains: {len(self.domains_list)}")
         print(f"[Klar] Keywords: {total_keywords}")
         print(f"[Klar] Categories: {len(self.domain_categories)}")
-        print(f"[Klar] Wikipedia prioritization: ENABLED")
+        print(f"[Klar] Wikipedia: DYNAMIC search for ANY topic (sv.wikipedia default, en fallback)")
         print(f"[Klar] Advanced ranking: BM25 + TF-IDF + Contextual weighting")
         print(f"[Security] STRICT WHITELIST MODE - Searching {len(self.domains_list)} approved domains")
 
@@ -174,7 +176,8 @@ class SearchEngine:
     
     def _get_wikipedia_article_url(self, topic: str, lang: str = 'sv') -> Optional[str]:
         """
-        Find direct Wikipedia article URL using Wikipedia API
+        DYNAMIC: Find direct Wikipedia article URL using Wikipedia API
+        Works for ANY topic - no hardcoded entity limits
         lang: 'sv' for Swedish, 'en' for English
         Returns: Direct Wikipedia article URL or None
         """
@@ -184,10 +187,12 @@ class SearchEngine:
                 api_url = "https://sv.wikipedia.org/w/api.php"
                 wiki_base = "https://sv.wikipedia.org/wiki/"
                 wiki_domain = 'sv.wikipedia.org'
+                lang_name = "Swedish Wikipedia"
             else:
                 api_url = "https://en.wikipedia.org/w/api.php"
                 wiki_base = "https://en.wikipedia.org/wiki/"
                 wiki_domain = 'wikipedia.org'
+                lang_name = "English Wikipedia"
             
             # SECURITY: Check if Wikipedia is whitelisted
             if not self._is_domain_whitelisted(wiki_domain):
@@ -200,39 +205,51 @@ class SearchEngine:
                 if topic_clean.lower().startswith(qword):
                     topic_clean = topic_clean[len(qword):].strip()
             
-            print(f"[Wikipedia] Searching for: {topic_clean}")
+            topic_clean = topic_clean.strip("?,!\"'.;:-").strip()
             
-            # Search for the article
+            if not topic_clean or len(topic_clean) < 2:
+                print(f"[Wikipedia] Topic too short or empty after cleanup")
+                return None
+            
+            print(f"[Wikipedia] Searching {lang_name} for: '{topic_clean}'")
+            
+            # Search for the article using Wikipedia API
             params = {
                 'action': 'query',
                 'format': 'json',
                 'titles': topic_clean,
-                'redirects': True,  # Follow redirects
+                'redirects': True,  # Follow redirects automatically
+                'formatversion': 2,
             }
             
             response = self.session.get(api_url, params=params, timeout=5)
             response.raise_for_status()
             data = response.json()
             
-            pages = data.get('query', {}).get('pages', {})
+            pages = data.get('query', {}).get('pages', [])
             
-            # Find the article (may be redirected)
-            for page_id, page_data in pages.items():
-                # Check if article exists (page_id != -1)
-                if page_id != '-1':
-                    title = page_data.get('title')
+            if not pages:
+                print(f"[Wikipedia] No results found for: '{topic_clean}'")
+                return None
+            
+            # Find the first valid article (Wikipedia API returns array in v2 format)
+            for page in pages:
+                page_id = page.get('id')
+                # Check if article exists (id is present and not -1 in v1 format)
+                if page_id and page_id != -1:
+                    title = page.get('title')
                     if title:
                         # Build direct article URL
                         article_url = wiki_base + quote(title.replace(' ', '_'), safe='/')
-                        print(f"[Wikipedia] ✓ Found: {title}")
-                        print(f"[Wikipedia] Direct URL: {article_url}")
+                        print(f"[Wikipedia] ✓ Found: '{title}'")
+                        print(f"[Wikipedia] URL: {article_url}")
                         return article_url
             
-            print(f"[Wikipedia] ✗ Article not found for: {topic_clean}")
+            print(f"[Wikipedia] ✗ Article not found for: '{topic_clean}'")
             return None
         
         except Exception as e:
-            print(f"[Wikipedia] Error searching: {e}")
+            print(f"[Wikipedia] Error searching {lang_name}: {e}")
             return None
     
     def _is_factual_query(self, query: str) -> bool:
@@ -291,7 +308,7 @@ class SearchEngine:
         return False
     
     def detect_query_intent(self, query: str, sven_hints: Dict = None) -> Tuple[List[str], List[str]]:
-        """Detect query intent with Wikipedia direct article search - WHITELIST ONLY"""
+        """Detect query intent with DYNAMIC Wikipedia search - WHITELIST ONLY"""
         query_lower = query.lower()
         detected_categories = []
         priority_domains = []
@@ -301,36 +318,22 @@ class SearchEngine:
         is_encyclopedia = self._is_encyclopedia_topic(query)
         
         if is_factual or is_encyclopedia:
-            # CRITICAL FIX: Use SVEN entity detection instead of query parsing
-            entities = sven_hints.get('entities', []) if sven_hints else []
+            # DYNAMIC: Use search_topic from SVEN instead of hardcoded aliases
+            search_topic = sven_hints.get('search_topic', query) if sven_hints else query
             
-            if entities:
-                # Use detected entities for Wikipedia search
-                for entity_name, entity_type in entities:
-                    if entity_type in ['PERSON', 'LOCATION', 'ORGANIZATION']:
-                        print(f"[Wikipedia] Using SVEN entity: {entity_name} ({entity_type})")
-                        
-                        # Try Swedish Wikipedia first
-                        sv_article = self._get_wikipedia_article_url(entity_name, lang='sv')
-                        if sv_article:
-                            priority_domains.append(sv_article)
-                        
-                        # Try English Wikipedia as backup
-                        en_article = self._get_wikipedia_article_url(entity_name, lang='en')
-                        if en_article:
-                            priority_domains.append(en_article)
-            else:
-                # Fallback: Use original query processing if no entities detected
-                print(f"[Wikipedia] No entities detected, using query-based search")
-                sv_article = self._get_wikipedia_article_url(query, lang='sv')
-                if sv_article:
-                    priority_domains.append(sv_article)
-                
-                en_article = self._get_wikipedia_article_url(query, lang='en')
-                if en_article:
-                    priority_domains.append(en_article)
+            print(f"[Wikipedia] Dynamic topic extraction: '{search_topic}'")
             
-            # Ensure Wikipedia homepage is fallback
+            # Try Swedish Wikipedia first (DEFAULT)
+            sv_article = self._get_wikipedia_article_url(search_topic, lang='sv')
+            if sv_article:
+                priority_domains.append(sv_article)
+            
+            # Try English Wikipedia as fallback
+            en_article = self._get_wikipedia_article_url(search_topic, lang='en')
+            if en_article:
+                priority_domains.append(en_article)
+            
+            # If no direct article found, add Wikipedia homepage as fallback
             if not priority_domains:
                 if self._is_domain_whitelisted('sv.wikipedia.org'):
                     priority_domains.append('https://sv.wikipedia.org')
@@ -419,7 +422,7 @@ class SearchEngine:
                     seen.add(domain)
                     result.append(base_domain)
         
-        print(f"[Security] Searching {len(result)} WHITELISTED domains")
+        print(f"[Search] Searching {len(result)} domains (priority first)")
         return result[:12]
     
     def get_demographic_hints(self, demographic: str) -> Dict:
@@ -480,6 +483,7 @@ class SearchEngine:
         # Get SVEN hints for enhanced searching
         sven_hints = self.sven.generate_search_hints(query)
         print(f"[SVEN] Normalized: {sven_hints['normalized_query']}")
+        print(f"[SVEN] Search topic: '{sven_hints['search_topic']}'")
         print(f"[SVEN] Expanded terms: {len(sven_hints['expanded_terms'])}")
         if sven_hints['entities']:
             print(f"[SVEN] Entities: {sven_hints['entities']}")
