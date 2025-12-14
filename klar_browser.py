@@ -1,7 +1,7 @@
 """
 Klar 3.1 - Standalone Swedish Browser
 Complete browser application with integrated search engine
-Features: LOKI offline search, Wikipedia direct search, Setup wizard, Whitelisted-only video playback
+Features: LOKI offline search, Wikipedia direct search, Setup wizard, Audio & video playback (whitelisted-only)
 """
 import sys
 import os
@@ -35,6 +35,7 @@ from engine.domain_whitelist import DomainWhitelist
 from engine.demographic_detector import DemographicDetector
 from engine.loki_system import LOKISystem
 from engine.video_support import VideoDetector, VideoPlayer, VideoMetadata, VideoType
+from engine.audio_support import AudioDetector, AudioPlayer, AudioMetadata, AudioType
 
 from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile
 
@@ -315,7 +316,7 @@ class KlarBrowser(QMainWindow):
             print("[LOKI] Disabled by user")
         
         # ============================================
-        # VIDEO CODEC SUPPORT - WHITELISTED ONLY
+        # MEDIA CODEC SUPPORT - WHITELISTED ONLY
         # ============================================
         profile = QWebEngineProfile.defaultProfile()
         settings = profile.settings()
@@ -327,10 +328,11 @@ class KlarBrowser(QMainWindow):
         settings.setAttribute(QWebEngineSettings.WebAttribute.AutoLoadImages, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.WebGLEnabled, True)
         
-        print("[Video] Whitelisted-only video support enabled")
-        print("[Video] Supported formats: MP4, WebM, OGV, HLS, DASH")
-        print("[Video] Supported sources: SVT, SR, UR, Filmstaden (whitelisted Swedish only)")
-        print("[Video] Security: Non-whitelisted domains blocked automatically")
+        print("[Media] Whitelisted-only media support enabled")
+        print("[Video] Formats: MP4, WebM, OGV, HLS, DASH")
+        print("[Audio] Formats: MP3, WAV, OGG, FLAC, M4A, HLS Audio")
+        print("[Media] Sources: SVT, SR, UR, Filmstaden, Spotify, Tidal (whitelisted Swedish only)")
+        print("[Media] Security: Non-whitelisted domains blocked automatically")
         # ============================================
         
         self.setWindowTitle("Klar 3.1")
@@ -561,7 +563,7 @@ class KlarBrowser(QMainWindow):
             ("🔒", "Integritet i fokus"),
             ("📶", "Offline-sökning med LOKI"),
             ("🖼️", "Inbyggd bildvisare"),
-            ("🎥", "Godk. videouppspelning")
+            ("🎥🔊", "Ljud & video uppspelning")
         ]
         
         for icon, text in features:
@@ -639,7 +641,8 @@ class KlarBrowser(QMainWindow):
             except:
                 pass
         
-        self.check_video_url(qurl)
+        # Check for media (audio/video)
+        self.check_media_url(qurl)
     
     def _cache_page_content(self, url: str, page, html: str):
         """Cache page content if LOKI enabled"""
@@ -682,77 +685,82 @@ class KlarBrowser(QMainWindow):
             print(f"[Security] Bypass error: {str(e)}")
             self.status.showMessage(f"Bypass fel: {str(e)}", 5000)
     
-    def check_video_url(self, qurl: QUrl):
-        """Video detection and handling - WHITELISTED ONLY"""
+    def check_media_url(self, qurl: QUrl):
+        """Audio and video detection - WHITELISTED ONLY"""
         url_string = qurl.toString()
         
-        # Use VideoDetector to identify video content
-        is_video, video_type, video_id = VideoDetector.detect_from_url(url_string)
+        # Check for audio first (more specific patterns)
+        is_audio, audio_type, audio_id = AudioDetector.detect_from_url(url_string)
         
-        if not is_video:
-            return  # Not a video, let normal page loading continue
-        
-        # Video detected
-        print(f"[Video] Detected: {video_type}")
-        
-        # Check if blocked (non-whitelisted domain)
-        if video_type == VideoType.BLOCKED:
-            blocked_html = self._generate_video_blocked_html(url_string)
-            self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
-            self.status.showMessage("🔒 Video från denna domän är blockerad", 5000)
-            print(f"[Video] BLOCKED: {url_string} (not whitelisted)")
-            return
-        
-        # Video is from whitelisted domain
-        metadata = VideoMetadata(url_string)
-        
-        if not metadata.can_play():
-            print(f"[Video] Cannot play: {video_type}")
-            return
-        
-        # Generate and display player
-        player_html = VideoPlayer.generate_player_html(
-            url_string, video_type, metadata.title
-        )
-        
-        if player_html:
-            # Wrap in container for consistent UI
-            wrapped_html = f'''<!DOCTYPE html>
+        if is_audio:
+            print(f"[Audio] Detected: {audio_type}")
+            
+            if audio_type == AudioType.BLOCKED:
+                blocked_html = self._generate_media_blocked_html(url_string, "Ljud")
+                self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
+                self.status.showMessage("🔒 Ljud från denna domän är blockerad", 5000)
+                print(f"[Audio] BLOCKED: {url_string}")
+                return
+            
+            metadata = AudioMetadata(url_string)
+            if metadata.can_play():
+                player_html = AudioPlayer.generate_player_html(
+                    url_string, audio_type, metadata.title
+                )
+                if player_html:
+                    wrapped_html = f'''<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{metadata.title} - Klar</title>
-    <style>
-        * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }}
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0a0e1a;
-            color: #e8eaf0;
-            padding: 20px;
-        }}
-        .player-container {{
-            max-width: 1200px;
-            margin: 0 auto;
-        }}
-    </style>
+    <title>{metadata.title} - Klar Audio</title>
 </head>
 <body>
-    <div class="player-container">
-        {player_html}
-    </div>
+    {player_html}
 </body>
 </html>'''
-            self.current_browser().setHtml(wrapped_html, QUrl("about:blank"))
-            self.status.showMessage(f"▶ Spelar upp: {metadata.title}", 3000)
-            print(f"[Video] Playing from whitelisted domain: {video_type}")
+                    self.current_browser().setHtml(wrapped_html, QUrl("about:blank"))
+                    self.status.showMessage(f"🔊 Spelar upp: {metadata.title}", 3000)
+                    print(f"[Audio] Playing: {audio_type}")
+                    return
+        
+        # Check for video (if not audio)
+        is_video, video_type, video_id = VideoDetector.detect_from_url(url_string)
+        
+        if is_video:
+            print(f"[Video] Detected: {video_type}")
+            
+            if video_type == VideoType.BLOCKED:
+                blocked_html = self._generate_media_blocked_html(url_string, "Video")
+                self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
+                self.status.showMessage("🔒 Video från denna domän är blockerad", 5000)
+                print(f"[Video] BLOCKED: {url_string}")
+                return
+            
+            metadata = VideoMetadata(url_string)
+            if metadata.can_play():
+                player_html = VideoPlayer.generate_player_html(
+                    url_string, video_type, metadata.title
+                )
+                if player_html:
+                    wrapped_html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{metadata.title} - Klar Video</title>
+</head>
+<body>
+    {player_html}
+</body>
+</html>'''
+                    self.current_browser().setHtml(wrapped_html, QUrl("about:blank"))
+                    self.status.showMessage(f"▶ Spelar upp: {metadata.title}", 3000)
+                    print(f"[Video] Playing: {video_type}")
+                    return
     
-    def _generate_video_blocked_html(self, url: str) -> str:
-        """Generate HTML for blocked video warning"""
+    def _generate_media_blocked_html(self, url: str, media_type: str) -> str:
+        """Generate HTML for blocked media warning"""
         safe_url = url.replace('"', '&quot;')
         return f'''<!DOCTYPE html>
 <html>
@@ -820,8 +828,8 @@ class KlarBrowser(QMainWindow):
 <body>
     <div class="container">
         <div class="icon">🔒</div>
-        <h1>Video blockerad för säkerhet</h1>
-        <p>Denna domän är inte godkänd för videouppspelning i Klar.</p>
+        <h1>{media_type} blockerad för säkerhet</h1>
+        <p>Denna domän är inte godkänd för {media_type.lower()}uppspelning i Klar.</p>
         
         <div class="reason">
             <strong>URL:</strong>
@@ -829,16 +837,12 @@ class KlarBrowser(QMainWindow):
         </div>
         
         <div class="note">
-            <strong>🇸🇪 Godkända videokällor:</strong>
-            <br>SVT.se, SR.se, UR.se, Filmstaden.se och andra godkända svenska domäner
+            <strong>🇸🇪 Godkända källor:</strong>
+            <br>SVT, SR, UR, Filmstaden, Spotify, Tidal och andra godkända svenska domäner
             <br><br>
             <strong>Säkerhetspolicy:</strong>
-            Klar tillåter endast video från whitelisted svenska domäner för din säkerhet och integritet.
+            Klar tillåter endast {media_type.lower()} från whitelisted svenska domäner för din säkerhet och integritet.
         </div>
-        
-        <p style="font-size: 12px; color: #6b7390; margin-top: 20px;">
-            Om du tror att denna domän bör vara tillgänglig, kontakta oscyra.solutions
-        </p>
     </div>
 </body>
 </html>'''
