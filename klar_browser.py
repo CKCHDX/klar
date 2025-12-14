@@ -608,15 +608,18 @@ class KlarBrowser(QMainWindow):
     def add_new_tab(self, qurl=None, label="Ny flik"):
         """Add new tab"""
         browser = QWebEngineView()
-        browser.urlChanged.connect(lambda url: self.on_url_changed(url, browser))
         if qurl:
             browser.setUrl(qurl)
         
         i = self.tabs.addTab(browser, label)
         self.tabs.setCurrentIndex(i)
         
-        browser.urlChanged.connect(lambda qurl, browser=browser: 
-                                   self.update_url_bar(qurl, browser))
+        # CRITICAL: Check for media BEFORE loading
+        browser.urlChanged.connect(lambda url: self._handle_media_before_load(url, browser))
+        
+        # Cache and history after load
+        browser.urlChanged.connect(lambda url: self._on_page_loaded(url, browser))
+        
         browser.loadFinished.connect(lambda _, i=i, browser=browser:
                                      self.tabs.setTabText(i, browser.page().title()[:25]))
         browser.loadProgress.connect(self.update_status)
@@ -625,13 +628,92 @@ class KlarBrowser(QMainWindow):
         
         return browser
     
-    def on_url_changed(self, qurl: QUrl, browser):
-        """Handle URL changes"""
+    def _handle_media_before_load(self, qurl: QUrl, browser):
+        """Handle media detection BEFORE page loads"""
         url_string = qurl.toString()
         
+        # Skip special URLs
+        if url_string.startswith('data:') or url_string.startswith('about:'):
+            return
+        
+        # Skip bypass protocol
         if url_string.startswith('klar-bypass://'):
             self.handle_bypass_redirect(url_string, browser)
             return
+        
+        # CRITICAL: Check for audio/video before allowing page load
+        is_audio, audio_type, audio_id = AudioDetector.detect_from_url(url_string)
+        
+        if is_audio and audio_type != AudioType.UNKNOWN:
+            print(f"[Audio] Detected: {audio_type} from {url_string}")
+            
+            if audio_type == AudioType.BLOCKED:
+                blocked_html = self._generate_media_blocked_html(url_string, "Ljud")
+                browser.setHtml(blocked_html, QUrl("about:blank"))
+                self.status.showMessage("🔒 Ljud från denna domän är blockerad", 5000)
+                print(f"[Audio] BLOCKED: {url_string}")
+                return
+            
+            metadata = AudioMetadata(url_string)
+            if metadata.can_play():
+                player_html = AudioPlayer.generate_player_html(
+                    url_string, audio_type, metadata.title
+                )
+                if player_html:
+                    wrapped_html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{metadata.title} - Klar Audio</title>
+</head>
+<body>
+    {player_html}
+</body>
+</html>'''
+                    browser.setHtml(wrapped_html, QUrl("about:blank"))
+                    self.status.showMessage(f"🔊 Spelar upp: {metadata.title}", 3000)
+                    print(f"[Audio] Playing: {audio_type}")
+                    return
+        
+        # Check for video (if not audio)
+        is_video, video_type, video_id = VideoDetector.detect_from_url(url_string)
+        
+        if is_video and video_type != VideoType.UNKNOWN:
+            print(f"[Video] Detected: {video_type} from {url_string}")
+            
+            if video_type == VideoType.BLOCKED:
+                blocked_html = self._generate_media_blocked_html(url_string, "Video")
+                browser.setHtml(blocked_html, QUrl("about:blank"))
+                self.status.showMessage("🔒 Video från denna domän är blockerad", 5000)
+                print(f"[Video] BLOCKED: {url_string}")
+                return
+            
+            metadata = VideoMetadata(url_string)
+            if metadata.can_play():
+                player_html = VideoPlayer.generate_player_html(
+                    url_string, video_type, metadata.title
+                )
+                if player_html:
+                    wrapped_html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{metadata.title} - Klar Video</title>
+</head>
+<body>
+    {player_html}
+</body>
+</html>'''
+                    browser.setHtml(wrapped_html, QUrl("about:blank"))
+                    self.status.showMessage(f"▶ Spelar upp: {metadata.title}", 3000)
+                    print(f"[Video] Playing: {video_type}")
+                    return
+    
+    def _on_page_loaded(self, qurl: QUrl, browser):
+        """Handle page loaded for caching and history"""
+        url_string = qurl.toString()
         
         # Cache page if LOKI enabled and valid content
         if self.loki and self.loki.settings.get('enabled', False):
@@ -640,9 +722,6 @@ class KlarBrowser(QMainWindow):
                 page.toHtml(lambda html: self._cache_page_content(url_string, page, html))
             except:
                 pass
-        
-        # Check for media (audio/video)
-        self.check_media_url(qurl)
     
     def _cache_page_content(self, url: str, page, html: str):
         """Cache page content if LOKI enabled"""
@@ -684,80 +763,6 @@ class KlarBrowser(QMainWindow):
         except Exception as e:
             print(f"[Security] Bypass error: {str(e)}")
             self.status.showMessage(f"Bypass fel: {str(e)}", 5000)
-    
-    def check_media_url(self, qurl: QUrl):
-        """Audio and video detection - WHITELISTED ONLY"""
-        url_string = qurl.toString()
-        
-        # Check for audio first (more specific patterns)
-        is_audio, audio_type, audio_id = AudioDetector.detect_from_url(url_string)
-        
-        if is_audio:
-            print(f"[Audio] Detected: {audio_type}")
-            
-            if audio_type == AudioType.BLOCKED:
-                blocked_html = self._generate_media_blocked_html(url_string, "Ljud")
-                self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
-                self.status.showMessage("🔒 Ljud från denna domän är blockerad", 5000)
-                print(f"[Audio] BLOCKED: {url_string}")
-                return
-            
-            metadata = AudioMetadata(url_string)
-            if metadata.can_play():
-                player_html = AudioPlayer.generate_player_html(
-                    url_string, audio_type, metadata.title
-                )
-                if player_html:
-                    wrapped_html = f'''<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{metadata.title} - Klar Audio</title>
-</head>
-<body>
-    {player_html}
-</body>
-</html>'''
-                    self.current_browser().setHtml(wrapped_html, QUrl("about:blank"))
-                    self.status.showMessage(f"🔊 Spelar upp: {metadata.title}", 3000)
-                    print(f"[Audio] Playing: {audio_type}")
-                    return
-        
-        # Check for video (if not audio)
-        is_video, video_type, video_id = VideoDetector.detect_from_url(url_string)
-        
-        if is_video:
-            print(f"[Video] Detected: {video_type}")
-            
-            if video_type == VideoType.BLOCKED:
-                blocked_html = self._generate_media_blocked_html(url_string, "Video")
-                self.current_browser().setHtml(blocked_html, QUrl("about:blank"))
-                self.status.showMessage("🔒 Video från denna domän är blockerad", 5000)
-                print(f"[Video] BLOCKED: {url_string}")
-                return
-            
-            metadata = VideoMetadata(url_string)
-            if metadata.can_play():
-                player_html = VideoPlayer.generate_player_html(
-                    url_string, video_type, metadata.title
-                )
-                if player_html:
-                    wrapped_html = f'''<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{metadata.title} - Klar Video</title>
-</head>
-<body>
-    {player_html}
-</body>
-</html>'''
-                    self.current_browser().setHtml(wrapped_html, QUrl("about:blank"))
-                    self.status.showMessage(f"▶ Spelar upp: {metadata.title}", 3000)
-                    print(f"[Video] Playing: {video_type}")
-                    return
     
     def _generate_media_blocked_html(self, url: str, media_type: str) -> str:
         """Generate HTML for blocked media warning"""
