@@ -9,6 +9,7 @@ from engine.domain_whitelist import DomainWhitelist
 from engine.demographic_detector import DemographicDetector
 from engine.loki_system import LOKISystem
 from engine.video_support import VideoDetector, VideoPlayer, VideoMetadata, VideoType
+from engine.audio_support import AudioDetector, AudioPlayer, AudioMetadata, AudioType
 
 __all__ = [
     'SearchEngine',
@@ -19,5 +20,9 @@ __all__ = [
     'VideoDetector',
     'VideoPlayer',
     'VideoMetadata',
-    'VideoType'
+    'VideoType',
+    'AudioDetector',
+    'AudioPlayer',
+    'AudioMetadata',
+    'AudioType'
 ]
