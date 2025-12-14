@@ -36,6 +36,7 @@ from engine.demographic_detector import DemographicDetector
 from engine.loki_system import LOKISystem
 from engine.video_support import VideoDetector, VideoPlayer, VideoMetadata, VideoType
 from engine.audio_support import AudioDetector, AudioPlayer, AudioMetadata, AudioType
+from engine.codec_fix import CodecFix, init_codec_support
 
 from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile
 
@@ -294,6 +295,12 @@ class SearchWorker(QThread):
 class KlarBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
+        # ============================================
+        # CODEC SUPPORT - FIRST
+        # ============================================
+        print("[Codec] Initializing codec support...")
+        init_codec_support()
+        
         # ============================================
         # FIRST RUN SETUP
         # ============================================
@@ -656,9 +663,14 @@ class KlarBrowser(QMainWindow):
             
             metadata = AudioMetadata(url_string)
             if metadata.can_play():
+                # Try native player first
                 player_html = AudioPlayer.generate_player_html(
                     url_string, audio_type, metadata.title
                 )
+                if not player_html:
+                    # Fallback to codec-aware player
+                    player_html = CodecFix.get_audio_fallback_html(url_string, metadata.title)
+                
                 if player_html:
                     wrapped_html = f'''<!DOCTYPE html>
 <html>
@@ -691,9 +703,14 @@ class KlarBrowser(QMainWindow):
             
             metadata = VideoMetadata(url_string)
             if metadata.can_play():
+                # Try native player first
                 player_html = VideoPlayer.generate_player_html(
                     url_string, video_type, metadata.title
                 )
+                if not player_html:
+                    # Fallback to codec-aware player
+                    player_html = CodecFix.get_player_workaround_html(url_string, metadata.title)
+                
                 if player_html:
                     wrapped_html = f'''<!DOCTYPE html>
 <html>
