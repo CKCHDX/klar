@@ -1,335 +1,333 @@
-# Klar Video Support Module
+# Klar Video Support - Swedish Whitelisted Domains Only
 
-Enhanced video detection, platform identification, and player generation for the Klar Swedish search browser.
+**STATUS**: ✅ Video support respects Klar's whitelisted-only policy
 
-## Features
+## What Is Klar?
 
-### Supported Platforms
+Klar is a **Swedish-only search engine** focusing on:
+- 🇬🇮 **Swedish content only** - indexed from whitelisted Swedish domains
+- 🔐 **Security-first** - no external domains, no YouTube, no global services
+- 🔍 **Privacy** - GDPR compliant, no tracking
+- ⚡ **Speed** - optimized for Swedish users searching Swedish content
 
-- **YouTube** - Full embed support with controls
-- **Vimeo** - Premium player with quality selection
-- **Dailymotion** - Fast streaming with adaptive bitrate
-- **Twitch** - Live streams and VOD playback
-- **TikTok** - Short-form video embeds
-- **Instagram** - Photo/video posts
-- **HTML5 Direct** - MP4, WebM, OGV, HLS, DASH
+**Klar does NOT allow access to external domains.** Your browser instance is restricted to only whitelisted Swedish websites.
 
-### Detection Methods
+## Video Support Philosophy
 
-#### Platform Detection
-Automatic detection of video URLs using regex patterns:
-- Domain-based detection (youtube.com, vimeo.com, etc.)
-- Short URL detection (youtu.be, dai.ly, etc.)
-- Video ID extraction for embeds
+Klar's video support follows the same principle:
 
-#### Direct File Detection
-Automatic detection of direct video file URLs:
-- `.mp4` - MPEG-4 video (H.264 codec)
-- `.webm` - WebM format (VP8/VP9 codec)
-- `.ogv` - Ogg Theora video
-- `.m3u8` - HTTP Live Streaming (HLS)
-- `.mpd` - Dynamic Adaptive Streaming (DASH)
+### ❌ What Video Support DOES NOT Do
+- ❌ Does NOT support YouTube
+- ❌ Does NOT support Vimeo, Dailymotion, or other external services
+- ❌ Does NOT embed players from non-whitelisted domains
+- ❌ Does NOT access external streaming platforms
+
+### ✅ What Video Support DOES Do
+- ✅ Plays videos from **whitelisted Swedish domains only**
+- ✅ Supports SVT (Swedish Television), SR, UR, Filmstaden
+- ✅ Plays direct video files (.mp4, .webm) hosted on whitelisted domains
+- ✅ Supports HLS/DASH streams from whitelisted sources
+- ✅ Blocks videos from non-whitelisted domains automatically
+
+## Supported Sources
+
+### Swedish Public Broadcasters (Whitelisted)
+
+| Service | Domain | Type | Support |
+|---------|--------|------|----------|
+| **SVT** (Swedish Television) | svt.se | Streaming | Direct link |
+| **SR** (Sveriges Radio) | sverigesradio.se | Audio/Video | Direct link |
+| **UR** (Educational) | ur.se | Educational | Direct link |
+| **Filmstaden** (Cinema) | filmstaden.se | Movies | Direct link |
+| **Blockflix** (Streaming) | blockflix.se | Streaming | Direct link* |
+
+*If added to domains.json
+
+### Direct File Support (On Whitelisted Domains)
+
+| Format | Extension | Support | Example |
+|--------|-----------|---------|----------|
+| **MP4** | .mp4 | ✅ Full | svt.se/media/video.mp4 |
+| **WebM** | .webm | ✅ Full | ur.se/stream.webm |
+| **OGV** | .ogv | ✅ Full | example.se/video.ogv |
+| **HLS** | .m3u8 | ✅ Full | sr.se/stream/live.m3u8 |
+| **DASH** | .mpd | ✅ Full | svt.se/stream/dash.mpd |
 
 ## Architecture
 
+### Security: Whitelisted-Only Design
+
+```
+User enters URL
+    ↓
+Check against domains.json whitelist
+    ├─ Domain whitelisted? → YES → Continue
+    └─ Domain NOT whitelisted? → NO → Block with warning
+         ↓
+Detect if content is video
+    ├─ SVT video → Generate player
+    ├─ Direct MP4 → Generate player
+    ├─ HLS stream → Generate player
+    └─ Not a video → Load normally
+         ↓
+Generate appropriate player
+```
+
 ### Components
 
-#### 1. `VideoType` Enum
-Enumeration of supported video types:
+#### `VideoDetector`
+Detects video content from whitelisted domain URLs only:
 ```python
-class VideoType(Enum):
-    YOUTUBE = "youtube"
-    VIMEO = "vimeo"
-    DAILYMOTION = "dailymotion"
-    TWITCH = "twitch"
-    TIKTOK = "tiktok"
-    INSTAGRAM = "instagram"
-    HTML5_MP4 = "mp4"
-    HTML5_WEBM = "webm"
-    HTML5_OGV = "ogv"
-    HLS_STREAM = "hls"
-    DASH_STREAM = "dash"
-    UNKNOWN = "unknown"
+is_whitelisted, domain = VideoDetector.is_whitelisted_domain(url)
+if not is_whitelisted:
+    # Block with warning
+else:
+    is_video, video_type, video_id = VideoDetector.detect_from_url(url)
 ```
 
-#### 2. `VideoDetector` Class
-Detects video content from URLs using regex patterns:
+**Detects:**
+- SVT Play videos (svt.se)
+- Sveriges Radio content (sverigesradio.se)
+- UR Educational content (ur.se)
+- Filmstaden movies (filmstaden.se)
+- Direct video files (.mp4, .webm, .m3u8, etc.)
 
+#### `VideoMetadata`
+Extracts metadata from whitelisted videos:
 ```python
-# Basic usage
-is_video, video_type, video_id = VideoDetector.detect_from_url(url)
-
-# Returns:
-# - is_video: bool - Whether URL contains video
-# - video_type: VideoType - Platform/format type
-# - video_id: str|None - Extracted video ID (if applicable)
+metadata = VideoMetadata(url)  # Only works if whitelisted
+if metadata.is_whitelisted and metadata.can_play():
+    # Generate player
 ```
 
-**Detection Patterns:**
-- YouTube: `youtube.com/watch?v=`, `youtu.be/`, `youtube.com/embed/`
-- Vimeo: `vimeo.com/`, `player.vimeo.com/video/`
-- Dailymotion: `dailymotion.com/video/`, `dai.ly/`
-- Twitch: `twitch.tv/`, `twitch.tv/videos/`
-- TikTok: `tiktok.com/*/video/`
-- Instagram: `instagram.com/p/`, `instagram.com/reel/`
-
-#### 3. `VideoMetadata` Class
-Extracts and manages video information:
-
+#### `VideoPlayer`
+Generates HTML for playback:
 ```python
-metadata = VideoMetadata(url)
-print(metadata.title)        # Extracted or generated title
-print(metadata.video_type)   # Detected platform type
-print(metadata.video_id)     # Extracted video ID
-print(metadata.is_embeddable())  # Can use embed HTML
-print(metadata.is_playable_html5())  # Can use HTML5 player
+# Whitelisted Swedish services
+html = VideoPlayer.generate_player_html(url, VideoType.SVT, title)
+
+# Direct files
+html = VideoPlayer.generate_player_html(url, VideoType.HTML5_MP4, title)
 ```
 
-**Title Extraction Priority:**
-1. From URL query parameters (title=...)
-2. From filename (removes extension, replaces dashes/underscores)
-3. From domain (e.g., "Video from youtube")
+## Usage Examples
 
-#### 4. `VideoPlayer` Class
-Generates HTML for video playback with two strategies:
+### Example 1: SVT Video (Whitelisted)
 
-##### Embedded Player (Platform-Specific)
-
-For services with official embed support:
-
-```python
-html = VideoPlayer.generate_embed_html(
-    url=url,
-    video_type=video_type,
-    video_id=video_id,
-    width=900,
-    height=506
-)
+```
+User visits: https://www.svt.se/play/video
+         ↓
+Detector: Domain is svt.se (whitelisted) ✓
+         ↓
+Detector: Content is video (SVT format) ✓
+         ↓
+Player: Opens SVT player button
 ```
 
-**Platform-Specific Implementation:**
-- **YouTube**: Uses official iframe with parameters (rel=0 for no recommendations)
-- **Vimeo**: Premium player with full controls
-- **Dailymotion**: Adaptive bitrate streaming
-- **Twitch**: Chat integration support
-- **TikTok**: Blockquote embed with async script loading
-- **Instagram**: Blockquote embed with native embed.js
+### Example 2: Direct MP4 on SR (Whitelisted)
 
-##### HTML5 Player (Direct Files)
-
-For direct video file URLs:
-
-```python
-html = VideoPlayer.generate_html5_player(
-    url=url,
-    video_type=video_type,
-    title="My Video"
-)
+```
+User visits: https://www.sverigesradio.se/media/audio.mp4
+         ↓
+Detector: Domain is sverigesradio.se (whitelisted) ✓
+         ↓
+Detector: Content is MP4 video file ✓
+         ↓
+Player: Shows HTML5 video player with controls
 ```
 
-**Features:**
-- Responsive 16:9 aspect ratio
-- Native HTML5 `<video>` controls
-- Keyboard shortcuts:
-  - **Space** - Play/Pause
-  - **→** - Forward 5 seconds
-  - **←** - Rewind 5 seconds
-  - **f** - Fullscreen
-  - **m** - Mute
-  - **↑/↓** - Volume control
-  - **> / .** - Speed up
-  - **< / ,** - Speed down
-- MIME type detection (mp4, webm, ogg, hls)
-- Modern dark theme matching Klar design
-- Keyboard controls documentation in UI
+### Example 3: YouTube Video (NOT Whitelisted) - BLOCKED
+
+```
+User tries: https://www.youtube.com/watch?v=...
+         ↓
+Detector: Domain is youtube.com (NOT in domains.json) ✗
+         ↓
+Block: Shows security warning
+       "Video from this domain is blocked"
+       "Only approved Swedish sources allowed"
+```
+
+## Adding Video Support to Whitelisted Domains
+
+If a whitelisted domain (in domains.json) hosts videos, **no code changes needed**! Video support automatically:
+
+1. Detects direct video files (.mp4, .webm, .m3u8)
+2. Generates HTML5 player
+3. Works immediately
+
+### To Add a New Swedish Service
+
+Example: Adding Vimeo Sweden (if it were added to domains.json):
+
+1. **Add domain** to `domains.json`
+2. **Update VideoDetector**:
+   ```python
+   if 'vimeo-se.com' in url_lower:
+       # Detect Vimeo Sweden content
+   ```
+3. **Add VideoType**:
+   ```python
+   VIMEO_SWEDEN = "vimeo_se"
+   ```
+4. **Add player generation**:
+   ```python
+   @staticmethod
+   def _generate_vimeo_sweden_player(url, title):
+       # Generate player
+   ```
 
 ## Integration with Klar Browser
 
 ### In `klar_browser.py`
 
-#### Imports
 ```python
-from engine.video_support import VideoDetector, VideoPlayer, VideoMetadata, VideoType
-```
+from engine.video_support import VideoDetector, VideoPlayer, VideoMetadata
+from engine.domain_whitelist import DomainWhitelist
 
-#### Enhanced URL Checking
-```python
 def check_video_url(self, qurl: QUrl):
-    """Enhanced video detection and handling"""
+    """Check for video and validate against whitelist"""
     url_string = qurl.toString()
     
-    # Detect video
-    is_video, video_type, video_id = VideoDetector.detect_from_url(url_string)
+    # Check whitelist first (security!)
+    is_whitelisted, reason = self.domain_whitelist.is_whitelisted(url_string)
+    if not is_whitelisted:
+        # Block with warning
+        self.display_blocked_page(reason)
+        return
     
+    # Detect video on whitelisted domain
+    is_video, video_type, video_id = VideoDetector.detect_from_url(url_string)
     if is_video:
         metadata = VideoMetadata(url_string)
-        
-        # Use embedded player if available
-        if metadata.is_embeddable() and video_id:
-            embed_html = VideoPlayer.generate_embed_html(
-                url_string, video_type, video_id
-            )
-            # Wrap and display
-        
-        # Use HTML5 player for direct files
-        elif metadata.is_playable_html5():
-            player_html = VideoPlayer.generate_html5_player(
+        if metadata.can_play():
+            html = VideoPlayer.generate_player_html(
                 url_string, video_type, metadata.title
             )
-            # Display
-        
-        # Fallback to external browser
-        else:
-            webbrowser.open(url_string)
+            self.load_html(html)
 ```
 
-### Browser Codec Configuration
+## Security Features
 
-WebEngine settings in Klar:
-```python
-profile = QWebEngineProfile.defaultProfile()
-settings = profile.settings()
+### 1. Whitelist-First Design
+- ✅ EVERY URL checked against domains.json first
+- ✅ Non-whitelisted domains BLOCKED immediately
+- ✅ No exceptions, no override
 
-# Enable video playback
-settings.setAttribute(QWebEngineSettings.WebAttribute.PluginsEnabled, True)
-settings.setAttribute(QWebEngineSettings.WebAttribute.JavascriptEnabled, True)
-settings.setAttribute(QWebEngineSettings.WebAttribute.PlaybackRequiresUserGesture, False)
-settings.setAttribute(QWebEngineSettings.WebAttribute.WebGLEnabled, True)
+### 2. Video Type Validation
+- ✅ Only known video types allowed
+- ✅ No arbitrary file downloads
+- ✅ MIME type verification
 
-print("[Video] Supported formats: MP4, WebM, OGV, HLS, DASH")
-print("[Video] Supported platforms: YouTube, Vimeo, Dailymotion, Twitch, TikTok")
+### 3. HTML Sanitization
+- ✅ All URLs escaped for HTML context
+- ✅ XSS prevention on metadata display
+- ✅ No user input in HTML generation
+
+### 4. Player Isolation
+- ✅ No cookies shared with videos
+- ✅ No cross-domain access
+- ✅ No plugins or extensions
+
+## User Experience
+
+### Allowed Videos (Whitelisted Domain)
+```
+User tries to play SVT video
+       ↓
+✓ Whitelist check passes
+       ↓
+✓ Video detected
+       ↓
+✓ Player appears
+       ↓
+User watches content
 ```
 
-## Usage Examples
+### Blocked Videos (Non-Whitelisted Domain)
+```
+User tries to play YouTube video
+       ↓
+✗ Whitelist check fails
+       ↓
+Warning message appears:
+"Video från denna domän är blockerad"
+(Video from this domain is blocked)
 
-### Example 1: YouTube Video
-```python
-url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-
-is_video, vtype, vid = VideoDetector.detect_from_url(url)
-# True, VideoType.YOUTUBE, "dQw4w9WgXcQ"
-
-metadata = VideoMetadata(url)
-print(metadata.title)  # "My Video"
-print(metadata.is_embeddable())  # True
-
-html = VideoPlayer.generate_embed_html(url, vtype, vid)
-# Returns embedded YouTube iframe
+"Endast godkända svenska domäner tillåtna"
+(Only approved Swedish domains allowed)
 ```
 
-### Example 2: Direct MP4 File
-```python
-url = "https://example.com/videos/sample.mp4"
+## Whitelisted Domains with Video Content
 
-is_video, vtype, vid = VideoDetector.detect_from_url(url)
-# True, VideoType.HTML5_MP4, None
+Current domains.json includes:
+- ✅ svt.se - SVT Play
+- ✅ sverigesradio.se - SR
+- ✅ ur.se - UR Educational
+- ✅ filmstaden.se - Filmstaden Cinema
+- ✅ spotify.com - Music streaming* (*audio, not video)
+- ✅ tidal.com - Music streaming* (*audio, not video)
 
-metadata = VideoMetadata(url)
-print(metadata.is_playable_html5())  # True
-
-html = VideoPlayer.generate_html5_player(url, vtype, "Sample Video")
-# Returns HTML5 player with controls
-```
-
-### Example 3: HLS Stream
-```python
-url = "https://example.com/stream/live.m3u8"
-
-is_video, vtype, vid = VideoDetector.detect_from_url(url)
-# True, VideoType.HLS_STREAM, None
-
-html = VideoPlayer.generate_html5_player(url, vtype)
-# Returns HTML5 player supporting HLS streaming
-```
-
-## Performance Considerations
-
-### Detection
-- Regex patterns are optimized for performance
-- Single-pass detection (no re-scanning)
-- Complexity: O(1) per URL
-
-### Player Generation
-- HTML generation is string-based (no DOM manipulation)
-- Minimal external dependencies
-- Self-contained CSS and JavaScript
-
-### Browser Playback
-- Native HTML5 video controls (hardware accelerated)
-- WebGL support for advanced effects
-- No additional plugins required
-
-## Security Considerations
-
-### URL Sanitization
-- All user-supplied URLs escaped for HTML context
-- Special characters replaced: `"` → `&quot;`
-- XSS prevention in title/metadata display
-
-### CORS Handling
-- `crossorigin="anonymous"` for HTML5 video
-- iframes use platform-provided embed URLs (safe)
-- No direct file downloads enabled (`controlsList="nodownload"`)
-
-### Content Isolation
-- Video content loaded in separate context
-- No access to browser cookies/local storage from embeds
-- Iframe sandboxing where applicable
-
-## Compatibility
-
-### Browser Support
-- **Chrome/Chromium 90+** - Full support
-- **Firefox 88+** - Full support
-- **Safari 14+** - Full support (except DASH)
-- **Edge 90+** - Full support
-
-### Video Format Support
-
-| Format | Codec | Support | Notes |
-|--------|-------|---------|-------|
-| MP4 | H.264 | Full | Most compatible |
-| WebM | VP8/VP9 | Full | Open format |
-| OGV | Theora | Full | Older format |
-| HLS | H.264/HEVC | Full | Streaming |
-| DASH | H.264/VP9 | Full | Adaptive |
+Plus 110+ other Swedish government, news, education, and business sites.
 
 ## Troubleshooting
 
-### Video Not Detected
-1. Check URL format matches expected pattern
-2. Verify domain is in the regex patterns
-3. Use URL with explicit video ID
+### Issue: "Video from this domain is blocked"
 
-### Playback Issues
-- Ensure WebEngine codec support enabled
-- Check video URL is publicly accessible
-- Verify CORS headers if self-hosted
+**Reason**: The domain is not in domains.json (Klar's whitelist)
 
-### Embed Not Displaying
-- Confirm platform supports embedding
-- Check video_id was extracted correctly
-- Verify network connectivity for embed script loading
+**Solution**: 
+- Contact oscyra.solutions
+- Provide Swedish domain name
+- Request domain to be added to whitelist
+
+### Issue: Video file shows but doesn't play
+
+**Possible reasons**:
+1. Browser doesn't support format (.ogv rarely works)
+2. Video URL is incorrect
+3. Video file is missing/moved
+
+**Solution**:
+- Try different format (MP4 most compatible)
+- Check URL is correct
+- Verify on original website
+
+### Issue: SVT video doesn't play directly
+
+**Reason**: SVT requires clicking through to their player
+
+**Solution**: This is expected - Klar shows a button to open SVT's official player
+
+## Performance
+
+- **Whitelist check**: <1ms per URL
+- **Video detection**: <1ms per URL
+- **Player generation**: <1ms HTML string building
+- **Total overhead**: Negligible
 
 ## Future Enhancements
 
-- [ ] Subtitles/CC support
-- [ ] Playlist detection
-- [ ] Live stream detection (YouTube Live, Twitch)
-- [ ] HDR video support
-- [ ] Picture-in-picture mode
-- [ ] Video analytics integration
-- [ ] Local M3U playlist support
-- [ ] AV1 codec support
+When/if new whitelisted domains are added:
+- [ ] Support for more Swedish streaming services
+- [ ] Playlist detection and support
+- [ ] Subtitle support from whitelisted sources
+- [ ] Quality selection for HLS/DASH
+- [ ] Viewing statistics in LOKI cache
 
-## Dependencies
+## Resources
 
-- Python 3.7+
-- PyQt6 (for browser integration)
-- re (standard library)
-- urllib.parse (standard library)
-- enum (standard library)
+- **Klar Philosophy**: README.md
+- **Domain Whitelist**: domains.json
+- **Whitelist Implementation**: engine/domain_whitelist.py
+- **Video Support Code**: engine/video_support.py
 
-## License
+## Contact
 
-Part of Klar Search Engine - Open source
+For questions about video support or to request whitelisted domains:
+- Website: https://oscyra.solutions/
+- Project: https://github.com/CKCHDX/klar
+
+---
+
+**Klar Video Support respects Swedish privacy, security, and focus.** Only whitelisted domains. Only Swedish content. No exceptions.
