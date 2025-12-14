@@ -1,7 +1,10 @@
 """
-Klar Video Support Module
-Enhanced video detection, platform identification, and player generation
-Supports: YouTube, Vimeo, Dailymotion, Twitch, TikTok, Direct HTML5
+Klar Video Support Module - WHITELISTED DOMAINS ONLY
+Video detection and playback for whitelisted Swedish domains only
+Supports: SVT, SR, UR, Filmstaden, Blockflix, and direct video files on whitelisted domains
+
+VIDEO POLICY: Only plays videos from whitelisted domains in domains.json
+No YouTube, no external services - strictly Swedish whitelisted sources
 """
 
 import re
@@ -11,37 +14,70 @@ from urllib.parse import urlparse, parse_qs
 
 
 class VideoType(Enum):
-    """Supported video platform types"""
-    YOUTUBE = "youtube"
-    YOUTUBE_SHORT = "youtu_be"
-    VIMEO = "vimeo"
-    DAILYMOTION = "dailymotion"
-    TWITCH = "twitch"
-    TIKTOK = "tiktok"
-    INSTAGRAM = "instagram"
+    """Supported video types for whitelisted domains"""
+    # Swedish public broadcasters
+    SVT = "svt"  # SVT Play - Swedish Television
+    SR = "sr"    # Sveriges Radio - Radio streams
+    UR = "ur"    # Educational Broadcasting
+    
+    # Swedish streaming services
+    FILMSTADEN = "filmstaden"  # Cinema
+    BLOCKFLIX = "blockflix"    # Swedish streaming
+    
+    # Direct files on whitelisted domains
     HTML5_MP4 = "mp4"
     HTML5_WEBM = "webm"
     HTML5_OGV = "ogv"
     HLS_STREAM = "hls"
     DASH_STREAM = "dash"
+    
+    # Status
+    BLOCKED = "blocked"  # Domain not whitelisted
     UNKNOWN = "unknown"
 
 
 class VideoDetector:
-    """Detect video content from URLs"""
+    """Detect video content from URLs - WHITELISTED DOMAINS ONLY"""
     
-    # Platform detection patterns
-    YOUTUBE_PATTERN = r'(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube-nocookie\.com\/embed\/)([a-zA-Z0-9_-]{11})'
-    VIMEO_PATTERN = r'(?:vimeo\.com\/|player\.vimeo\.com\/video\/)([0-9]+)'
-    DAILYMOTION_PATTERN = r'(?:dailymotion\.com\/video\/|dai\.ly\/)([a-zA-Z0-9]+)'
-    TWITCH_PATTERN = r'(?:twitch\.tv\/|twitch\.tv\/videos\/)([a-zA-Z0-9_-]+)'
-    TIKTOK_PATTERN = r'(?:tiktok\.com\/.*?\/)([a-zA-Z0-9]+)(?:\?|$)'
-    INSTAGRAM_PATTERN = r'(?:instagram\.com\/p\/|instagram\.com\/reel\/)([a-zA-Z0-9_-]+)'
+    # Whitelisted domain patterns (from domains.json)
+    WHITELISTED_DOMAINS = {
+        'svt.se': 'SVT (Swedish Television)',
+        'sverigesradio.se': 'SR (Sveriges Radio)',
+        'ur.se': 'UR (Educational)',
+        'filmstaden.se': 'Filmstaden (Cinema)',
+        'sverigestelevision.se': 'SVT',
+    }
+    
+    @staticmethod
+    def is_whitelisted_domain(url: str) -> Tuple[bool, str]:
+        """
+        Check if URL is from a whitelisted domain
+        Returns: (is_whitelisted, domain_name)
+        """
+        try:
+            parsed = urlparse(url.lower())
+            netloc = parsed.netloc.replace('www.', '')
+            
+            # Check against whitelisted domains
+            for domain, name in VideoDetector.WHITELISTED_DOMAINS.items():
+                if domain in netloc or netloc.endswith(domain):
+                    return True, domain
+            
+            # Check if any part matches
+            for domain in VideoDetector.WHITELISTED_DOMAINS.keys():
+                if domain in netloc:
+                    return True, domain
+            
+            return False, netloc
+        except:
+            return False, ""
     
     @staticmethod
     def detect_from_url(url: str) -> Tuple[bool, VideoType, Optional[str]]:
         """
         Detect if URL is a video and identify the type
+        CRITICAL: Only processes whitelisted domains
+        
         Returns: (is_video, video_type, video_id)
         """
         if not url:
@@ -49,78 +85,81 @@ class VideoDetector:
         
         url_lower = url.lower()
         
-        # YouTube detection
-        if 'youtube' in url_lower or 'youtu.be' in url_lower:
-            match = re.search(VideoDetector.YOUTUBE_PATTERN, url)
-            if match:
-                video_id = match.group(1)
-                return True, VideoType.YOUTUBE, video_id
+        # SECURITY CHECK: Is this domain whitelisted?
+        is_whitelisted, domain = VideoDetector.is_whitelisted_domain(url)
+        if not is_whitelisted:
+            return False, VideoType.BLOCKED, None
         
-        # Vimeo detection
-        if 'vimeo' in url_lower:
-            match = re.search(VideoDetector.VIMEO_PATTERN, url)
-            if match:
-                video_id = match.group(1)
-                return True, VideoType.VIMEO, video_id
+        # Domain is whitelisted - now check for video content
         
-        # Dailymotion detection
-        if 'dailymotion' in url_lower or 'dai.ly' in url_lower:
-            match = re.search(VideoDetector.DAILYMOTION_PATTERN, url)
-            if match:
-                video_id = match.group(1)
-                return True, VideoType.DAILYMOTION, video_id
+        # SVT (Swedish Television) detection
+        if 'svt.se' in url_lower:
+            if 'play.svt.se' in url_lower or '/video/' in url_lower:
+                # Extract video ID if present
+                video_id = VideoDetector._extract_id_from_path(url)
+                return True, VideoType.SVT, video_id
         
-        # Twitch detection
-        if 'twitch.tv' in url_lower:
-            match = re.search(VideoDetector.TWITCH_PATTERN, url)
-            if match:
-                video_id = match.group(1)
-                return True, VideoType.TWITCH, video_id
+        # SR (Sveriges Radio) detection
+        if 'sverigesradio.se' in url_lower or 'sr.se' in url_lower:
+            if '/sida/' in url_lower or '/artikel/' in url_lower:
+                video_id = VideoDetector._extract_id_from_path(url)
+                return True, VideoType.SR, video_id
         
-        # TikTok detection
-        if 'tiktok' in url_lower:
-            match = re.search(VideoDetector.TIKTOK_PATTERN, url)
-            if match:
-                video_id = match.group(1)
-                return True, VideoType.TIKTOK, video_id
+        # UR (Educational) detection
+        if 'ur.se' in url_lower:
+            if '/play/' in url_lower or '/video/' in url_lower:
+                video_id = VideoDetector._extract_id_from_path(url)
+                return True, VideoType.UR, video_id
         
-        # Instagram detection
-        if 'instagram' in url_lower:
-            match = re.search(VideoDetector.INSTAGRAM_PATTERN, url)
-            if match:
-                video_id = match.group(1)
-                return True, VideoType.INSTAGRAM, video_id
+        # Filmstaden detection
+        if 'filmstaden.se' in url_lower:
+            if '/watch/' in url_lower or '/film/' in url_lower:
+                video_id = VideoDetector._extract_id_from_path(url)
+                return True, VideoType.FILMSTADEN, video_id
         
-        # Direct file detection
-        video_extensions = ['.mp4', '.webm', '.ogv', '.m3u8']
-        if any(ext in url_lower for ext in video_extensions):
-            if '.m3u8' in url_lower:
-                return True, VideoType.HLS_STREAM, None
-            elif '.mp4' in url_lower:
-                return True, VideoType.HTML5_MP4, None
-            elif '.webm' in url_lower:
-                return True, VideoType.HTML5_WEBM, None
-            elif '.ogv' in url_lower:
-                return True, VideoType.HTML5_OGV, None
+        # Direct file detection (on whitelisted domains)
+        if '.mp4' in url_lower:
+            return True, VideoType.HTML5_MP4, None
+        elif '.webm' in url_lower:
+            return True, VideoType.HTML5_WEBM, None
+        elif '.ogv' in url_lower:
+            return True, VideoType.HTML5_OGV, None
+        elif '.m3u8' in url_lower:
+            return True, VideoType.HLS_STREAM, None
+        elif '.mpd' in url_lower:
+            return True, VideoType.DASH_STREAM, None
         
         return False, VideoType.UNKNOWN, None
+    
+    @staticmethod
+    def _extract_id_from_path(url: str) -> Optional[str]:
+        """Extract video ID from URL path"""
+        try:
+            # Try to extract last path segment as ID
+            parsed = urlparse(url)
+            path_parts = [p for p in parsed.path.split('/') if p]
+            if path_parts:
+                return path_parts[-1]
+            return None
+        except:
+            return None
 
 
 class VideoMetadata:
-    """Extract and manage video metadata"""
+    """Extract and manage video metadata - WHITELISTED ONLY"""
     
     def __init__(self, url: str):
         self.url = url
+        self.is_whitelisted, self.domain = VideoDetector.is_whitelisted_domain(url)
         self.title = self._extract_title()
         self.video_type = self._detect_type()
         self.video_id = self._extract_id()
     
     def _extract_title(self) -> str:
         """Extract video title from URL or filename"""
-        # Try to extract title from URL
         parsed = urlparse(self.url)
         
-        # From query params (YouTube, etc.)
+        # From query params
         if parsed.query:
             params = parse_qs(parsed.query)
             if 'title' in params:
@@ -129,13 +168,12 @@ class VideoMetadata:
         # From path (filename)
         path = parsed.path.split('/')[-1]
         if path and '.' in path:
-            return path.rsplit('.', 1)[0]
+            return path.rsplit('.', 1)[0].replace('-', ' ').replace('_', ' ')
         elif path:
             return path.replace('-', ' ').replace('_', ' ')
         
-        # Default
-        domain = parsed.netloc.replace('www.', '').split('.')[0]
-        return f"Video from {domain.capitalize()}"
+        # Default: domain name
+        return f"Video från {self.domain}"
     
     def _detect_type(self) -> VideoType:
         """Detect video platform type"""
@@ -147,21 +185,16 @@ class VideoMetadata:
         _, _, video_id = VideoDetector.detect_from_url(self.url)
         return video_id
     
-    def is_embeddable(self) -> bool:
-        """Check if video platform supports embedding"""
-        embeddable_types = {
-            VideoType.YOUTUBE,
-            VideoType.VIMEO,
-            VideoType.DAILYMOTION,
-            VideoType.TWITCH,
-            VideoType.TIKTOK,
-            VideoType.INSTAGRAM
-        }
-        return self.video_type in embeddable_types
-    
-    def is_playable_html5(self) -> bool:
-        """Check if video can be played via HTML5"""
+    def can_play(self) -> bool:
+        """Check if video can be played (whitelisted AND valid type)"""
+        if not self.is_whitelisted:
+            return False
+        
         playable_types = {
+            VideoType.SVT,
+            VideoType.SR,
+            VideoType.UR,
+            VideoType.FILMSTADEN,
             VideoType.HTML5_MP4,
             VideoType.HTML5_WEBM,
             VideoType.HTML5_OGV,
@@ -172,45 +205,10 @@ class VideoMetadata:
 
 
 class VideoPlayer:
-    """Generate HTML for video playback"""
+    """Generate HTML for video playback - WHITELISTED DOMAINS ONLY"""
     
     @staticmethod
-    def generate_embed_html(
-        url: str,
-        video_type: VideoType,
-        video_id: str,
-        width: int = 900,
-        height: int = 506
-    ) -> Optional[str]:
-        """
-        Generate embed HTML for supported platforms
-        """
-        if not video_id:
-            return None
-        
-        if video_type == VideoType.YOUTUBE:
-            return f'<iframe width="{width}" height="{height}" src="https://www.youtube.com/embed/{video_id}?rel=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'
-        
-        elif video_type == VideoType.VIMEO:
-            return f'<iframe src="https://player.vimeo.com/video/{video_id}" width="{width}" height="{height}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>'
-        
-        elif video_type == VideoType.DAILYMOTION:
-            return f'<iframe src="https://www.dailymotion.com/embed/video/{video_id}" width="{width}" height="{height}" frameborder="0" allow="autoplay" allowfullscreen></iframe>'
-        
-        elif video_type == VideoType.TWITCH:
-            # Twitch embed requires special handling
-            return f'<iframe src="https://twitch.tv/{video_id}/chat?parent=localhost" height="500" width="100%" frameborder="0" allowfullscreen></iframe>'
-        
-        elif video_type == VideoType.TIKTOK:
-            return f'<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@{video_id}" data-unique-id="{video_id}" data-embed-type="video"><section></section></blockquote><script async src="https://www.tiktok.com/embed.js"></script>'
-        
-        elif video_type == VideoType.INSTAGRAM:
-            return f'<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/p/{video_id}/" data-instgrm-version="14"></blockquote><script async src="//www.instagram.com/embed.js"></script>'
-        
-        return None
-    
-    @staticmethod
-    def generate_html5_player(
+    def generate_player_html(
         url: str,
         video_type: VideoType,
         title: str = "Video",
@@ -218,11 +216,86 @@ class VideoPlayer:
         height: str = "auto"
     ) -> Optional[str]:
         """
-        Generate HTML5 video player for direct file playback
-        Supports MP4, WebM, OGV, HLS, DASH
+        Generate HTML5 video player for whitelisted domain video files
         """
+        if video_type == VideoType.BLOCKED:
+            return VideoPlayer._generate_blocked_html(url)
         
-        # Determine MIME type
+        if video_type in (VideoType.UNKNOWN, VideoType.BLOCKED):
+            return None
+        
+        # For direct files (MP4, WebM, etc.)
+        if video_type in (VideoType.HTML5_MP4, VideoType.HTML5_WEBM, VideoType.HTML5_OGV, 
+                          VideoType.HLS_STREAM, VideoType.DASH_STREAM):
+            return VideoPlayer._generate_html5_player(url, video_type, title)
+        
+        # For Swedish streaming services
+        if video_type == VideoType.SVT:
+            return VideoPlayer._generate_svt_player(url, title)
+        elif video_type == VideoType.SR:
+            return VideoPlayer._generate_sr_player(url, title)
+        elif video_type == VideoType.UR:
+            return VideoPlayer._generate_ur_player(url, title)
+        elif video_type == VideoType.FILMSTADEN:
+            return VideoPlayer._generate_filmstaden_player(url, title)
+        
+        return None
+    
+    @staticmethod
+    def _generate_blocked_html(url: str) -> str:
+        """Generate blocked domain warning"""
+        safe_url = url.replace('"', '&quot;')
+        return f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e1a;
+            color: #e8eaf0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }}
+        .container {{
+            max-width: 600px;
+            background: #131824;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+        }}
+        .icon {{ font-size: 60px; margin-bottom: 20px; }}
+        h1 {{ color: #ef4444; margin-bottom: 10px; }}
+        p {{ color: #a0a8c0; line-height: 1.6; }}
+        .reason {{ background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; margin: 20px 0; color: #fca5a5; }}
+        .note {{ background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px; margin: 20px 0; color: #93c5fd; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🔒</div>
+        <h1>Video från denna domän är blockerad</h1>
+        <p>Klar tillåter endast video från godkända svenska domäner för din säkerhet.</p>
+        <div class="reason">
+            <strong>URL:</strong> {safe_url}
+        </div>
+        <div class="note">
+            <strong>Tillåtna videokällor:</strong>
+            <br>SVT.se, SR.se, UR.se, Filmstaden.se och andra godkända svenska webbplatser
+        </div>
+    </div>
+</body>
+</html>
+'''
+    
+    @staticmethod
+    def _generate_html5_player(url: str, video_type: VideoType, title: str) -> str:
+        """Generate HTML5 video player for direct file playback"""
         mime_type = "video/mp4"
         if video_type == VideoType.HTML5_WEBM:
             mime_type = "video/webm"
@@ -231,22 +304,19 @@ class VideoPlayer:
         elif video_type in (VideoType.HLS_STREAM, VideoType.DASH_STREAM):
             mime_type = "application/x-mpegURL"
         
-        # Escape URL for HTML
         safe_url = url.replace('"', '&quot;')
         safe_title = title.replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
         
-        html = f'''
+        return f'''
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{safe_title} - Klar Video Player</title>
+    <title>{safe_title} - Klar Video</title>
     <style>
         * {{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0; padding: 0; box-sizing: border-box;
         }}
         body {{
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -258,21 +328,19 @@ class VideoPlayer:
             min-height: 100vh;
             padding: 20px;
         }}
-        .player-container {{
+        .container {{
             width: 100%;
             max-width: 1200px;
             background: #131824;
             border-radius: 12px;
             padding: 30px;
             border: 1px solid rgba(59, 130, 246, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }}
-        .player-title {{
+        .title {{
             color: #3b82f6;
             font-size: 20px;
             font-weight: 600;
             margin-bottom: 20px;
-            word-break: break-word;
         }}
         .video-wrapper {{
             position: relative;
@@ -285,120 +353,53 @@ class VideoPlayer:
         }}
         .video-wrapper video {{
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
             width: 100%;
             height: 100%;
-            border-radius: 8px;
         }}
-        .controls-info {{
+        .controls {{
             color: #a0a8c0;
             font-size: 12px;
             margin-top: 15px;
             padding-top: 15px;
             border-top: 1px solid rgba(59, 130, 246, 0.2);
         }}
-        .control-list {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }}
-        .control-item {{
+        .klar-badge {{
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            color: #60a5fa;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-size: 11px;
-            padding: 5px 0;
-        }}
-        .control-item strong {{
-            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 15px;
         }}
     </style>
 </head>
 <body>
-    <div class="player-container">
-        <div class="player-title">\u25b6 {safe_title}</div>
+    <div class="container">
+        <div class="klar-badge">✓ Godkänd svensk källa</div>
+        <div class="title">{safe_title}</div>
         <div class="video-wrapper">
-            <video controls controlsList="nodownload" crossorigin="anonymous" preload="metadata" style="background: #000;">
+            <video controls preload="metadata" style="background: #000;">
                 <source src="{safe_url}" type="{mime_type}">
-                Your browser does not support HTML5 video playback.
+                Din webbläsare stöder inte HTML5 videospelning.
             </video>
         </div>
-        <div class="controls-info">
-            <strong>Keyboard Controls:</strong>
-            <div class="control-list">
-                <div class="control-item"><strong>Space</strong> - Play/Pause</div>
-                <div class="control-item"><strong>\u2192</strong> - Forward 5s</div>
-                <div class="control-item"><strong>\u2190</strong> - Rewind 5s</div>
-                <div class="control-item"><strong>f</strong> - Fullscreen</div>
-                <div class="control-item"><strong>m</strong> - Mute</div>
-                <div class="control-item"><strong>\u2191/\u2193</strong> - Volume</div>
-                <div class="control-item"><strong>&gt;</strong> - Speed Up</div>
-                <div class="control-item"><strong>&lt;</strong> - Speed Down</div>
-            </div>
+        <div class="controls">
+            <strong>Tangentbordskontroller:</strong><br>
+            Space = Spela/Pausa | ← / → = Spola | f = Fullskärm | m = Ljud av
         </div>
     </div>
-    <script>
-        const video = document.querySelector('video');
-        
-        document.addEventListener('keydown', (e) => {{
-            if (e.target !== document.body) return;
-            
-            switch(e.key) {{
-                case ' ':
-                    e.preventDefault();
-                    video.paused ? video.play() : video.pause();
-                    break;
-                case 'ArrowRight':
-                    video.currentTime += 5;
-                    break;
-                case 'ArrowLeft':
-                    video.currentTime -= 5;
-                    break;
-                case 'f':
-                    e.preventDefault();
-                    if (video.requestFullscreen) {{
-                        video.requestFullscreen();
-                    }}
-                    break;
-                case 'm':
-                    video.muted = !video.muted;
-                    break;
-                case 'ArrowUp':
-                    e.preventDefault();
-                    video.volume = Math.min(1, video.volume + 0.1);
-                    break;
-                case 'ArrowDown':
-                    e.preventDefault();
-                    video.volume = Math.max(0, video.volume - 0.1);
-                    break;
-                case '>':
-                case '.':
-                    video.playbackRate = Math.min(2, video.playbackRate + 0.25);
-                    break;
-                case '<':
-                case ',':
-                    video.playbackRate = Math.max(0.25, video.playbackRate - 0.25);
-                    break;
-            }}
-        }});
-        
-        document.addEventListener('fullscreenchange', () => {{
-            if (!document.fullscreenElement) {{
-            }}
-        }});
-    </script>
 </body>
 </html>
 '''
-        return html
     
     @staticmethod
-    def generate_simple_player(url: str, title: str = "Video") -> str:
-        """
-        Generate a minimal video player for fallback use
-        """
+    def _generate_svt_player(url: str, title: str) -> str:
+        """Generate SVT Play player - direct link to SVT"""
         safe_url = url.replace('"', '&quot;')
-        safe_title = title.replace('"', '&quot;')
-        
         return f'''
 <!DOCTYPE html>
 <html>
@@ -406,26 +407,201 @@ class VideoPlayer:
     <meta charset="UTF-8">
     <style>
         body {{
-            margin: 0; padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #0a0e1a;
+            color: #e8eaf0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 20px;
         }}
-        video {{
-            max-width: 90vw;
-            max-height: 90vh;
+        .container {{
+            text-align: center;
+            background: #131824;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }}
+        .logo {{ font-size: 60px; margin-bottom: 20px; }}
+        h1 {{ color: #3b82f6; margin-bottom: 20px; }}
+        p {{ color: #a0a8c0; margin-bottom: 20px; }}
+        .btn {{
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s;
+        }}
+        .btn:hover {{ background: #60a5fa; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">📺</div>
+        <h1>SVT Play</h1>
+        <p>Denna video kräver SVT Play för uppspelning.</p>
+        <a href="{safe_url}" class="btn" target="_blank">Öppna i SVT Play →</a>
+    </div>
+</body>
+</html>
+'''
+    
+    @staticmethod
+    def _generate_sr_player(url: str, title: str) -> str:
+        """Generate SR player - direct link to Sveriges Radio"""
+        safe_url = url.replace('"', '&quot;')
+        return f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e1a;
+            color: #e8eaf0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }}
+        .container {{
+            text-align: center;
+            background: #131824;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }}
+        .logo {{ font-size: 60px; margin-bottom: 20px; }}
+        h1 {{ color: #3b82f6; margin-bottom: 20px; }}
+        p {{ color: #a0a8c0; margin-bottom: 20px; }}
+        .btn {{
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
         }}
     </style>
 </head>
 <body>
-    <video controls crossorigin="anonymous" preload="metadata" style="width: 100%; max-width: 1200px;">
-        <source src="{safe_url}">
-        Your browser does not support HTML5 video.
-    </video>
+    <div class="container">
+        <div class="logo">📻</div>
+        <h1>Sveriges Radio</h1>
+        <p>Klicka nedan för att lyssna på Sveriges Radio.</p>
+        <a href="{safe_url}" class="btn" target="_blank">Öppna i SR →</a>
+    </div>
+</body>
+</html>
+'''
+    
+    @staticmethod
+    def _generate_ur_player(url: str, title: str) -> str:
+        """Generate UR player - direct link to UR"""
+        safe_url = url.replace('"', '&quot;')
+        return f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e1a;
+            color: #e8eaf0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }}
+        .container {{
+            text-align: center;
+            background: #131824;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }}
+        .logo {{ font-size: 60px; margin-bottom: 20px; }}
+        h1 {{ color: #3b82f6; margin-bottom: 20px; }}
+        p {{ color: #a0a8c0; margin-bottom: 20px; }}
+        .btn {{
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎓</div>
+        <h1>UR - Utbildningsradion</h1>
+        <p>Klicka nedan för att se innehållet på UR.</p>
+        <a href="{safe_url}" class="btn" target="_blank">Öppna i UR →</a>
+    </div>
+</body>
+</html>
+'''
+    
+    @staticmethod
+    def _generate_filmstaden_player(url: str, title: str) -> str:
+        """Generate Filmstaden player - direct link"""
+        safe_url = url.replace('"', '&quot;')
+        return f'''
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0e1a;
+            color: #e8eaf0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }}
+        .container {{
+            text-align: center;
+            background: #131824;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }}
+        .logo {{ font-size: 60px; margin-bottom: 20px; }}
+        h1 {{ color: #3b82f6; margin-bottom: 20px; }}
+        p {{ color: #a0a8c0; margin-bottom: 20px; }}
+        .btn {{
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+        }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🎬</div>
+        <h1>Filmstaden</h1>
+        <p>Se filmen på Filmstaden.</p>
+        <a href="{safe_url}" class="btn" target="_blank">Öppna i Filmstaden →</a>
+    </div>
 </body>
 </html>
 '''
