@@ -1,7 +1,7 @@
 """
 Klar Video Support Module - WHITELISTED DOMAINS ONLY
 Video detection and playback for whitelisted Swedish domains only
-Supports: SVT, SR, UR, Filmstaden, Blockflix, and direct video files on whitelisted domains
+Supports: SVT, SR, UR, Filmstaden, and direct video files on whitelisted domains
 
 VIDEO POLICY: Only plays videos from whitelisted domains in domains.json
 No YouTube, no external services - strictly Swedish whitelisted sources
@@ -79,6 +79,9 @@ class VideoDetector:
         CRITICAL: Only processes whitelisted domains
         
         Returns: (is_video, video_type, video_id)
+        
+        IMPORTANT: Detects DIRECT video files, NOT DASH/HLS manifests
+        (DASH/HLS cause codec errors in PyQt6)
         """
         if not url:
             return False, VideoType.UNKNOWN, None
@@ -91,11 +94,19 @@ class VideoDetector:
             return False, VideoType.BLOCKED, None
         
         # Domain is whitelisted - now check for video content
+        # CRITICAL: Skip DASH and HLS manifests (they cause codec issues)
+        # Only detect direct MP4, WebM, OGV files
         
-        # SVT (Swedish Television) detection
-        if 'svt.se' in url_lower:
-            if 'play.svt.se' in url_lower or '/video/' in url_lower:
-                # Extract video ID if present
+        # Skip DASH and HLS manifests entirely
+        if '.m3u8' in url_lower or '.mpd' in url_lower:
+            print(f"[Video] Skipping manifest format (causes codec issues): {url}")
+            return False, VideoType.UNKNOWN, None
+        
+        # SVT (Swedish Television) detection - DIRECT PLAYER PAGE ONLY
+        if 'svt.se' in url_lower or 'play.svt.se' in url_lower:
+            # Detect SVT Play page, not manifest
+            if '/video/' in url_lower or 'play.svt.se' in url_lower:
+                # This is a SVT Play page - user should use SVT's player
                 video_id = VideoDetector._extract_id_from_path(url)
                 return True, VideoType.SVT, video_id
         
@@ -105,7 +116,7 @@ class VideoDetector:
                 video_id = VideoDetector._extract_id_from_path(url)
                 return True, VideoType.SR, video_id
         
-        # UR (Educational) detection
+        # UR (Educational) detection - DIRECT PLAYER PAGE ONLY
         if 'ur.se' in url_lower:
             if '/play/' in url_lower or '/video/' in url_lower:
                 video_id = VideoDetector._extract_id_from_path(url)
@@ -117,17 +128,14 @@ class VideoDetector:
                 video_id = VideoDetector._extract_id_from_path(url)
                 return True, VideoType.FILMSTADEN, video_id
         
-        # Direct file detection (on whitelisted domains)
+        # Direct file detection (on whitelisted domains ONLY)
+        # These are safe because they're single files, not manifests
         if '.mp4' in url_lower:
             return True, VideoType.HTML5_MP4, None
         elif '.webm' in url_lower:
             return True, VideoType.HTML5_WEBM, None
         elif '.ogv' in url_lower:
             return True, VideoType.HTML5_OGV, None
-        elif '.m3u8' in url_lower:
-            return True, VideoType.HLS_STREAM, None
-        elif '.mpd' in url_lower:
-            return True, VideoType.DASH_STREAM, None
         
         return False, VideoType.UNKNOWN, None
     
@@ -198,8 +206,6 @@ class VideoMetadata:
             VideoType.HTML5_MP4,
             VideoType.HTML5_WEBM,
             VideoType.HTML5_OGV,
-            VideoType.HLS_STREAM,
-            VideoType.DASH_STREAM
         }
         return self.video_type in playable_types
 
@@ -225,8 +231,7 @@ class VideoPlayer:
             return None
         
         # For direct files (MP4, WebM, etc.)
-        if video_type in (VideoType.HTML5_MP4, VideoType.HTML5_WEBM, VideoType.HTML5_OGV, 
-                          VideoType.HLS_STREAM, VideoType.DASH_STREAM):
+        if video_type in (VideoType.HTML5_MP4, VideoType.HTML5_WEBM, VideoType.HTML5_OGV):
             return VideoPlayer._generate_html5_player(url, video_type, title)
         
         # For Swedish streaming services
@@ -301,8 +306,6 @@ class VideoPlayer:
             mime_type = "video/webm"
         elif video_type == VideoType.HTML5_OGV:
             mime_type = "video/ogg"
-        elif video_type in (VideoType.HLS_STREAM, VideoType.DASH_STREAM):
-            mime_type = "application/x-mpegURL"
         
         safe_url = url.replace('"', '&quot;')
         safe_title = title.replace('"', '&quot;').replace('<', '&lt;').replace('>', '&gt;')
@@ -398,7 +401,7 @@ class VideoPlayer:
     
     @staticmethod
     def _generate_svt_player(url: str, title: str) -> str:
-        """Generate SVT Play player - direct link to SVT"""
+        """Generate SVT player - direct link to SVT"""
         safe_url = url.replace('"', '&quot;')
         return f'''
 <!DOCTYPE html>
@@ -444,6 +447,7 @@ class VideoPlayer:
         <div class="logo">📺</div>
         <h1>SVT Play</h1>
         <p>Denna video kräver SVT Play för uppspelning.</p>
+        <p style="font-size: 12px; color: #6b7390; margin-bottom: 20px;">SVT Play har bästa videoformat-stöd för HD-uppspelning.</p>
         <a href="{safe_url}" class="btn" target="_blank">Öppna i SVT Play →</a>
     </div>
 </body>
