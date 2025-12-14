@@ -1,7 +1,7 @@
 """
 Klar 3.1 - Standalone Swedish Browser
 Complete browser application with integrated search engine
-Features: LOKI offline search, Wikipedia direct search, Setup wizard
+Features: LOKI offline search, Wikipedia direct search, Setup wizard, Enhanced video playback
 """
 import sys
 import os
@@ -34,6 +34,7 @@ from engine.results_page import ResultsPage
 from engine.domain_whitelist import DomainWhitelist
 from engine.demographic_detector import DemographicDetector
 from engine.loki_system import LOKISystem
+from engine.video_support import VideoDetector, VideoPlayer, VideoMetadata, VideoType
 
 from PyQt6.QtWebEngineCore import QWebEngineSettings, QWebEngineProfile
 
@@ -314,7 +315,7 @@ class KlarBrowser(QMainWindow):
             print("[LOKI] Disabled by user")
         
         # ============================================
-        # VIDEO CODEC SUPPORT
+        # VIDEO CODEC SUPPORT - ENHANCED
         # ============================================
         profile = QWebEngineProfile.defaultProfile()
         settings = profile.settings()
@@ -324,8 +325,11 @@ class KlarBrowser(QMainWindow):
         settings.setAttribute(QWebEngineSettings.WebAttribute.PlaybackRequiresUserGesture, False)
         settings.setAttribute(QWebEngineSettings.WebAttribute.AllowRunningInsecureContent, True)
         settings.setAttribute(QWebEngineSettings.WebAttribute.AutoLoadImages, True)
+        settings.setAttribute(QWebEngineSettings.WebAttribute.WebGLEnabled, True)
         
-        print("[Klar] Video codec support enabled")
+        print("[Video] Enhanced codec support enabled")
+        print("[Video] Supported formats: MP4, WebM, OGV, HLS, DASH")
+        print("[Video] Supported platforms: YouTube, Vimeo, Dailymotion, Twitch, TikTok")
         # ============================================
         
         self.setWindowTitle("Klar 3.1")
@@ -556,7 +560,7 @@ class KlarBrowser(QMainWindow):
             ("🔒", "Integritet i fokus"),
             ("📶", "Offline-sökning med LOKI"),
             ("🖼️", "Inbyggd bildvisare"),
-            ("🎥", "Spela upp videor direkt")
+            ("🎥", "HD video playback")
         ]
         
         for icon, text in features:
@@ -678,20 +682,82 @@ class KlarBrowser(QMainWindow):
             self.status.showMessage(f"Bypass fel: {str(e)}", 5000)
     
     def check_video_url(self, qurl: QUrl):
-        """Check if URL is a video and open externally"""
+        """Enhanced video detection and handling using video_support module"""
         url_string = qurl.toString()
-    
-        video_indicators = [
-            'youtube.com/watch',
-            'youtu.be/',
-            'vimeo.com/',
-            'dailymotion.com/',
-            '.mp4',
-            '.webm',
-            '.m3u8'
-        ]
-    
-        if any(indicator in url_string.lower() for indicator in video_indicators):
+        
+        # Use VideoDetector to identify video content
+        is_video, video_type, video_id = VideoDetector.detect_from_url(url_string)
+        
+        if is_video:
+            print(f"[Video] Detected: {video_type}")
+            metadata = VideoMetadata(url_string)
+            
+            # Handle embeddable platforms (YouTube, Vimeo, etc.)
+            if metadata.is_embeddable() and video_id:
+                print(f"[Video] Using embedded player for {video_type}")
+                embed_html = VideoPlayer.generate_embed_html(
+                    url_string, video_type, video_id, width=900, height=506
+                )
+                if embed_html:
+                    wrapped_html = f'''<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{metadata.title} - Klar</title>
+    <style>
+        body {{
+            margin: 0; padding: 20px;
+            background: #0a0e1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }}
+        .video-container {{
+            width: 100%;
+            max-width: 900px;
+            background: #131824;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }}
+        .video-title {{
+            color: #3b82f6;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }}
+        iframe {{
+            width: 100%;
+            border-radius: 8px;
+        }}
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <div class="video-title">▶ {metadata.title}</div>
+        {embed_html}
+    </div>
+</body>
+</html>'''
+                    self.current_browser().setHtml(wrapped_html, QUrl("about:blank"))
+                    self.status.showMessage(f"▶ Playing: {metadata.title}", 3000)
+                    return
+            
+            # Handle direct HTML5 playback
+            elif metadata.is_playable_html5():
+                print(f"[Video] Using HTML5 player for {video_type}")
+                player_html = VideoPlayer.generate_html5_player(
+                    url_string, video_type, metadata.title
+                )
+                if player_html:
+                    self.current_browser().setHtml(player_html, QUrl("about:blank"))
+                    self.status.showMessage(f"▶ Playing: {metadata.title}", 3000)
+                    return
+            
+            # Fallback: open externally
             print(f"[Video] Opening externally: {url_string}")
             webbrowser.open(url_string)
             self.current_browser().back()
