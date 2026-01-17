@@ -1,0 +1,48 @@
+# Klar 3.1 Android - Python Requirements
+# Core dependencies for Android search engine
+
+# ===== WEB SCRAPING & PARSING =====
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+soupsieve>=2.5
+
+# ===== HTTP & NETWORKING =====
+requests>=2.31.0
+urllib3>=2.2.0
+certifi>=2024.0.0
+charset-normalizer>=3.3.0
+idna>=3.6
+
+# ===== SEARCH & NLP =====
+langdetect>=1.0.9
+
+# ===== JSON & DATA PROCESSING =====
+# json - Built-in Python standard library
+# pathlib - Built-in Python standard library
+
+# ===== SYSTEM & UTILITIES =====
+psutil>=5.9.0
+colorama>=0.4.6
+typing-extensions>=4.8.0
+packaging>=24.0
+
+# ===== DATA VALIDATION =====
+pydantic>=2.5.0
+pydantic-core>=2.14.0
+
+# ===== SECURITY & CRYPTO =====
+pycryptodome>=3.19.0
+
+# ===== COMMON DEPENDENCIES =====
+attrs>=23.0.0
+six>=1.16.0
+sniffio>=1.3.0
+exceptiongroup>=1.2.0
+
+# ===== NOTES =====
+# - Use Python 3.11+
+# - Optimized for Android 14-16 (API 34-36)
+# - LOKI offline mode uses SQLite (built-in)
+# - No PyQt6 needed (Compose UI instead)
+# - No Flask needed (Kotlin WebView instead)
+# - Minimal dependencies for smaller APK size
