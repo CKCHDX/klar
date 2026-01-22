@@ -1,10 +1,83 @@
-flask==2.3.3
+# Klar Search Engine (KSE) - Production Requirements
+# Swedish search engine production dependencies
+# Version: 1.0.0
+
+# Web Framework
+Flask==2.3.3
+Flask-CORS==4.0.0
+Werkzeug==2.3.7
+gunicorn==21.2.0
+
+# Database
+psycopg2-binary==2.9.7
+SQLAlchemy==2.0.23
+
+# Cache
+redis==5.0.0
+
+# Web Scraping
 requests==2.31.0
 beautifulsoup4==4.12.2
-nltk==3.8.1
-PyQt6==6.5.0
+html5lib==1.1
 lxml==4.9.3
-python-dotenv==1.0.0
+
+# NLP & Text Processing
+NLTK==3.8.1
 spacy==3.7.2
-sv-core-news-sm @ https://huggingface.co/spacy/sv_core_news_sm/resolve/main/sv_core_news_sm-3.7.1-py3-none-any.whl
-psutil==5.9.6
+swedish-stemmer==0.3
+pyfqdn==1.1.3
+
+# Data Processing
+pandas==2.1.1
+numpy==1.26.1
+scipy==1.11.3
+scikit-learn==1.3.2
+
+# Logging & Monitoring
+python-json-logger==2.0.7
+prometheus-client==0.18.0
+
+# Configuration
+python-dotenv==1.0.0
+pyyaml==6.0.1
+jsonschema==4.20.0
+
+# Security
+cryptography==41.0.7
+bcrypt==4.1.1
+
+# UI (Optional - for desktop client)
+PyQt6==6.6.0
+PyQt6-sip==13.6.0
+PyQt6-Qt6==6.6.0
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-flask==1.3.0
+pytest-asyncio==0.21.1
+
+# Code Quality
+black==23.11.0
+flake8==6.1.0
+pylint==3.0.2
+mypy==1.7.0
+isort==5.13.2
+
+# Documentation
+Sphinx==7.2.6
+sphinx-rtd-theme==2.0.0
+
+# Utilities
+click==8.1.7
+colorama==0.4.6
+tqdm==4.66.1
+faker==21.0.0
+
+# Production Server
+uWSGI==2.0.23
+
+# Optional: Data Analysis
+matplotlib==3.8.2
+seaborn==0.13.0
+
