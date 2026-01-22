@@ -1,0 +1,115 @@
+{
+  "application": {
+    "name": "Klar Search Engine",
+    "version": "1.0.0",
+    "description": "Swedish-optimized search engine for Sweden",
+    "author": "Alex Jonsson (CKCHDX)",
+    "environment": "production"
+  },
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8080,
+    "wsgi_workers": 4,
+    "debug": false,
+    "threaded": true,
+    "timeout": 30,
+    "max_content_length_mb": 16,
+    "cors_enabled": true,
+    "cors_origins": ["*"]
+  },
+  "database": {
+    "type": "postgresql",
+    "host": "localhost",
+    "port": 5432,
+    "database": "kse",
+    "user": "kse_user",
+    "password": "",
+    "pool_size": 10,
+    "max_overflow": 20,
+    "ssl_mode": "prefer",
+    "connection_timeout": 10
+  },
+  "cache": {
+    "type": "redis",
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "password": null,
+    "ttl_search_results": 604800,
+    "ttl_suggestions": 2592000,
+    "ttl_pagerank": 86400,
+    "max_memory_mb": 1024
+  },
+  "crawler": {
+    "max_workers": 4,
+    "rate_limit_seconds": 0.5,
+    "timeout_seconds": 10,
+    "user_agent": "KlarSearchEngine/1.0 (+https://oscyra.solutions/klar)",
+    "respect_robots_txt": true,
+    "crawl_depth_default": 2,
+    "crawl_depth_max": 5
+  },
+  "indexing": {
+    "batch_size": 1000,
+    "min_word_length": 3,
+    "max_word_length": 50,
+    "enable_stemming": true,
+    "swedish_stopwords_enabled": true,
+    "remove_duplicates": true
+  },
+  "ranking": {
+    "weights": {
+      "tf_idf": 0.35,
+      "pagerank": 0.20,
+      "domain_trust": 0.15,
+      "recency": 0.10,
+      "geography": 0.10,
+      "entity_match": 0.10
+    },
+    "pagerank_iterations": 10,
+    "pagerank_damping_factor": 0.85
+  },
+  "search": {
+    "default_results": 10,
+    "max_results": 100,
+    "max_query_length": 500,
+    "enable_spell_check": true,
+    "enable_suggestions": true,
+    "suggestion_min_prefix": 2
+  },
+  "domains": {
+    "total_domains": 2543,
+    "domain_list_file": "database/data/swedish_domains.json",
+    "auto_update_enabled": true,
+    "auto_update_interval_hours": 24
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": "logs/kse.log",
+    "max_bytes": 10485760,
+    "backup_count": 10
+  },
+  "security": {
+    "rate_limit_requests_per_minute": 100,
+    "rate_limit_burst": 20,
+    "sql_injection_protection": true,
+    "xss_protection": true,
+    "cors_credentials": false
+  },
+  "monitoring": {
+    "health_check_interval_seconds": 60,
+    "collect_metrics": true,
+    "prometheus_enabled": false,
+    "prometheus_port": 9090
+  },
+  "maintenance": {
+    "backup_enabled": true,
+    "backup_interval_hours": 24,
+    "backup_retention_days": 30,
+    "vacuum_enabled": true,
+    "vacuum_interval_hours": 168,
+    "integrity_check_enabled": true,
+    "integrity_check_interval_hours": 24
+  }
+}
