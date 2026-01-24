@@ -1,246 +1,331 @@
 """
-Database Layer Tests
-
-Tests for connection pooling, schema management, and data access.
+Tests for KSE Database Module
 """
 
 import pytest
-from kse.database import DatabaseConnection, DatabaseSchema, DomainLoader, Repository
-from kse.core import DatabaseException, SchemaException
+import os
+from kse.database import (
+    KSEDatabase,
+    initialize_database,
+    get_db_connection,
+)
+from kse.database.kse_queries import KSEQueries
+from kse.database.kse_domains_loader import SwedishDomainsLoader
+
+
+@pytest.fixture
+def test_db():
+    """
+    Create test database fixture.
+    """
+    # Use environment variables for test database
+    db = KSEDatabase(
+        host=os.getenv("KSE_TEST_DB_HOST", "localhost"),
+        port=int(os.getenv("KSE_TEST_DB_PORT", 5432)),
+        database=os.getenv("KSE_TEST_DB_NAME", "kse_test"),
+        user=os.getenv("KSE_TEST_DB_USER", "postgres"),
+        password=os.getenv("KSE_TEST_DB_PASSWORD", "postgres"),
+    )
+    
+    # Connect and initialize schema
+    if db.connect():
+        db.drop_schema()  # Clean slate for tests
+        db.create_schema()
+        yield db
+        db.disconnect()
+    else:
+        pytest.skip("Could not connect to test database")
 
 
 class TestDatabaseConnection:
-    """Test database connection pooling."""
+    """Test database connection."""
     
-    def test_connection_pool_initialization(self, db_connection):
-        """Test that connection pool initializes correctly."""
-        assert db_connection._pool is not None
+    def test_connect_to_database(self, test_db):
+        """Test database connection."""
+        assert test_db.conn is not None
     
-    def test_get_connection(self, db_connection):
-        """Test getting connection from pool."""
-        conn = db_connection.get_connection()
-        assert conn is not None
-        db_connection.return_connection(conn)
+    def test_disconnect_from_database(self, test_db):
+        """Test database disconnection."""
+        test_db.disconnect()
+        assert test_db.conn is None
     
-    def test_context_manager(self, db_connection):
-        """Test connection context manager."""
-        with db_connection.get_connection_context() as conn:
-            assert conn is not None
-            cursor = conn.cursor()
-            cursor.execute("SELECT 1;")
-            result = cursor.fetchone()
-            assert result[0] == 1
-            cursor.close()
+    def test_schema_verification(self, test_db):
+        """Test schema verification."""
+        stats = test_db.verify_schema()
+        assert "domains" in stats
+        assert "pages" in stats
+        assert "terms" in stats
+        assert "inverted_index" in stats
 
 
-class TestDatabaseSchema:
-    """Test database schema creation and management."""
+class TestDomainQueries:
+    """Test domain-related queries."""
     
-    def test_schema_creation(self, test_schema):
-        """Test that all tables are created."""
-        validation = test_schema.validate_schema()
-        assert all(validation.values()), f"Schema validation failed: {validation}"
-    
-    def test_all_tables_exist(self, test_schema):
-        """Test existence of all required tables."""
-        expected_tables = [
-            "kse_domains",
-            "kse_pages",
-            "kse_index_terms",
-            "kse_page_terms",
-            "kse_crawl_stats",
-            "kse_search_queries",
-            "kse_index_snapshots",
-            "kse_system_logs",
-        ]
-        
-        validation = test_schema.validate_schema()
-        for table in expected_tables:
-            assert table in validation, f"Table {table} not found"
-            assert validation[table], f"Table {table} does not exist"
-    
-    def test_schema_constraints(self, test_schema, db_connection):
-        """Test that constraints are properly defined."""
-        with db_connection.get_connection_context() as conn:
-            cursor = conn.cursor()
-            
-            # Test domain unique constraint
-            cursor.execute("""
-                INSERT INTO kse_domains (domain_name, domain_url, category, trust_score)
-                VALUES ('Test', 'https://test.com', 'Test', 0.5);
-            """)
-            conn.commit()
-            
-            # Attempt duplicate should fail
-            with pytest.raises(Exception):
-                cursor.execute("""
-                    INSERT INTO kse_domains (domain_name, domain_url, category, trust_score)
-                    VALUES ('Test2', 'https://test.com', 'Test', 0.5);
-                """)
-                conn.commit()
-            
-            conn.rollback()
-            cursor.close()
-
-
-class TestDomainLoader:
-    """Test domain loading functionality."""
-    
-    def test_load_domains(self, test_schema, test_loader, db_connection):
+    def test_load_domains(self, test_db):
         """Test loading Swedish domains."""
-        with db_connection.get_connection_context() as conn:
-            loader = DomainLoader(conn)
-            success = loader.load_domains()
-            assert success
-            assert loader.get_domain_count() > 0
+        loader = SwedishDomainsLoader(test_db)
+        loaded = loader.load_sample_domains()
+        assert loaded > 0
     
-    def test_domain_count(self, populated_db):
-        """Test that correct number of domains are loaded."""
-        with populated_db.get_connection_context() as conn:
-            loader = DomainLoader(conn)
-            count = loader.get_domain_count()
-            # Should have loaded at least the sample domains
-            assert count >= 10, f"Expected at least 10 domains, got {count}"
-    
-    def test_get_active_domains(self, populated_db):
-        """Test retrieving active domains."""
-        with populated_db.get_connection_context() as conn:
-            loader = DomainLoader(conn)
-            active = loader.get_active_domains()
-            assert len(active) > 0
-            assert all(d['id'] > 0 for d in active)
-            assert all(d['name'] for d in active)
-            assert all(d['url'] for d in active)
-    
-    def test_get_domains_needing_crawl(self, populated_db):
-        """Test getting domains that need crawling."""
-        with populated_db.get_connection_context() as conn:
-            loader = DomainLoader(conn)
-            to_crawl = loader.get_domains_needing_crawl(limit=5)
-            assert len(to_crawl) > 0
-            assert len(to_crawl) <= 5
-
-
-class TestRepository:
-    """Test data repository functionality."""
-    
-    def test_add_domain(self, test_schema, test_repository, db_connection):
-        """Test adding a domain."""
-        with db_connection.get_connection_context() as conn:
-            repo = Repository(conn)
-            domain_id = repo.add_domain(
-                name="Test Domain",
-                url="https://test-example.com",
-                category="Test",
-                trust=0.8
-            )
-            assert domain_id is not None
-            assert domain_id > 0
-    
-    def test_get_domain(self, test_schema, test_repository, db_connection):
-        """Test retrieving a domain."""
-        with db_connection.get_connection_context() as conn:
-            repo = Repository(conn)
-            domain_id = repo.add_domain(
-                name="Test Domain 2",
-                url="https://test-domain-2.com",
-                trust=0.7
-            )
-            
-            domain = repo.get_domain(domain_id)
-            assert domain is not None
-            assert domain['name'] == "Test Domain 2"
-            assert domain['trust'] == 0.7
-    
-    def test_add_page(self, test_schema, populated_db):
-        """Test adding a page."""
-        with populated_db.get_connection_context() as conn:
-            repo = Repository(conn)
-            loader = DomainLoader(conn)
-            
-            # Get first domain
-            domains = loader.get_active_domains()
-            assert len(domains) > 0
-            domain_id = domains[0]['id']
-            
-            page_id = repo.add_page(
-                domain_id=domain_id,
-                url="https://example.com/page",
-                title="Test Page",
-                description="Test page description",
-                content_text="Test page content"
-            )
-            assert page_id is not None
-            assert page_id > 0
-    
-    def test_get_statistics(self, populated_db):
-        """Test getting system statistics."""
-        with populated_db.get_connection_context() as conn:
-            repo = Repository(conn)
-            stats = repo.get_statistics()
-            
-            assert 'domains' in stats
-            assert 'pages' in stats
-            assert 'terms' in stats
-            assert stats['domains'] > 0
-            assert stats['indexing_percentage'] >= 0
-    
-    def test_page_count(self, test_schema, populated_db):
-        """Test page counting."""
-        with populated_db.get_connection_context() as conn:
-            repo = Repository(conn)
-            
-            # Initially 0 pages
-            assert repo.get_page_count() == 0
-            
-            loader = DomainLoader(conn)
-            domains = loader.get_active_domains()
-            
-            # Add some pages
-            for i in range(5):
-                repo.add_page(
-                    domain_id=domains[0]['id'],
-                    url=f"https://example.com/page{i}",
-                    title=f"Page {i}"
-                )
-            
-            assert repo.get_page_count() == 5
-
-
-class TestDatabaseIntegration:
-    """Integration tests for database layer."""
-    
-    def test_full_initialization_flow(self, test_db_config):
-        """Test complete database initialization flow."""
-        # Create connection
-        db_conn = DatabaseConnection(**test_db_config)
-        db_conn.initialize_pool()
+    def test_get_pending_domains(self, test_db):
+        """Test getting pending domains for crawling."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
         
-        with db_conn.get_connection_context() as conn:
-            # Create schema
-            schema = DatabaseSchema(conn)
-            schema.drop_schema(confirm=True)
-            assert schema.create_schema()
-            
-            # Load domains
-            loader = DomainLoader(conn)
-            assert loader.load_domains()
-            
-            # Add pages
-            repo = Repository(conn)
-            domains = loader.get_active_domains()
-            assert len(domains) > 0
-            
-            page_id = repo.add_page(
-                domain_id=domains[0]['id'],
-                url="https://integration-test.com",
-                title="Integration Test"
-            )
-            assert page_id is not None
-            
-            # Verify stats
-            stats = repo.get_statistics()
-            assert stats['domains'] > 0
-            assert stats['pages'] == 1
+        queries = KSEQueries(test_db)
+        pending = queries.get_pending_domains(limit=10)
         
-        db_conn.close_pool()
+        assert len(pending) > 0
+        assert all("url" in d for d in pending)
+        assert all("trust_score" in d for d in pending)
+    
+    def test_update_domain_crawl_time(self, test_db):
+        """Test updating domain crawl time."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        queries = KSEQueries(test_db)
+        domain = queries.get_pending_domains(limit=1)[0]
+        
+        success = queries.update_domain_crawl_time(domain["id"], status="active")
+        assert success
+    
+    def test_get_high_trust_domains(self, test_db):
+        """Test getting high-trust domains."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        high_trust = loader.get_high_trust_domains(min_trust=0.9)
+        assert len(high_trust) > 0
+        assert all(d["trust_score"] >= 0.9 for d in high_trust)
+
+
+class TestPageQueries:
+    """Test page-related queries."""
+    
+    def test_insert_page(self, test_db):
+        """Test inserting a page."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        queries = KSEQueries(test_db)
+        
+        page_id = queries.insert_page(
+            domain_id=1,
+            url="https://example.se/page1",
+            title="Test Page",
+            description="Test description",
+            content="This is test content",
+            content_hash="abc123",
+            status_code=200,
+            content_type="text/html",
+            size_bytes=1024,
+        )
+        
+        assert page_id is not None
+    
+    def test_get_unindexed_pages(self, test_db):
+        """Test getting unindexed pages."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        queries = KSEQueries(test_db)
+        
+        # Insert a page
+        queries.insert_page(
+            domain_id=1,
+            url="https://example.se/page1",
+            title="Test Page",
+            description="Test description",
+            content="This is test content",
+            content_hash="abc123",
+            status_code=200,
+            content_type="text/html",
+            size_bytes=1024,
+        )
+        
+        # Get unindexed pages
+        unindexed = queries.get_unindexed_pages(limit=10)
+        assert len(unindexed) > 0
+    
+    def test_mark_page_indexed(self, test_db):
+        """Test marking page as indexed."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        queries = KSEQueries(test_db)
+        
+        # Insert a page
+        page_id = queries.insert_page(
+            domain_id=1,
+            url="https://example.se/page1",
+            title="Test Page",
+            description="Test description",
+            content="This is test content",
+            content_hash="abc123",
+            status_code=200,
+            content_type="text/html",
+            size_bytes=1024,
+        )
+        
+        # Mark as indexed
+        success = queries.mark_page_indexed(page_id)
+        assert success
+
+
+class TestTermQueries:
+    """Test term/index queries."""
+    
+    def test_insert_or_get_term(self, test_db):
+        """Test inserting/getting terms."""
+        queries = KSEQueries(test_db)
+        
+        term_id1 = queries.insert_or_get_term("test")
+        term_id2 = queries.insert_or_get_term("test")
+        
+        assert term_id1 is not None
+        assert term_id2 is not None
+        assert term_id1 == term_id2  # Should return same ID
+    
+    def test_insert_inverted_index(self, test_db):
+        """Test inserting into inverted index."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        queries = KSEQueries(test_db)
+        
+        # Insert page
+        page_id = queries.insert_page(
+            domain_id=1,
+            url="https://example.se/page1",
+            title="Test Page",
+            description="Test description",
+            content="This is test content",
+            content_hash="abc123",
+            status_code=200,
+            content_type="text/html",
+            size_bytes=1024,
+        )
+        
+        # Insert term and index
+        term_id = queries.insert_or_get_term("test")
+        success = queries.insert_inverted_index(
+            term_id=term_id,
+            page_id=page_id,
+            position=0,
+            field="content",
+            tf_idf_score=0.85,
+        )
+        
+        assert success
+    
+    def test_search_inverted_index(self, test_db):
+        """Test searching inverted index."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        queries = KSEQueries(test_db)
+        
+        # Insert page
+        page_id = queries.insert_page(
+            domain_id=1,
+            url="https://example.se/page1",
+            title="Test Page",
+            description="Test description",
+            content="This is test content",
+            content_hash="abc123",
+            status_code=200,
+            content_type="text/html",
+            size_bytes=1024,
+        )
+        
+        # Insert term and index
+        term_id = queries.insert_or_get_term("test")
+        queries.insert_inverted_index(
+            term_id=term_id,
+            page_id=page_id,
+            position=0,
+            field="content",
+            tf_idf_score=0.85,
+        )
+        
+        # Search
+        results = queries.search_inverted_index(term_id, limit=10)
+        assert len(results) > 0
+        assert results[0]["page_id"] == page_id
+
+
+class TestCrawlQueue:
+    """Test crawl queue operations."""
+    
+    def test_add_to_crawl_queue(self, test_db):
+        """Test adding URLs to crawl queue."""
+        queries = KSEQueries(test_db)
+        
+        success = queries.add_to_crawl_queue(
+            url="https://example.se/page1",
+            domain_id=1,
+            priority=5,
+        )
+        
+        assert success
+    
+    def test_get_next_url_to_crawl(self, test_db):
+        """Test getting next URL from queue."""
+        queries = KSEQueries(test_db)
+        
+        # Add URLs
+        queries.add_to_crawl_queue("https://example1.se", priority=5)
+        queries.add_to_crawl_queue("https://example2.se", priority=10)
+        
+        # Get next (should be highest priority)
+        url = queries.get_next_url_to_crawl()
+        assert url is not None
+        assert url["url"] in ["https://example1.se", "https://example2.se"]
+    
+    def test_mark_url_crawled(self, test_db):
+        """Test marking URL as crawled."""
+        queries = KSEQueries(test_db)
+        
+        # Add URL
+        queries.add_to_crawl_queue("https://example.se", priority=5)
+        
+        # Get and mark as done
+        url = queries.get_next_url_to_crawl()
+        success = queries.mark_url_crawled(url["id"], success=True)
+        assert success
+
+
+class TestStatistics:
+    """Test statistics operations."""
+    
+    def test_log_crawl_event(self, test_db):
+        """Test logging crawl events."""
+        queries = KSEQueries(test_db)
+        
+        success = queries.log_crawl_event(
+            event_type="fetched",
+            domain_id=1,
+            url="https://example.se",
+            status_code=200,
+            duration_ms=150,
+            message="Successfully fetched",
+        )
+        
+        assert success
+    
+    def test_get_statistics(self, test_db):
+        """Test getting database statistics."""
+        loader = SwedishDomainsLoader(test_db)
+        loader.load_sample_domains()
+        
+        queries = KSEQueries(test_db)
+        stats = queries.get_statistics()
+        
+        assert stats["total_domains"] > 0
+        assert stats["total_pages"] == 0  # No pages inserted yet
+        assert stats["total_terms"] == 0  # No terms inserted yet
+
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])
