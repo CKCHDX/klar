@@ -1,49 +1,22 @@
 """
 KSE Web Crawler Module
 
-Comprehensive web crawling engine for Swedish domains.
-Includes fetching, parsing, deduplication, and scheduling.
+Provides HTTP crawling, HTML parsing, link extraction, and content processing
+for the Klar Search Engine.
 """
 
-from kse.crawler.kse_crawler_core import (
-    Crawler,
-    CrawlerConfig,
-    CrawlResult,
-)
-from kse.crawler.kse_crawler_fetcher import (
-    Fetcher,
-    FetchResult,
-    FetchStatus,
-)
-from kse.crawler.kse_crawler_parser import (
-    Parser,
-    ParsedPage,
-)
-from kse.crawler.kse_crawler_scheduler import (
-    CrawlScheduler,
-    CrawlJob,
-)
-from kse.crawler.kse_crawler_limiter import (
-    RateLimiter,
-    RobotsTxtChecker,
-)
+from .kse_crawler import KSECrawler, CrawlResult
+from .kse_crawler_manager import KSECrawlerManager
+from .kse_url_frontier import URLFrontier
+from .kse_parser import HTMLParser, extract_links, extract_text
 
+__version__ = "1.0.0"
 __all__ = [
-    # Core crawler
-    "Crawler",
-    "CrawlerConfig",
+    "KSECrawler",
     "CrawlResult",
-    # Fetching
-    "Fetcher",
-    "FetchResult",
-    "FetchStatus",
-    # Parsing
-    "Parser",
-    "ParsedPage",
-    # Scheduling
-    "CrawlScheduler",
-    "CrawlJob",
-    # Rate limiting
-    "RateLimiter",
-    "RobotsTxtChecker",
+    "KSECrawlerManager",
+    "URLFrontier",
+    "HTMLParser",
+    "extract_links",
+    "extract_text",
 ]
