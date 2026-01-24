@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Sida hittades inte - Klar{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="container">
+        <div class="error-content">
+            <h1 class="error-code">404</h1>
+            <h2>Sida hittades inte</h2>
+            <p>Bortskämd! Sidan du letar efter finns inte.</p>
+            <a href="{{ url_for('index') }}" class="error-link">Till startsida</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.error-content h1 {
+    font-size: 120px;
+    margin: 0;
+    color: #2172e5;
+}
+
+.error-content h2 {
+    font-size: 32px;
+    margin: 16px 0;
+}
+
+.error-content p {
+    font-size: 16px;
+    color: #757575;
+    margin-bottom: 24px;
+}
+
+.error-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #2172e5;
+    color: white;
+    border-radius: 24px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.error-link:hover {
+    background-color: #1565c0;
+    text-decoration: none;
+}
+</style>
+{% endblock %}
