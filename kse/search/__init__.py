@@ -1,40 +1,52 @@
 """
-KSE Search & Ranking Module
+Search Module
 
-Search query processing, ranking algorithms, and result retrieval.
+Stage 4: Search Pipeline - Query parsing, ranking, and execution
 """
 
-from kse.search.kse_search_query import (
-    SearchQuery,
+from .kse_search_query import (
     QueryType,
+    SearchQuery,
+    QueryParser,
 )
 
-from kse.search.kse_search_ranking import (
-    Ranker,
+from .kse_search_ranking import (
     RankingStrategy,
     RankingScore,
+    Ranker,
 )
 
-from kse.search.kse_search_executor import (
-    SearchExecutor,
+from .kse_search_executor import (
     SearchResult,
     ResultSet,
+    SearchExecutor,
 )
 
-from kse.search.kse_search_cache import (
-    SearchCache,
+from .kse_search_cache import (
     CacheEntry,
+    SearchCache,
 )
 
 __all__ = [
-    'SearchQuery',
+    # Query types and classes
     'QueryType',
-    'Ranker',
+    'SearchQuery',
+    'QueryParser',
+    
+    # Ranking
     'RankingStrategy',
     'RankingScore',
-    'SearchExecutor',
+    'Ranker',
+    
+    # Execution
     'SearchResult',
     'ResultSet',
-    'SearchCache',
+    'SearchExecutor',
+    
+    # Caching
     'CacheEntry',
+    'SearchCache',
 ]
+
+__version__ = '4.0.0'
+__stage__ = 'Stage 4: Search Pipeline'
