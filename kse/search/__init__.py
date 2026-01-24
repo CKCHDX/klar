@@ -1,52 +1,21 @@
 """
-Search Module
+KSE Search Engine Module
 
-Stage 4: Search Pipeline - Query parsing, ranking, and execution
+Provides indexing, ranking, and search capabilities for the Klar Search Engine.
 """
 
-from .kse_search_query import (
-    QueryType,
-    SearchQuery,
-    QueryParser,
-)
+from .kse_indexer import KSEIndexer
+from .kse_tokenizer import Tokenizer, stem_swedish
+from .kse_ranker import KSERanker, TFIDFRanker
+from .kse_search import SearchEngine, SearchResult
 
-from .kse_search_ranking import (
-    RankingStrategy,
-    RankingScore,
-    Ranker,
-)
-
-from .kse_search_executor import (
-    SearchResult,
-    ResultSet,
-    SearchExecutor,
-)
-
-from .kse_search_cache import (
-    CacheEntry,
-    SearchCache,
-)
-
+__version__ = "1.0.0"
 __all__ = [
-    # Query types and classes
-    'QueryType',
-    'SearchQuery',
-    'QueryParser',
-    
-    # Ranking
-    'RankingStrategy',
-    'RankingScore',
-    'Ranker',
-    
-    # Execution
-    'SearchResult',
-    'ResultSet',
-    'SearchExecutor',
-    
-    # Caching
-    'CacheEntry',
-    'SearchCache',
+    "KSEIndexer",
+    "Tokenizer",
+    "stem_swedish",
+    "KSERanker",
+    "TFIDFRanker",
+    "SearchEngine",
+    "SearchResult",
 ]
-
-__version__ = '4.0.0'
-__stage__ = 'Stage 4: Search Pipeline'
