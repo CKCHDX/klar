@@ -1,0 +1,40 @@
+# KSE - Klar Swedish Engine
+# Production Requirements
+# Python 3.9+
+
+# Database
+psycopg2-binary==2.9.9
+
+# Testing
+pytest==7.4.3
+pytest-cov==4.1.0
+pytest-xdist==3.5.0
+
+# Code Quality
+black==23.12.0
+pylint==3.0.3
+mypy==1.7.1
+flake8==6.1.0
+
+# Type Checking
+types-psycopg2==2.9.21.15
+
+# Utilities
+python-dotenv==1.0.0
+
+# Logging & Monitoring (Phase 4+)
+# prometheus-client==0.19.0
+# python-json-logger==2.0.7
+
+# API & Web (Phase 3+)
+# flask==3.0.0
+# flask-cors==4.0.0
+# flask-limiter==3.5.0
+
+# NLP & Indexing (Phase 3+)
+# nltk==3.8.1
+# scikit-learn==1.3.2
+# numpy==1.26.2
+
+# GUI (Phase 4+)
+# PyQt6==6.6.1
