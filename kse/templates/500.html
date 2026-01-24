@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Serverfel - Klar{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="container">
+        <div class="error-content">
+            <h1 class="error-code">500</h1>
+            <h2>Serverfel</h2>
+            <p>Något gick snett. Var vänlig och försök igen senare.</p>
+            <a href="{{ url_for('index') }}" class="error-link">Tillbaka till startsida</a>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+}
+
+.error-content h1 {
+    font-size: 120px;
+    margin: 0;
+    color: #f44336;
+}
+
+.error-content h2 {
+    font-size: 32px;
+    margin: 16px 0;
+}
+
+.error-content p {
+    font-size: 16px;
+    color: #757575;
+    margin-bottom: 24px;
+}
+
+.error-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #f44336;
+    color: white;
+    border-radius: 24px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.error-link:hover {
+    background-color: #d32f2f;
+    text-decoration: none;
+}
+</style>
+{% endblock %}
