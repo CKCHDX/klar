@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Klar - Sök på Svenska{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="container hero-content">
+        <h1 class="hero-title">Klar</h1>
+        <p class="hero-subtitle">Svenskt sökmotor</p>
+        
+        <!-- Search Box -->
+        <form method="GET" action="{{ url_for('search_page') }}" class="search-form">
+            <div class="search-container">
+                <input type="text" 
+                       name="q" 
+                       class="search-input" 
+                       placeholder="Sök på svenska..."
+                       autocomplete="off"
+                       id="search-input">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </form>
+        
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Sidor indexerade</h3>
+                <p class="stat-value">{{ stats.get('total_pages', 0)|format_number }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Unika termer</h3>
+                <p class="stat-value">{{ stats.get('total_terms', 0)|format_number }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Domäner indexerade</h3>
+                <p class="stat-value">{{ stats.get('total_domains', 0)|format_number }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Genomsnittlig söktid</h3>
+                <p class="stat-value">{{ stats.get('avg_search_time', 0)|round(0)|int }} ms</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Searches -->
+<section class="popular-searches">
+    <div class="container">
+        <h2>Populära sökningar</h2>
+        <ul class="search-tags">
+            <li><a href="{{ url_for('search_page', q='svenska ordböcker') }}">Svenska ord böcker</a></li>
+            <li><a href="{{ url_for('search_page', q='svenska universitet') }}">Svenska universitet</a></li>
+            <li><a href="{{ url_for('search_page', q='svenska nyheter') }}">Svenska nyheter</a></li>
+            <li><a href="{{ url_for('search_page', q='svenska recept') }}">Svenska recept</a></li>
+            <li><a href="{{ url_for('search_page', q='svenska historia') }}">Svenska historia</a></li>
+        </ul>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="features">
+    <div class="container">
+        <h2>Varför välja Klar?</h2>
+        <div class="features-grid">
+            <div class="feature">
+                <i class="fas fa-bolt"></i>
+                <h3>Snabb</h3>
+                <p>Resultatet inom millisekunder</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-globe"></i>
+                <h3>Svenska fokus</h3>
+                <p>Optimerat för svenska webb</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Privat</h3>
+                <p>Vi sparar inte dina sökningar</p>
+            </div>
+            <div class="feature">
+                <i class="fas fa-cog"></i>
+                <h3>Intelligent</h3>
+                <p>AI-driven sökrankning</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Autocomplete functionality
+    document.getElementById('search-input').addEventListener('input', async (e) => {
+        const query = e.target.value;
+        
+        if (query.length < 2) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/autocomplete?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            
+            // TODO: Display autocomplete suggestions
+            console.log('Suggestions:', data.suggestions);
+        } catch (error) {
+            console.error('Autocomplete error:', error);
+        }
+    });
+</script>
+{% endblock %}
