@@ -1019,7 +1019,7 @@ KLAR:   "Search the web"     (and stay completely private)
 
 ---
 
-**Version:** 3.0.0  
+**Version:** V0.1.56  
 **Status:** Production Ready  
 **Last Updated:** January 25, 2026  
 
