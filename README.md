@@ -71,16 +71,16 @@ USERS: Get answers, no tracking
 │  USER        REQUEST                    PROCESS                 │
 │  ├─ Enter:   "svenska universitet"      ├─ Receives query       │
 │  │           ↓                          │  ↓                    │
-│  ├─ Search   "What are Swedish         ├─ Processes NLP         │
+│  ├─ Search   "What are Swedish          ├─ Processes NLP        │
 │  │           universities?"             │  (Swedish)            │
 │  │           ↓                          │  ↓                    │
-│  │      ENCRYPTED HTTPS                ├─ Searches index        │
-│  │      (No tracking)                  │  (over 2.8M pages)     │
+│  │      ENCRYPTED HTTPS                 ├─ Searches index       │
+│  │      (No tracking)                   │  (over 2.8M pages)    │
 │  │           ↓                          │  ↓                    │
-│  │      Results < 500ms                ├─ Ranks by 7            │
+│  │      Results < 500ms                 ├─ Ranks by 7           │
 │  │           ↓                          │  factors              │
 │  ├─ Display  Top 10 results             │  ↓                    │
-│  │ (No ads)                            ├─ Returns results       │
+│  │ (No ads)                             ├─ Returns results      │
 │  │           ↓                          │                       │
 │  └─ Click    Open in browser            └─ HTTPS response       │
 │                                                                 │
@@ -118,31 +118,31 @@ USERS: Get answers, no tracking
 **Klar Browser** is the desktop/mobile application that users download. It's like Chrome or Firefox, but specialized for searching through Klar Search Engine.
 
 ```
-┌───────────────────────────────────────┐
+┌────────────────────────────────────────┐
 │       KLAR BROWSER                     │
 │    (What Users Download)               │
-├───────────────────────────────────────┤
+├────────────────────────────────────────┤
 │                                        │
-│  ┌─────────────────────────────────┐  │
+│  ┌──────────────────────────────────┐  │
 │  │  Search Box                      │  │
 │  │  "svenska nyheter"               │  │
-│  └─────────────────────────────────┘  │
+│  └──────────────────────────────────┘  │
 │              ↓                         │
-│  ┌─────────────────────────────────┐  │
+│  ┌──────────────────────────────────┐  │
 │  │  Search Results                  │  │
-│  │  1. SVT Nyheter (99/100)        │  │
-│  │  2. DN.se (97/100)              │  │
-│  │  3. Expressen (95/100)          │  │
-│  └─────────────────────────────────┘  │
+│  │  1. SVT Nyheter (99/100)         │  │
+│  │  2. DN.se (97/100)               │  │
+│  │  3. Expressen (95/100)           │  │
+│  └──────────────────────────────────┘  │
 │              ↓                         │
-│  Click result → Opens in browser      │
+│  Click result → Opens in browser       │
 │                                        │
 │  ✅ No ads                            │
 │  ✅ No tracking                       │
 │  ✅ No cookies                        │
 │  ✅ No profiling                      │
 │  ✅ Completely private                │
-│                                        │
+│                                       │
 └───────────────────────────────────────┘
 ```
 
