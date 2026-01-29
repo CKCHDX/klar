@@ -86,8 +86,16 @@ class KSEApplication:
             if hasattr(config, 'gui') and hasattr(config.gui, 'setup_completed'):
                 return not config.gui.setup_completed
             
-            # Check if index exists
-            storage_path = Path(config.storage.base_path) / 'storage' / 'index'
+            # Check if index exists - use base_dir instead of storage.base_path
+            from pathlib import Path
+            if hasattr(config, 'base_dir'):
+                base_dir = Path(config.base_dir)
+            elif hasattr(config, 'storage_dir'):
+                base_dir = Path(config.storage_dir).parent
+            else:
+                base_dir = Path.cwd() / 'data'
+            
+            storage_path = base_dir / 'storage' / 'index'
             index_file = storage_path / 'inverted_index.pkl'
             
             return not index_file.exists()
