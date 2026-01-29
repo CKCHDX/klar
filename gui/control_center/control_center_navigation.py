@@ -129,8 +129,11 @@ class ControlCenterNavigation(QTabWidget):
         index = self.addTab(widget, icon, name)
         self.setTabToolTip(index, tooltip)
         
-        # Enable context menu
-        self.setTabContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        # Enable context menu on tab bar (set once)
+        if not hasattr(self, '_context_menu_enabled'):
+            self.tabBar().setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+            self.tabBar().customContextMenuRequested.connect(self.show_module_context_menu)
+            self._context_menu_enabled = True
         
         # Store references
         self._modules[module_id] = config
