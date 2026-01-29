@@ -213,7 +213,6 @@ class Phase1StorageConfig(QWizardPage):
         self.depth_spinbox.setRange(1, 1000)
         self.depth_spinbox.setValue(self.crawl_depth)
         self.depth_spinbox.setSuffix(" pages")
-        self.depth_spinbox.setSpecialValueText("Unlimited (be careful!)")
         self.depth_spinbox.valueChanged.connect(self._on_depth_changed)
         depth_layout.addWidget(self.depth_spinbox)
         
@@ -433,8 +432,11 @@ class Phase1StorageConfig(QWizardPage):
             'dynamic': 2.0  # Default for dynamic, will be adjusted per domain
         }
         
-        # Use a large number for unlimited crawl
-        crawl_depth = 10000 if self.crawl_depth == -1 else self.crawl_depth
+        # Maximum pages for unlimited crawl (safety limit)
+        MAX_UNLIMITED_CRAWL_PAGES = 10000
+        
+        # Use safety limit for unlimited crawl
+        crawl_depth = MAX_UNLIMITED_CRAWL_PAGES if self.crawl_depth == -1 else self.crawl_depth
         
         return {
             'storage_path': str(self.storage_path),

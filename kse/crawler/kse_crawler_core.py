@@ -124,18 +124,18 @@ class CrawlerCore:
         
         logger.info(f"Starting crawl of {domain} from {start_url}")
         
-        # Get dynamic crawl delay from robots.txt if enabled
-        current_crawl_delay = self.crawl_delay
+        # Get domain-level crawl delay (static for entire domain crawl)
+        domain_crawl_delay = self.crawl_delay
         if self.dynamic_speed:
             from urllib.parse import urlparse
             parsed = urlparse(start_url)
             base_url = f"{parsed.scheme}://{parsed.netloc}"
             robots_delay = self.robots_parser.get_crawl_delay(base_url)
             if robots_delay:
-                current_crawl_delay = robots_delay
+                domain_crawl_delay = robots_delay
                 logger.info(f"Using robots.txt crawl delay for {domain}: {robots_delay}s")
             else:
-                logger.info(f"No robots.txt delay found for {domain}, using default: {current_crawl_delay}s")
+                logger.info(f"No robots.txt delay found for {domain}, using default: {domain_crawl_delay}s")
         
         # Initialize domain status
         self.domain_status[domain] = {
@@ -144,7 +144,7 @@ class CrawlerCore:
             "pages_failed": 0,
             "start_time": time.time(),
             "last_crawl": None,
-            "crawl_delay": current_crawl_delay
+            "crawl_delay": domain_crawl_delay
         }
         
         # URL queue for this domain
@@ -209,8 +209,8 @@ class CrawlerCore:
                     if crawled_count % 10 == 0:
                         self._save_crawl_state()
                     
-                    # Respect crawl delay (use dynamic delay if enabled)
-                    time.sleep(current_crawl_delay)
+                    # Respect domain-level crawl delay
+                    time.sleep(domain_crawl_delay)
                 
                 except Exception as e:
                     logger.error(f"Failed to crawl {current_url}: {e}")

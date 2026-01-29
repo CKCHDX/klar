@@ -155,12 +155,17 @@ class CrawlerThread(QThread):
                         f"✓ Indexed {index_stats['pages_indexed']} pages"
                     )
                     
+                    # Update stats with actual indexed count
                     final_stats['pages_indexed'] = index_stats['pages_indexed']
+                    final_stats['pages_crawled'] = self.total_pages
                     final_stats['total_terms'] = index_stats['total_terms']
                     
                 except Exception as e:
                     self.log_message.emit('error', f"Failed to index pages: {str(e)}")
                     logger.error(f"Indexing failed: {e}", exc_info=True)
+                    # Set indexed count to 0 on failure
+                    final_stats['pages_indexed'] = 0
+                    final_stats['pages_crawled'] = self.total_pages
             
             if not self._stop_requested:
                 self.log_message.emit('success', "✓ Crawling and indexing completed successfully!")
@@ -554,7 +559,8 @@ class Phase2CrawlControl(QWizardPage):
         message = (
             f"Crawling completed!\n\n"
             f"Domains crawled: {stats.get('domains_crawled', 0)}/{stats.get('total_domains', 0)}\n"
-            f"Pages crawled: {stats.get('pages_indexed', 0)}\n"
+            f"Pages crawled: {stats.get('pages_crawled', 0)}\n"
+            f"Pages indexed: {stats.get('pages_indexed', 0)}\n"
             f"Terms indexed: {stats.get('total_terms', 0)}\n"
             f"Errors: {stats.get('errors', 0)}\n"
             f"Time: {minutes}m {seconds}s\n"
