@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['C:\\Users\\akoj2\\Desktop\\klar\\3.1\\klar.ico'],
+    icon=['klar.ico'],
 )
