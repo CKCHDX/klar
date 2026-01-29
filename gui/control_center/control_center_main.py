@@ -544,5 +544,9 @@ def main():
     sys.exit(app.exec())
 
 
+# Backwards compatibility alias
+ControlCenter = ControlCenterMain
+
+
 if __name__ == '__main__':
     main()

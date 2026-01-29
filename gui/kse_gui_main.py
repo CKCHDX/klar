@@ -21,7 +21,7 @@ from gui.kse_gui_config import GUIConfig
 from gui.setup_wizard.setup_wizard_main import SetupWizard
 
 try:
-    from gui.control_center.control_center_main import ControlCenter
+    from gui.control_center.control_center_main import ControlCenterMain as ControlCenter
     CONTROL_CENTER_AVAILABLE = True
 except ImportError:
     CONTROL_CENTER_AVAILABLE = False
