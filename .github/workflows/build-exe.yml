@@ -1,0 +1,79 @@
+name: Build Klar Executable
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-windows-exe:
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller
+      
+      - name: Verify required files
+        run: |
+          if (-not (Test-Path "klar_browser.py")) { throw "Missing klar_browser.py" }
+          if (-not (Test-Path "keywords_db.json")) { throw "Missing keywords_db.json" }
+          if (-not (Test-Path "domains.json")) { throw "Missing domains.json" }
+          if (-not (Test-Path "klar.ico")) { throw "Missing klar.ico" }
+          if (-not (Test-Path "engine")) { throw "Missing engine directory" }
+          Write-Host "All required files verified"
+        shell: pwsh
+      
+      - name: Build executable with PyInstaller
+        run: |
+          pyinstaller `
+            --onefile `
+            --windowed `
+            --icon=klar.ico `
+            --add-data "keywords_db.json;." `
+            --add-data "domains.json;." `
+            --add-data "klar.ico;." `
+            --add-data "engine;engine" `
+            --hidden-import=PyQt6.QtCore `
+            --hidden-import=PyQt6.QtGui `
+            --hidden-import=PyQt6.QtWidgets `
+            --hidden-import=PyQt6.QtWebEngineWidgets `
+            --hidden-import=PyQt6.QtWebEngineCore `
+            --hidden-import=PyQt6.sip `
+            --hidden-import=requests `
+            --hidden-import=bs4 `
+            --hidden-import=lxml `
+            --hidden-import=engine.domain_whitelist `
+            --hidden-import=engine.demographic_detector `
+            --hidden-import=engine.loki_system `
+            --hidden-import=engine.setup_wizard `
+            --exclude-module PySide6 `
+            --name=Klar `
+            klar_browser.py
+        shell: pwsh
+      
+      - name: Verify build output
+        run: |
+          if (-not (Test-Path "dist/Klar.exe")) {
+            throw "Klar.exe was not created"
+          }
+          $fileSize = (Get-Item "dist/Klar.exe").Length
+          Write-Host "Build successful! Klar.exe size: $fileSize bytes"
+        shell: pwsh
+      
+      - name: Upload executable as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Klar-Windows-Executable
+          path: dist/Klar.exe
+          if-no-files-found: error
