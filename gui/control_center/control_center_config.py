@@ -6,7 +6,10 @@ Module definitions, settings, and API endpoints for KSE Control Center
 from typing import Dict, Any, List
 from pathlib import Path
 import json
+import logging
 from gui.kse_gui_config import GUIConfig
+
+logger = logging.getLogger(__name__)
 
 
 class ControlCenterConfig:
@@ -20,6 +23,8 @@ class ControlCenterConfig:
     MIN_HEIGHT = 700
     
     # API configuration
+    # Note: Using HTTP for localhost development. For production/remote servers,
+    # update to HTTPS to ensure encrypted communication.
     API_BASE_URL = "http://localhost:5000"
     API_TIMEOUT = 30  # seconds
     API_RETRY_COUNT = 3
@@ -165,7 +170,7 @@ class ControlCenterConfig:
                 with open(cls.CONFIG_FILE, 'r') as f:
                     return json.load(f)
             except Exception as e:
-                print(f"Error loading config: {e}")
+                logger.error(f"Error loading config: {e}")
         return {}
     
     @classmethod
@@ -176,7 +181,7 @@ class ControlCenterConfig:
             with open(cls.CONFIG_FILE, 'w') as f:
                 json.dump(config, f, indent=2)
         except Exception as e:
-            print(f"Error saving config: {e}")
+            logger.error(f"Error saving config: {e}")
     
     @classmethod
     def get_default_window_state(cls) -> Dict[str, Any]:

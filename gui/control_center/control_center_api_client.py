@@ -154,7 +154,7 @@ class ControlCenterAPIClient(QObject):
             endpoint, result, callback
         ))
         worker.error.connect(lambda error: self._on_request_error(
-            endpoint, error, error_callback
+            endpoint, method, data, callback, error_callback, error
         ))
         worker.finished.connect(thread.quit)
         worker.error.connect(thread.quit)
@@ -167,7 +167,15 @@ class ControlCenterAPIClient(QObject):
         if not hasattr(self, '_threads'):
             self._threads = []
         self._threads.append(thread)
-        thread.finished.connect(lambda: self._threads.remove(thread))
+        thread.finished.connect(lambda: self._cleanup_thread(thread))
+    
+    def _cleanup_thread(self, thread: QThread):
+        """Safely remove thread from list"""
+        try:
+            if hasattr(self, '_threads') and thread in self._threads:
+                self._threads.remove(thread)
+        except (ValueError, RuntimeError):
+            pass  # Thread already removed or destroyed
     
     def _on_request_success(self, endpoint: str, result: Dict, callback: Optional[Callable]):
         """Handle successful request"""
@@ -180,7 +188,15 @@ class ControlCenterAPIClient(QObject):
             except Exception as e:
                 logger.error(f"Error in callback: {e}")
     
-    def _on_request_error(self, endpoint: str, error: str, error_callback: Optional[Callable]):
+    def _on_request_error(
+        self,
+        endpoint: str,
+        method: str,
+        data: Optional[Dict],
+        callback: Optional[Callable],
+        error_callback: Optional[Callable],
+        error: str
+    ):
         """Handle request error with retry logic"""
         attempts = self._retry_attempts.get(endpoint, 0)
         
@@ -189,7 +205,10 @@ class ControlCenterAPIClient(QObject):
             self._retry_attempts[endpoint] = attempts + 1
             delay = self.retry_delay * (2 ** attempts)
             logger.warning(f"Request failed, retrying in {delay}s (attempt {attempts + 1}/{self.retry_count})")
-            QTimer.singleShot(int(delay * 1000), lambda: self._make_request(endpoint))
+            QTimer.singleShot(
+                int(delay * 1000),
+                lambda: self._make_request(endpoint, method, data, callback, error_callback)
+            )
         else:
             # Max retries reached
             self._retry_attempts[endpoint] = 0
