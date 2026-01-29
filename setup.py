@@ -28,17 +28,18 @@ setup(
     ],
     python_requires=">=3.9",
     install_requires=[
-        "Flask>=2.3.0",
+        "Flask>=2.3.2",
         "PyQt6>=6.6.0",
         "requests>=2.31.0",
         "beautifulsoup4>=4.12.0",
         "lxml>=4.9.0",
-        "nltk>=3.8.1",
+        "nltk>=3.9",
         "numpy>=1.24.0",
         "scikit-learn>=1.2.0",
         "python-dotenv>=1.0.0",
         "PyYAML>=6.0",
         "psutil>=5.9.0",
+        "urllib3>=2.6.3",
     ],
     entry_points={
         "console_scripts": [
