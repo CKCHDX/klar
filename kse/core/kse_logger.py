@@ -104,6 +104,22 @@ class KSELogger:
         return logger
 
 
+def setup_logging(log_dir: Optional[Path] = None, level: str = "INFO", enable_console: bool = True) -> None:
+    """
+    Convenience function to set up logging with sensible defaults
+    
+    Args:
+        log_dir: Directory for log files (defaults to DEFAULT_LOG_DIR)
+        level: Logging level (defaults to INFO)
+        enable_console: Whether to log to console (defaults to True)
+    """
+    if log_dir is None:
+        from kse.core.kse_constants import DEFAULT_LOG_DIR
+        log_dir = DEFAULT_LOG_DIR
+    
+    KSELogger.setup(log_dir, level, enable_console)
+
+
 def get_logger(name: str, log_file: Optional[str] = None) -> logging.Logger:
     """
     Convenience function to get a logger
