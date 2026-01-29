@@ -31,14 +31,27 @@ search:
 
 # Ranking Settings
 ranking:
+  enabled: true
   weights:
-    tf_idf: 0.25
+    tf_idf: 0.35
     pagerank: 0.20
     domain_authority: 0.15
-    recency: 0.15
-    keyword_density: 0.10
-    link_structure: 0.10
+    recency: 0.10
+    keyword_density: 0.08
+    link_structure: 0.07
     regional_relevance: 0.05
+
+# Cache Settings
+cache:
+  enabled: true
+  max_size_mb: 100
+  default_ttl: 3600  # 1 hour
+
+# Monitoring Settings
+monitoring:
+  enabled: true
+  check_interval: 60  # seconds
+  history_size: 100
 
 # Server Settings
 server:

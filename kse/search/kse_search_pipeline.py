@@ -1,5 +1,5 @@
 """
-KSE Search Pipeline - Main search orchestrator
+KSE Search Pipeline - Main search orchestrator with advanced ranking and caching
 """
 from typing import List, Dict, Optional
 from kse.search.kse_query_preprocessor import QueryPreprocessor
@@ -7,6 +7,9 @@ from kse.search.kse_result_processor import ResultProcessor
 from kse.search.kse_search_executor import SearchExecutor
 from kse.indexing.kse_indexer_pipeline import IndexerPipeline
 from kse.nlp.kse_nlp_core import NLPCore
+from kse.ranking.kse_ranking_core import RankingCore
+from kse.ranking.kse_diversity_ranker import DiversityRanker
+from kse.cache.kse_cache_manager import CacheManager
 from kse.core.kse_logger import get_logger
 import time
 
@@ -14,23 +17,44 @@ logger = get_logger(__name__, "search.log")
 
 
 class SearchPipeline:
-    """Main search orchestrator"""
+    """Main search orchestrator with ranking and caching"""
     
-    def __init__(self, indexer: IndexerPipeline, nlp_core: Optional[NLPCore] = None):
+    def __init__(
+        self,
+        indexer: IndexerPipeline,
+        nlp_core: Optional[NLPCore] = None,
+        enable_cache: bool = True,
+        enable_ranking: bool = True
+    ):
         """
         Initialize search pipeline
         
         Args:
             indexer: Indexer pipeline instance
             nlp_core: NLP core instance (uses indexer's NLP if None)
+            enable_cache: Enable search result caching
+            enable_ranking: Enable advanced ranking
         """
         self.indexer = indexer
         self.nlp = nlp_core or indexer.nlp
+        self.enable_cache = enable_cache
+        self.enable_ranking = enable_ranking
         
         # Initialize components
         self.query_preprocessor = QueryPreprocessor(self.nlp)
         self.result_processor = ResultProcessor()
         self.search_executor = SearchExecutor(indexer)
+        
+        # Initialize ranking system
+        if self.enable_ranking:
+            self.ranking_core = RankingCore()
+            self.diversity_ranker = DiversityRanker(max_per_domain=3)
+            logger.info("Advanced ranking enabled")
+        
+        # Initialize cache
+        if self.enable_cache:
+            self.cache_manager = CacheManager(max_size_mb=100, default_ttl=3600)
+            logger.info("Search cache enabled")
         
         # Search history
         self.search_history: List[Dict] = []
@@ -45,7 +69,7 @@ class SearchPipeline:
         max_per_domain: int = 3
     ) -> Dict:
         """
-        Execute search query
+        Execute search query with advanced ranking and caching
         
         Args:
             query: Search query
@@ -59,6 +83,15 @@ class SearchPipeline:
         start_time = time.time()
         
         logger.info(f"Search request: '{query}'")
+        
+        # Check cache if enabled
+        if self.enable_cache:
+            cache_key = f"{query}_{max_results}_{diversify}"
+            cached_result = self.cache_manager.get('search', cache_key)
+            if cached_result:
+                logger.info(f"Cache hit for query: '{query}'")
+                cached_result['from_cache'] = True
+                return cached_result
         
         # Preprocess query
         preprocessed = self.query_preprocessor.preprocess(query)
@@ -76,7 +109,7 @@ class SearchPipeline:
         # Execute search
         results = self.search_executor.execute_search(
             preprocessed['processed_terms'],
-            max_results
+            max_results * 3  # Get more results for ranking
         )
         
         # Process results
@@ -84,12 +117,28 @@ class SearchPipeline:
             # Deduplicate
             results = self.result_processor.deduplicate_results(results)
             
+            # Apply advanced ranking if enabled
+            if self.enable_ranking:
+                results = self.ranking_core.rank_results(
+                    results,
+                    preprocessed['processed_terms']
+                )
+                logger.debug(f"Applied advanced ranking to {len(results)} results")
+            
             # Diversify if requested
             if diversify:
-                results = self.result_processor.diversify_results(
-                    results,
-                    max_per_domain
-                )
+                if self.enable_ranking:
+                    # Use advanced diversity ranker
+                    results = self.diversity_ranker.diversify_results(results)
+                else:
+                    # Use basic diversity
+                    results = self.result_processor.diversify_results(
+                        results,
+                        max_per_domain
+                    )
+            
+            # Limit to max_results
+            results = results[:max_results]
             
             # Format results
             results = self.result_processor.format_results(
@@ -107,8 +156,16 @@ class SearchPipeline:
             'results': results,
             'total_results': len(results),
             'search_time': round(search_time, 3),
-            'timestamp': time.time()
+            'timestamp': time.time(),
+            'from_cache': False,
+            'ranking_enabled': self.enable_ranking,
+            'cache_enabled': self.enable_cache
         }
+        
+        # Cache result if enabled
+        if self.enable_cache:
+            cache_key = f"{query}_{max_results}_{diversify}"
+            self.cache_manager.set('search', cache_key, response)
         
         # Log search
         self._log_search(response)
@@ -150,17 +207,45 @@ class SearchPipeline:
             Dictionary with statistics
         """
         if not self.search_history:
-            return {
+            stats = {
                 'total_searches': 0,
                 'average_search_time': 0,
                 'average_results': 0
             }
+        else:
+            total_time = sum(s['search_time'] for s in self.search_history)
+            total_results = sum(s['results_count'] for s in self.search_history)
+            
+            stats = {
+                'total_searches': len(self.search_history),
+                'average_search_time': round(total_time / len(self.search_history), 3),
+                'average_results': round(total_results / len(self.search_history), 2)
+            }
         
-        total_time = sum(s['search_time'] for s in self.search_history)
-        total_results = sum(s['results_count'] for s in self.search_history)
+        # Add cache statistics if enabled
+        if self.enable_cache:
+            stats['cache'] = self.cache_manager.get_statistics()
         
-        return {
-            'total_searches': len(self.search_history),
-            'average_search_time': round(total_time / len(self.search_history), 3),
-            'average_results': round(total_results / len(self.search_history), 2)
-        }
+        return stats
+    
+    def clear_cache(self) -> None:
+        """Clear search cache"""
+        if self.enable_cache:
+            self.cache_manager.clear('search')
+            logger.info("Search cache cleared")
+    
+    def get_ranking_weights(self) -> Dict:
+        """Get current ranking weights"""
+        if self.enable_ranking:
+            weights = self.ranking_core.get_weights()
+            return {
+                'tf_idf': weights.tf_idf,
+                'pagerank': weights.pagerank,
+                'domain_authority': weights.domain_authority,
+                'recency': weights.recency,
+                'keyword_density': weights.keyword_density,
+                'link_structure': weights.link_structure,
+                'regional_relevance': weights.regional_relevance
+            }
+        return {}
+
