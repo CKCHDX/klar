@@ -210,32 +210,39 @@ class Phase1StorageConfig(QWizardPage):
         depth_layout.addWidget(depth_label)
         
         self.depth_spinbox = QSpinBox()
-        self.depth_spinbox.setRange(1, 5)
+        self.depth_spinbox.setRange(1, 1000)
         self.depth_spinbox.setValue(self.crawl_depth)
         self.depth_spinbox.setSuffix(" pages")
         self.depth_spinbox.valueChanged.connect(self._on_depth_changed)
         depth_layout.addWidget(self.depth_spinbox)
         
-        depth_info = QLabel("(1=fast test, 5=comprehensive)")
+        depth_info = QLabel("(1-50=test, 50-200=moderate, 200+=comprehensive)")
         depth_info.setStyleSheet(f"color: {GUIConfig.COLORS['text_secondary']};")
         depth_layout.addWidget(depth_info)
         depth_layout.addStretch()
         
         layout.addLayout(depth_layout)
         
+        # Add unlimited crawl checkbox
+        self.unlimited_crawl_checkbox = QCheckBox("Crawl entire domain (unlimited pages)")
+        self.unlimited_crawl_checkbox.setChecked(False)
+        self.unlimited_crawl_checkbox.setStyleSheet(f"color: {GUIConfig.COLORS['text_primary']};")
+        self.unlimited_crawl_checkbox.stateChanged.connect(self._on_unlimited_changed)
+        layout.addWidget(self.unlimited_crawl_checkbox)
+        
         # Crawl speed
         speed_layout = QHBoxLayout()
-        speed_label = QLabel("Crawl Speed:")
+        speed_label = QLabel("Base Crawl Speed:")
         speed_label.setMinimumWidth(200)
         speed_layout.addWidget(speed_label)
         
         self.speed_combo = QComboBox()
-        self.speed_combo.addItems(["Slow (5s/page)", "Medium (2s/page)", "Fast (1s/page)"])
-        self.speed_combo.setCurrentText("Medium (2s/page)")
+        self.speed_combo.addItems(["Slow (5s/page)", "Medium (2s/page)", "Fast (1s/page)", "Dynamic (auto-adjust)"])
+        self.speed_combo.setCurrentText("Dynamic (auto-adjust)")
         self.speed_combo.currentTextChanged.connect(self._on_speed_changed)
         speed_layout.addWidget(self.speed_combo)
         
-        speed_info = QLabel("(slower is more respectful to servers)")
+        speed_info = QLabel("(dynamic adjusts based on robots.txt)")
         speed_info.setStyleSheet(f"color: {GUIConfig.COLORS['text_secondary']};")
         speed_layout.addWidget(speed_info)
         speed_layout.addStretch()
@@ -357,12 +364,25 @@ class Phase1StorageConfig(QWizardPage):
         self.crawl_depth = value
         logger.debug(f"Crawl depth changed to: {value}")
     
+    def _on_unlimited_changed(self, state: int):
+        """Handle unlimited crawl checkbox change"""
+        if state == 2:  # Checked
+            self.depth_spinbox.setEnabled(False)
+            self.crawl_depth = -1  # -1 indicates unlimited
+            logger.debug("Unlimited crawl enabled")
+        else:
+            self.depth_spinbox.setEnabled(True)
+            self.crawl_depth = self.depth_spinbox.value()
+            logger.debug(f"Crawl depth set to: {self.crawl_depth}")
+    
     def _on_speed_changed(self, text: str):
         """Handle crawl speed change"""
         if "Slow" in text:
             self.crawl_speed = "slow"
         elif "Fast" in text:
             self.crawl_speed = "fast"
+        elif "Dynamic" in text:
+            self.crawl_speed = "dynamic"
         else:
             self.crawl_speed = "medium"
         
@@ -408,14 +428,22 @@ class Phase1StorageConfig(QWizardPage):
         speed_to_delay = {
             'slow': 5.0,
             'medium': 2.0,
-            'fast': 1.0
+            'fast': 1.0,
+            'dynamic': 2.0  # Default for dynamic, will be adjusted per domain
         }
+        
+        # Maximum pages for unlimited crawl (safety limit)
+        MAX_UNLIMITED_CRAWL_PAGES = 10000
+        
+        # Use safety limit for unlimited crawl
+        crawl_depth = MAX_UNLIMITED_CRAWL_PAGES if self.crawl_depth == -1 else self.crawl_depth
         
         return {
             'storage_path': str(self.storage_path),
             'domains': self.selected_domains,
-            'crawl_depth': self.crawl_depth,
+            'crawl_depth': crawl_depth,
             'crawl_speed': self.crawl_speed,
             'crawl_delay': speed_to_delay[self.crawl_speed],
-            'respect_robots': self.robots_checkbox.isChecked()
+            'respect_robots': self.robots_checkbox.isChecked(),
+            'dynamic_speed': self.crawl_speed == 'dynamic'
         }

@@ -124,6 +124,13 @@ class SetupWizard(QWizard):
             
             config.gui.setup_completed = True
             
+            # Set config file path if not already set using public method
+            if not self.config_manager._kse_config._config_file:
+                from pathlib import Path
+                config_file = Path.cwd() / "config" / "kse_config.yaml"
+                config_file.parent.mkdir(parents=True, exist_ok=True)
+                self.config_manager.set_config_file_path(config_file)
+            
             # Save configuration
             self.config_manager.save_config()
             logger.info("Setup completion status saved")

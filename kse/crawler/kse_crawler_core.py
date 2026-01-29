@@ -28,7 +28,8 @@ class CrawlerCore:
         timeout: int = 10,
         max_retries: int = 3,
         crawl_depth: int = 50,
-        respect_robots: bool = True
+        respect_robots: bool = True,
+        dynamic_speed: bool = False
     ):
         """
         Initialize crawler
@@ -42,12 +43,14 @@ class CrawlerCore:
             max_retries: Maximum retries per request
             crawl_depth: Maximum pages to crawl per domain
             respect_robots: Whether to respect robots.txt
+            dynamic_speed: Whether to dynamically adjust crawl speed from robots.txt
         """
         self.storage = storage_manager
         self.allowed_domains = set(allowed_domains)
         self.crawl_delay = crawl_delay
         self.crawl_depth = crawl_depth
         self.respect_robots = respect_robots
+        self.dynamic_speed = dynamic_speed
         
         # Initialize components
         self.http_client = HTTPClient(user_agent, timeout, max_retries)
@@ -63,6 +66,8 @@ class CrawlerCore:
         self._load_crawl_state()
         
         logger.info(f"Crawler initialized for {len(self.allowed_domains)} domains")
+        if dynamic_speed:
+            logger.info("Dynamic speed adjustment enabled")
     
     def _load_crawl_state(self) -> None:
         """Load previous crawl state from storage"""
@@ -119,13 +124,27 @@ class CrawlerCore:
         
         logger.info(f"Starting crawl of {domain} from {start_url}")
         
+        # Get domain-level crawl delay (static for entire domain crawl)
+        domain_crawl_delay = self.crawl_delay
+        if self.dynamic_speed:
+            from urllib.parse import urlparse
+            parsed = urlparse(start_url)
+            base_url = f"{parsed.scheme}://{parsed.netloc}"
+            robots_delay = self.robots_parser.get_crawl_delay(base_url)
+            if robots_delay:
+                domain_crawl_delay = robots_delay
+                logger.info(f"Using robots.txt crawl delay for {domain}: {robots_delay}s")
+            else:
+                logger.info(f"No robots.txt delay found for {domain}, using default: {domain_crawl_delay}s")
+        
         # Initialize domain status
         self.domain_status[domain] = {
             "status": CrawlStatus.IN_PROGRESS.value,
             "pages_crawled": 0,
             "pages_failed": 0,
             "start_time": time.time(),
-            "last_crawl": None
+            "last_crawl": None,
+            "crawl_delay": domain_crawl_delay
         }
         
         # URL queue for this domain
@@ -190,8 +209,8 @@ class CrawlerCore:
                     if crawled_count % 10 == 0:
                         self._save_crawl_state()
                     
-                    # Respect crawl delay
-                    time.sleep(self.crawl_delay)
+                    # Respect domain-level crawl delay
+                    time.sleep(domain_crawl_delay)
                 
                 except Exception as e:
                     logger.error(f"Failed to crawl {current_url}: {e}")

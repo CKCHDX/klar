@@ -5,6 +5,7 @@ Main control interface for KSE system management
 
 __all__ = [
     'ControlCenterMain',
+    'ControlCenter',  # Alias for ControlCenterMain
     'ControlCenterConfig',
     'ControlCenterNavigation',
     'ControlCenterAPIClient',
@@ -12,7 +13,7 @@ __all__ = [
 
 def __getattr__(name):
     """Lazy import to avoid loading PyQt6 unless needed"""
-    if name == 'ControlCenterMain':
+    if name == 'ControlCenterMain' or name == 'ControlCenter':
         from gui.control_center.control_center_main import ControlCenterMain
         return ControlCenterMain
     elif name == 'ControlCenterConfig':

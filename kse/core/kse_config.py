@@ -339,3 +339,12 @@ class ConfigManager:
             value: Value to set
         """
         self._kse_config.set(key, value)
+    
+    def set_config_file_path(self, config_file: Path) -> None:
+        """
+        Set the configuration file path
+        
+        Args:
+            config_file: Path to configuration file
+        """
+        self._kse_config._config_file = config_file

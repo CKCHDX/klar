@@ -76,8 +76,9 @@ class CrawlerThread(QThread):
                 crawl_delay=self.config.get('crawl_delay', 2.0),
                 timeout=10,
                 max_retries=3,
-                crawl_depth=self.config.get('crawl_depth', 2),
-                respect_robots=self.config.get('respect_robots', True)
+                crawl_depth=self.config.get('crawl_depth', 50),
+                respect_robots=self.config.get('respect_robots', True),
+                dynamic_speed=self.config.get('dynamic_speed', False)
             )
             
             self.log_message.emit('success', f"Crawler initialized for {self.total_domains} domains")
@@ -132,8 +133,42 @@ class CrawlerThread(QThread):
                 'pages_per_second': self.total_pages / elapsed_time if elapsed_time > 0 else 0
             }
             
+            # Index the crawled pages
+            if self.crawler and self.total_pages > 0:
+                self.log_message.emit('info', "Indexing crawled pages...")
+                try:
+                    from kse.indexing.kse_indexer_pipeline import IndexerPipeline
+                    from kse.nlp.kse_nlp_core import NLPCore
+                    
+                    # Initialize indexer
+                    nlp_core = NLPCore(enable_lemmatization=True, enable_stopword_removal=True)
+                    indexer = IndexerPipeline(storage_manager, nlp_core)
+                    
+                    # Get crawled pages
+                    pages = self.crawler.get_crawled_pages()
+                    
+                    # Index pages
+                    index_stats = indexer.index_pages(pages)
+                    
+                    self.log_message.emit(
+                        'success',
+                        f"✓ Indexed {index_stats['pages_indexed']} pages"
+                    )
+                    
+                    # Update stats with actual indexed count
+                    final_stats['pages_indexed'] = index_stats['pages_indexed']
+                    final_stats['pages_crawled'] = self.total_pages
+                    final_stats['total_terms'] = index_stats['total_terms']
+                    
+                except Exception as e:
+                    self.log_message.emit('error', f"Failed to index pages: {str(e)}")
+                    logger.error(f"Indexing failed: {e}", exc_info=True)
+                    # Set indexed count to 0 on failure
+                    final_stats['pages_indexed'] = 0
+                    final_stats['pages_crawled'] = self.total_pages
+            
             if not self._stop_requested:
-                self.log_message.emit('success', "✓ Crawling completed successfully!")
+                self.log_message.emit('success', "✓ Crawling and indexing completed successfully!")
             
             self.crawl_completed.emit(final_stats)
             
@@ -524,7 +559,9 @@ class Phase2CrawlControl(QWizardPage):
         message = (
             f"Crawling completed!\n\n"
             f"Domains crawled: {stats.get('domains_crawled', 0)}/{stats.get('total_domains', 0)}\n"
+            f"Pages crawled: {stats.get('pages_crawled', 0)}\n"
             f"Pages indexed: {stats.get('pages_indexed', 0)}\n"
+            f"Terms indexed: {stats.get('total_terms', 0)}\n"
             f"Errors: {stats.get('errors', 0)}\n"
             f"Time: {minutes}m {seconds}s\n"
             f"Speed: {stats.get('pages_per_second', 0):.2f} pages/sec"
