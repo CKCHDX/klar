@@ -40,7 +40,20 @@ def create_app():
     storage_manager = StorageManager(data_dir)
     nlp_core = NLPCore(enable_lemmatization=True, enable_stopword_removal=True)
     indexer = IndexerPipeline(storage_manager, nlp_core)
-    search_pipeline = SearchPipeline(indexer, nlp_core)
+    search_pipeline = SearchPipeline(
+        indexer,
+        nlp_core,
+        enable_cache=config.get("cache.enabled", True),
+        enable_ranking=config.get("ranking.enabled", True)
+    )
+    
+    # Initialize monitoring if enabled
+    monitoring = None
+    if config.get("monitoring.enabled", True):
+        from kse.monitoring.kse_monitoring_core import MonitoringCore
+        monitoring = MonitoringCore(check_interval=60)
+        monitoring.start_monitoring()
+        logger.info("Monitoring enabled")
     
     logger.info("KSE Server initialized")
     
@@ -102,6 +115,41 @@ def register_routes():
             'count': len(history)
         })
     
+    @app.route('/api/cache/clear', methods=['POST'])
+    def clear_cache():
+        """Clear search cache"""
+        search_pipeline.clear_cache()
+        return jsonify({
+            'status': 'success',
+            'message': 'Cache cleared'
+        })
+    
+    @app.route('/api/cache/stats', methods=['GET'])
+    def cache_stats():
+        """Get cache statistics"""
+        if search_pipeline.enable_cache:
+            stats = search_pipeline.cache_manager.get_statistics()
+            return jsonify(stats)
+        return jsonify({
+            'error': 'Cache not enabled'
+        }), 400
+    
+    @app.route('/api/ranking/weights', methods=['GET'])
+    def ranking_weights():
+        """Get current ranking weights"""
+        weights = search_pipeline.get_ranking_weights()
+        return jsonify(weights)
+    
+    @app.route('/api/monitoring/status', methods=['GET'])
+    def monitoring_status():
+        """Get system monitoring status"""
+        if monitoring:
+            status = monitoring.get_system_status()
+            return jsonify(status)
+        return jsonify({
+            'error': 'Monitoring not enabled'
+        }), 400
+    
     @app.route('/', methods=['GET'])
     def index():
         """Root endpoint"""
@@ -112,7 +160,11 @@ def register_routes():
                 '/api/search?q=query',
                 '/api/health',
                 '/api/stats',
-                '/api/history'
+                '/api/history',
+                '/api/cache/clear',
+                '/api/cache/stats',
+                '/api/ranking/weights',
+                '/api/monitoring/status'
             ]
         })
 
@@ -129,10 +181,14 @@ def main():
     logger.info(f"Starting KSE Server on {host}:{port}")
     print(f"\nKSE Server starting on http://{host}:{port}")
     print(f"API endpoints:")
-    print(f"  - GET http://{host}:{port}/api/search?q=<query>")
-    print(f"  - GET http://{host}:{port}/api/health")
-    print(f"  - GET http://{host}:{port}/api/stats")
-    print(f"  - GET http://{host}:{port}/api/history")
+    print(f"  - GET  http://{host}:{port}/api/search?q=<query>")
+    print(f"  - GET  http://{host}:{port}/api/health")
+    print(f"  - GET  http://{host}:{port}/api/stats")
+    print(f"  - GET  http://{host}:{port}/api/history")
+    print(f"  - POST http://{host}:{port}/api/cache/clear")
+    print(f"  - GET  http://{host}:{port}/api/cache/stats")
+    print(f"  - GET  http://{host}:{port}/api/ranking/weights")
+    print(f"  - GET  http://{host}:{port}/api/monitoring/status")
     print()
     
     app.run(host=host, port=port, debug=debug)
