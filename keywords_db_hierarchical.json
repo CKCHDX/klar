@@ -2,8 +2,8 @@
   "version": "4.0.0",
   "type": "hierarchical",
   "description": "Hierarchical keyword database for Klar 4.0 - Supports multi-level taxonomy and metadata-based search",
-  "total_keywords": 1500,
-  "total_categories": 50,
+  "total_keywords": 1105,
+  "total_categories": 47,
   "hierarchy": {
     "nyheter": {
       "id": "nyheter",

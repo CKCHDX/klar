@@ -5,7 +5,7 @@ Enables Google-like search by indexing metadata tags
 """
 
 from bs4 import BeautifulSoup
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Any
 import re
 from urllib.parse import urlparse
 
@@ -32,7 +32,7 @@ class MetadataExtractor:
             'article:author'
         ]
         
-    def extract_metadata(self, html: str, url: str) -> Dict[str, any]:
+    def extract_metadata(self, html: str, url: str) -> Dict[str, Any]:
         """
         Extract all metadata from HTML page
         
@@ -92,7 +92,7 @@ class MetadataExtractor:
             if domain.startswith('www.'):
                 domain = domain[4:]
             return domain
-        except:
+        except (ValueError, AttributeError):
             return ''
     
     def _extract_path(self, url: str) -> str:
@@ -100,7 +100,7 @@ class MetadataExtractor:
         try:
             parsed = urlparse(url)
             return parsed.path
-        except:
+        except (ValueError, AttributeError):
             return ''
     
     def _extract_title(self, soup: BeautifulSoup) -> str:
@@ -308,7 +308,7 @@ class MetadataExtractor:
         # Combine all parts
         return ' '.join(parts)
     
-    def extract_subpage_structure(self, metadata: Dict) -> Dict[str, any]:
+    def extract_subpage_structure(self, metadata: Dict) -> Dict[str, Any]:
         """
         Extract subpage structure information
         Useful for discovering related pages on same domain
