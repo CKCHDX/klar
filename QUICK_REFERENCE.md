@@ -125,10 +125,11 @@ data/              # Runtime data
 
 ## Documentation
 - `README.md` - Complete documentation
+- `START_HERE.md` - Documentation hub
 - `QUICKSTART.md` - Quick start guide
 - `SECURITY.md` - Security details
 - `NEXT_STEPS.md` - What to do next
-- `DEPLOYMENT.md` - Deployment guide
+- `KSE-DEPLOYMENT.md` - Deployment guide
 - `KSE-Tree.md` - Architecture
 
 ## Support

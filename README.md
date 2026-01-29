@@ -9,6 +9,17 @@
 
 ---
 
+## 🚀 Quick Links
+
+- **👉 [START HERE](START_HERE.md)** - Documentation hub and navigation guide
+- **⚡ [QUICKSTART](QUICKSTART.md)** - Get up and running in 10 minutes
+- **🚢 [KSE-DEPLOYMENT](KSE-DEPLOYMENT.md)** - Production deployment guide
+- **🏗️ [KSE-Tree](KSE-Tree.md)** - Complete project structure
+- **🎨 [GUI Quick Start](GUI_QUICK_START.md)** - Control Center interface
+- **🔐 [SECURITY](SECURITY.md)** - Security and privacy details
+
+---
+
 ## 📋 TABLE OF CONTENTS
 
 1. [The Klar Vision](#-the-klar-vision)
@@ -22,6 +33,7 @@
 9. [For Operators: Running KSE Server](#-for-operators-running-kse-server)
 10. [Technical Architecture](#-technical-architecture)
 11. [Privacy: The Core Difference](#-privacy-the-core-difference)
+12. [Documentation](#-documentation)
 
 ---
 
@@ -1002,6 +1014,55 @@ We can provide:
 GOOGLE: "Search the web"     (and we'll profit from you)
 KLAR:   "Search the web"     (and stay completely private)
 ```
+
+---
+
+## 📚 Documentation
+
+### Essential Reading
+
+| Document | Purpose | Audience |
+|----------|---------|----------|
+| **[START_HERE.md](START_HERE.md)** | Documentation hub & navigation | Everyone |
+| **[QUICKSTART.md](QUICKSTART.md)** | Get running in 10 minutes | Developers |
+| **[KSE-DEPLOYMENT.md](KSE-DEPLOYMENT.md)** | Production deployment | DevOps, Operators |
+| **[KSE-Tree.md](KSE-Tree.md)** | Project architecture | Developers |
+| **[SECURITY.md](SECURITY.md)** | Security & privacy | Security teams |
+
+### User Guides
+
+| Document | Purpose | Audience |
+|----------|---------|----------|
+| **[GUI_QUICK_START.md](GUI_QUICK_START.md)** | GUI getting started | GUI users |
+| **[GUI_DOCUMENTATION.md](GUI_DOCUMENTATION.md)** | Complete GUI manual | GUI users |
+| **[CONTROL_CENTER_QUICK_REFERENCE.md](CONTROL_CENTER_QUICK_REFERENCE.md)** | GUI shortcuts | GUI users |
+
+### Reference
+
+| Document | Purpose | Audience |
+|----------|---------|----------|
+| **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** | Daily commands | Operators |
+| **[PROJECT_STATUS.md](PROJECT_STATUS.md)** | Current status | Project managers |
+| **[NEXT_STEPS.md](NEXT_STEPS.md)** | Future roadmap | Contributors |
+
+### Getting Started Paths
+
+**Path 1: Deploy KSE Server**
+1. Read [KSE-DEPLOYMENT.md](KSE-DEPLOYMENT.md)
+2. Follow deployment steps
+3. Monitor with [QUICK_REFERENCE.md](QUICK_REFERENCE.md)
+
+**Path 2: Local Development**
+1. Read [QUICKSTART.md](QUICKSTART.md)
+2. Install and test locally
+3. Review [KSE-Tree.md](KSE-Tree.md) for architecture
+
+**Path 3: Use Control Center GUI**
+1. Read [GUI_QUICK_START.md](GUI_QUICK_START.md)
+2. Launch Setup Wizard
+3. Manage with Control Center
+
+For complete navigation, see **[START_HERE.md](START_HERE.md)**
 
 ---
 
