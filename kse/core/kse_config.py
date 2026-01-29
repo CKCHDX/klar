@@ -165,6 +165,10 @@ class KSEConfig(metaclass=Singleton):
             key: Configuration key (supports dot notation)
             value: Value to set
         """
+        # Extract underlying dict from DictToObject if needed
+        if hasattr(value, '_data') and hasattr(value, '__class__') and value.__class__.__name__ == 'DictToObject':
+            value = value._data
+        
         keys = key.split('.')
         config = self._config
         
@@ -229,22 +233,31 @@ class DictToObject:
             parent_manager: Reference to parent ConfigManager for updates
             key_path: Dot-separated path to this object in the config
         """
-        self._data = data
-        self._parent_manager = parent_manager
-        self._key_path = key_path
+        # Set internal attributes first using super().__setattr__ to avoid triggering our custom __setattr__
+        super().__setattr__('_data', data)
+        super().__setattr__('_parent_manager', parent_manager)
+        super().__setattr__('_key_path', key_path)
         
+        # Now set regular attributes
         for key, value in data.items():
             if isinstance(value, dict):
                 child_path = f"{key_path}.{key}" if key_path else key
-                setattr(self, key, DictToObject(value, parent_manager, child_path))
+                # Use super().__setattr__ to avoid triggering parent_manager.set during initialization
+                super().__setattr__(key, DictToObject(value, parent_manager, child_path))
             else:
-                setattr(self, key, value)
+                # Use super().__setattr__ to avoid triggering parent_manager.set during initialization
+                super().__setattr__(key, value)
     
     def __setattr__(self, name: str, value: Any):
         # Handle internal attributes
         if name.startswith('_'):
             super().__setattr__(name, value)
             return
+        
+        # Convert SimpleNamespace to dict for YAML serialization
+        from types import SimpleNamespace
+        if isinstance(value, SimpleNamespace):
+            value = vars(value)
         
         # Update the internal data dict
         if hasattr(self, '_data'):
@@ -254,6 +267,11 @@ class DictToObject:
         if hasattr(self, '_parent_manager') and self._parent_manager and hasattr(self, '_key_path'):
             full_key = f"{self._key_path}.{name}" if self._key_path else name
             self._parent_manager.set(full_key, value)
+        
+        # Wrap dicts in DictToObject for consistent nested access
+        if isinstance(value, dict) and hasattr(self, '_parent_manager') and hasattr(self, '_key_path'):
+            child_path = f"{self._key_path}.{name}" if self._key_path else name
+            value = DictToObject(value, self._parent_manager if hasattr(self, '_parent_manager') else None, child_path)
         
         # Set the attribute
         super().__setattr__(name, value)
