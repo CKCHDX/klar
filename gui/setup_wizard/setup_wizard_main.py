@@ -113,19 +113,23 @@ class SetupWizard(QWizard):
     
     def _save_completion_status(self):
         """Save setup completion status"""
-        # Update configuration to mark setup as completed
-        config = self.config_manager.config
-        
-        # Add GUI section if it doesn't exist
-        if not hasattr(config, 'gui'):
-            from types import SimpleNamespace
-            config.gui = SimpleNamespace()
-        
-        config.gui.setup_completed = True
-        
-        # Save configuration
-        self.config_manager.save_config()
-        logger.info("Setup completion status saved")
+        try:
+            # Update configuration to mark setup as completed
+            config = self.config_manager.config
+            
+            # Add GUI section if it doesn't exist
+            if not hasattr(config, 'gui'):
+                from types import SimpleNamespace
+                config.gui = SimpleNamespace()
+            
+            config.gui.setup_completed = True
+            
+            # Save configuration
+            self.config_manager.save_config()
+            logger.info("Setup completion status saved")
+        except Exception as e:
+            logger.error(f"Failed to save completion status: {e}")
+            # Non-critical error, setup still succeeded
 
 
 class WelcomePage(QWizardPage):

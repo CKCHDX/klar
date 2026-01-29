@@ -610,7 +610,9 @@ class Phase2CrawlControl(QWizardPage):
         """Cleanup when leaving page"""
         if self.crawler_thread and self.crawler_thread.isRunning():
             self.crawler_thread.stop()
-            self.crawler_thread.wait()
+            # Wait max 5 seconds for graceful shutdown
+            if not self.crawler_thread.wait(5000):
+                logger.warning("Crawler thread did not stop within timeout")
         
         if self.update_timer.isActive():
             self.update_timer.stop()

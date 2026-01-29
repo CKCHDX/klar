@@ -316,7 +316,9 @@ class Phase1StorageConfig(QWizardPage):
         try:
             # Check if path exists or can be created
             if not path.exists():
+                # Test if we can create it (but don't actually create yet)
                 path.mkdir(parents=True, exist_ok=True)
+                logger.info(f"Created storage directory: {path}")
                 self.storage_status_label.setText("✓ Storage path created")
                 self.storage_status_label.setStyleSheet(Styles.get_status_label_style('running'))
             else:

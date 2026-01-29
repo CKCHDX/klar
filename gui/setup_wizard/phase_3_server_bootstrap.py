@@ -8,7 +8,6 @@ import requests
 import time
 from typing import Optional, Dict
 from pathlib import Path
-from multiprocessing import Process
 
 from PyQt6.QtWidgets import (
     QWizardPage, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
@@ -80,8 +79,11 @@ class ServerThread(QThread):
     def stop(self):
         """Stop the server (note: Flask doesn't support graceful shutdown easily)"""
         self.is_running = False
-        self.terminate()  # Force terminate the thread
-        self.wait()
+        # Note: terminate() is used as Flask's app.run() doesn't support graceful shutdown
+        # In production, consider using werkzeug.serving.make_server() with shutdown capability
+        logger.warning("Forcing server thread termination - Flask doesn't support graceful shutdown")
+        self.terminate()
+        self.wait(2000)  # Wait max 2 seconds
 
 
 class Phase3ServerBootstrap(QWizardPage):
@@ -631,9 +633,11 @@ class Phase3ServerBootstrap(QWizardPage):
                 self.health_label.setText("⚠ Unhealthy")
                 self.health_label.setStyleSheet(Styles.get_status_label_style('warning'))
                 self.health_check_passed = False
-        except:
-            # Silent failure for periodic checks
+        except requests.RequestException:
+            # Silent failure for periodic checks (connection errors expected during startup)
             pass
+        except Exception as e:
+            logger.warning(f"Periodic health check error: {e}")
     
     def isComplete(self) -> bool:
         """Check if page is complete"""

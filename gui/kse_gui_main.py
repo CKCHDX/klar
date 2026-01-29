@@ -19,7 +19,15 @@ except ImportError:
 
 from gui.kse_gui_config import GUIConfig
 from gui.setup_wizard.setup_wizard_main import SetupWizard
-from gui.control_center.control_center_main import ControlCenter
+
+try:
+    from gui.control_center.control_center_main import ControlCenter
+    CONTROL_CENTER_AVAILABLE = True
+except ImportError:
+    CONTROL_CENTER_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("Control Center module not available")
+
 from kse.core.kse_config import ConfigManager
 from kse.core.kse_logger import setup_logging
 
@@ -55,9 +63,11 @@ class KSEApplication:
             # Apply dark theme
             self.app.setStyleSheet(GUIConfig.get_default_stylesheet())
             
-            # Enable high DPI scaling
-            self.app.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
-            self.app.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
+            # Enable high DPI scaling (must be set before QApplication creation)
+            # Note: These should be set via environment variables or before QApplication
+            # Keeping here for documentation but moving to environment setup recommended
+            # self.app.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
+            # self.app.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
             
             logger.info("Application initialized successfully")
             return True
@@ -101,6 +111,17 @@ class KSEApplication:
     def show_control_center(self):
         """Show the control center"""
         try:
+            if not CONTROL_CENTER_AVAILABLE:
+                logger.warning("Control Center not available, showing message")
+                QMessageBox.information(
+                    None,
+                    "Setup Complete",
+                    "Setup has been completed successfully!\n\n"
+                    "The Control Center module is not yet available.\n"
+                    "You can start the KSE server manually."
+                )
+                return
+            
             logger.info("Launching Control Center")
             self.main_window = ControlCenter()
             self.main_window.show()
