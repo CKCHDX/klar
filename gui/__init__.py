@@ -1,3 +1,3 @@
 """
-Setup Wizard GUI Module
+GUI Module for Klar Search Engine
 """

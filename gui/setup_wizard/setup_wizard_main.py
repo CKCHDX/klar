@@ -233,6 +233,10 @@ Click 'Finish' to close the wizard and start using Klar.
         """
         if self.is_standalone:
             self.root.mainloop()
+        else:
+            # For non-standalone mode, the parent should use wait_window()
+            # to block until this window closes
+            pass
         
         return self.completed
 

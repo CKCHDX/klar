@@ -3,6 +3,7 @@ Configuration Manager for Klar Search Engine
 """
 import json
 import logging
+import copy
 from pathlib import Path
 from typing import Dict, Any, Optional
 
@@ -62,12 +63,12 @@ class ConfigManager:
                 logger.info(f"Configuration loaded from {self.config_path}")
             else:
                 logger.info("No configuration file found, using defaults")
-                self.config = self.DEFAULT_CONFIG.copy()
+                self.config = copy.deepcopy(self.DEFAULT_CONFIG)
                 self.save_config()
         except Exception as e:
             logger.error(f"Error loading configuration: {e}")
             logger.info("Using default configuration")
-            self.config = self.DEFAULT_CONFIG.copy()
+            self.config = copy.deepcopy(self.DEFAULT_CONFIG)
     
     def save_config(self) -> None:
         """Save current configuration to file"""
@@ -118,6 +119,8 @@ class ConfigManager:
         for k in keys[:-1]:
             if k not in config:
                 config[k] = {}
+            elif not isinstance(config[k], dict):
+                raise TypeError(f"Cannot set nested key '{key}': '{k}' is not a dictionary")
             config = config[k]
         
         # Set the value
@@ -130,6 +133,6 @@ class ConfigManager:
     
     def reset_to_defaults(self) -> None:
         """Reset configuration to default values"""
-        self.config = self.DEFAULT_CONFIG.copy()
+        self.config = copy.deepcopy(self.DEFAULT_CONFIG)
         self.save_config()
         logger.info("Configuration reset to defaults")

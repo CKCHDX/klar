@@ -49,9 +49,12 @@ class KSEMainGUI:
     def _run_setup_wizard(self) -> None:
         """Run the setup wizard for first-time setup"""
         wizard = SetupWizard(self.root)
-        completed = wizard.run()
+        # Make the wizard modal and wait for it to complete
+        wizard.root.transient(self.root)
+        wizard.root.grab_set()
+        self.root.wait_window(wizard.root)
         
-        if not completed:
+        if not wizard.completed:
             logger.warning("Setup wizard was not completed")
             if messagebox.askyesno(
                 "Setup Incomplete",
