@@ -93,19 +93,19 @@ if [ $ERROR_COUNT -gt 0 ]; then
 fi
 
 # Validate JSON files
-python -c "import json; json.load(open('keywords_db.json', encoding='utf-8'))" 2>/dev/null
+$PYTHON_CMD -c "import json; json.load(open('keywords_db.json', encoding='utf-8'))" 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "ERROR: keywords_db.json has syntax errors"
     exit 1
 fi
 
-python -c "import json; json.load(open('domains.json', encoding='utf-8'))" 2>/dev/null
+$PYTHON_CMD -c "import json; json.load(open('domains.json', encoding='utf-8'))" 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "ERROR: domains.json has syntax errors"
     exit 1
 fi
 
-python -m py_compile klar_browser.py 2>/dev/null
+$PYTHON_CMD -m py_compile klar_browser.py 2>/dev/null
 if [ $? -ne 0 ]; then
     echo "ERROR: klar_browser.py has syntax errors"
     exit 1
@@ -131,7 +131,7 @@ sleep 1
 
 echo ""
 echo "[5/7] Cleaning old builds..."
-rm -rf dist build release Klar.spec 2>/dev/null
+rm -rf dist build release 2>/dev/null
 echo "OK: Build directories cleaned"
 sleep 1
 
@@ -145,7 +145,7 @@ echo "This may take 3-7 minutes, please wait..."
 echo ""
 
 # Build with PyInstaller
-python -m PyInstaller \
+$PYTHON_CMD -m PyInstaller \
     --onefile \
     --windowed \
     --icon=klar.ico \
@@ -200,7 +200,7 @@ echo "Packaging Linux release..."
 cp dist/Klar release/linux/Klar
 chmod +x release/linux/Klar
 
-FILESIZE=$(stat -f%z "release/linux/Klar" 2>/dev/null || stat -c%s "release/linux/Klar")
+FILESIZE=$(stat -c%s "release/linux/Klar" 2>/dev/null || stat -f%z "release/linux/Klar" 2>/dev/null)
 FILESIZE_MB=$((FILESIZE / 1024 / 1024))
 
 echo "Building complete! Klar executable is ready."

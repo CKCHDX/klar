@@ -109,9 +109,13 @@ pip install PyQt6 PyQt6-WebEngine requests beautifulsoup4 lxml pyinstaller
 ### 3. Clean old builds
 
 ```bash
-rm -rf dist build release *.spec  # Linux/macOS
-# or
-rmdir /s /q dist build release & del *.spec  # Windows
+# Linux/macOS
+rm -rf dist build release
+# Keep Klar.spec for reproducible builds
+
+# Windows
+rmdir /s /q dist build release
+# Keep Klar.spec for reproducible builds
 ```
 
 ### 4. Build with PyInstaller
@@ -174,9 +178,16 @@ python -m PyInstaller ^
 
 ### 5. Create release structure
 
+**Linux/macOS:**
 ```bash
-mkdir -p release/linux  # or release/windows for Windows
-cp dist/Klar release/linux/  # or release\windows\ for Windows
+mkdir -p release/linux
+cp dist/Klar release/linux/
+```
+
+**Windows:**
+```cmd
+mkdir release\windows
+copy dist\Klar.exe release\windows\
 ```
 
 ## PyInstaller Configuration
