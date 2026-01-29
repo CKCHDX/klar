@@ -217,5 +217,107 @@ def get_config() -> KSEConfig:
     return KSEConfig()
 
 
-# Alias for backward compatibility with GUI code
-ConfigManager = KSEConfig
+class DictToObject:
+    """Helper class to convert dict to object with attribute access"""
+    
+    def __init__(self, data: Dict[str, Any], parent_manager=None, key_path: str = ""):
+        """
+        Initialize with dictionary data
+        
+        Args:
+            data: Dictionary to convert to object
+            parent_manager: Reference to parent ConfigManager for updates
+            key_path: Dot-separated path to this object in the config
+        """
+        self._data = data
+        self._parent_manager = parent_manager
+        self._key_path = key_path
+        
+        for key, value in data.items():
+            if isinstance(value, dict):
+                child_path = f"{key_path}.{key}" if key_path else key
+                setattr(self, key, DictToObject(value, parent_manager, child_path))
+            else:
+                setattr(self, key, value)
+    
+    def __setattr__(self, name: str, value: Any):
+        # Handle internal attributes
+        if name.startswith('_'):
+            super().__setattr__(name, value)
+            return
+        
+        # Update the internal data dict
+        if hasattr(self, '_data'):
+            self._data[name] = value
+        
+        # Update the parent manager if available
+        if hasattr(self, '_parent_manager') and self._parent_manager and hasattr(self, '_key_path'):
+            full_key = f"{self._key_path}.{name}" if self._key_path else name
+            self._parent_manager.set(full_key, value)
+        
+        # Set the attribute
+        super().__setattr__(name, value)
+    
+    def __repr__(self):
+        return f"<DictToObject {self._data}>"
+
+
+class ConfigManager:
+    """
+    Configuration manager with attribute-style access
+    Provides backward compatibility with GUI code
+    """
+    
+    def __init__(self, config_file: Optional[Path] = None):
+        """
+        Initialize configuration manager
+        
+        Args:
+            config_file: Path to YAML configuration file
+        """
+        self._kse_config = KSEConfig(config_file)
+        self._config_obj = None
+    
+    @property
+    def config(self) -> DictToObject:
+        """
+        Get configuration as object with attribute access
+        
+        Returns:
+            Configuration object
+        """
+        # Create config object with reference to this manager for updates
+        self._config_obj = DictToObject(self._kse_config.get_all(), parent_manager=self)
+        return self._config_obj
+    
+    def save_config(self, config_file: Optional[Path] = None) -> None:
+        """
+        Save configuration to file
+        
+        Args:
+            config_file: Path to save configuration (defaults to loaded file)
+        """
+        self._kse_config.save(config_file)
+    
+    def get(self, key: str, default: Any = None) -> Any:
+        """
+        Get configuration value
+        
+        Args:
+            key: Configuration key (supports dot notation)
+            default: Default value if key not found
+        
+        Returns:
+            Configuration value
+        """
+        return self._kse_config.get(key, default)
+    
+    def set(self, key: str, value: Any) -> None:
+        """
+        Set configuration value
+        
+        Args:
+            key: Configuration key (supports dot notation)
+            value: Value to set
+        """
+        self._kse_config.set(key, value)
