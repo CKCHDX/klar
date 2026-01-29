@@ -1,0 +1,94 @@
+{
+  "domains": [
+    {
+      "domain": "svt.se",
+      "name": "SVT Nyheter",
+      "category": "news",
+      "trust_score": 95,
+      "priority": 1
+    },
+    {
+      "domain": "dn.se",
+      "name": "Dagens Nyheter",
+      "category": "news",
+      "trust_score": 90,
+      "priority": 1
+    },
+    {
+      "domain": "aftonbladet.se",
+      "name": "Aftonbladet",
+      "category": "news",
+      "trust_score": 85,
+      "priority": 2
+    },
+    {
+      "domain": "expressen.se",
+      "name": "Expressen",
+      "category": "news",
+      "trust_score": 85,
+      "priority": 2
+    },
+    {
+      "domain": "svd.se",
+      "name": "Svenska Dagbladet",
+      "category": "news",
+      "trust_score": 90,
+      "priority": 1
+    },
+    {
+      "domain": "regeringen.se",
+      "name": "Regeringen",
+      "category": "government",
+      "trust_score": 100,
+      "priority": 1
+    },
+    {
+      "domain": "riksdagen.se",
+      "name": "Riksdagen",
+      "category": "government",
+      "trust_score": 100,
+      "priority": 1
+    },
+    {
+      "domain": "uu.se",
+      "name": "Uppsala Universitet",
+      "category": "education",
+      "trust_score": 95,
+      "priority": 1
+    },
+    {
+      "domain": "lu.se",
+      "name": "Lunds Universitet",
+      "category": "education",
+      "trust_score": 95,
+      "priority": 1
+    },
+    {
+      "domain": "su.se",
+      "name": "Stockholms Universitet",
+      "category": "education",
+      "trust_score": 95,
+      "priority": 1
+    },
+    {
+      "domain": "kth.se",
+      "name": "KTH",
+      "category": "education",
+      "trust_score": 95,
+      "priority": 1
+    },
+    {
+      "domain": "wikipedia.org",
+      "name": "Wikipedia",
+      "category": "reference",
+      "trust_score": 85,
+      "priority": 2
+    }
+  ],
+  "metadata": {
+    "version": "1.0",
+    "last_updated": "2026-01-25",
+    "total_domains": 12,
+    "description": "Initial Swedish domains list for KSE"
+  }
+}
