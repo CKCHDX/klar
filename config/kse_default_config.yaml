@@ -1,0 +1,62 @@
+# KSE Default Configuration
+# Klar Search Engine - Default Settings
+
+# Paths (relative to base directory)
+base_dir: "."
+data_dir: "./data"
+config_dir: "./config"
+log_dir: "./data/logs"
+storage_dir: "./data/storage"
+
+# Logging
+log_level: "INFO"
+enable_console_logging: true
+
+# Crawler Settings
+crawler:
+  user_agent: "KlarBot/3.0 (+https://oscyra.solutions/klar)"
+  crawl_delay: 1.0  # seconds between requests
+  timeout: 10  # request timeout in seconds
+  max_retries: 3
+  crawl_depth: 50  # max links per domain
+  respect_robots_txt: true
+  max_concurrent_requests: 10
+
+# Search Settings
+search:
+  results_per_page: 10
+  search_timeout: 0.5  # 500ms target
+  enable_cache: true
+  cache_ttl: 3600  # 1 hour
+
+# Ranking Settings
+ranking:
+  weights:
+    tf_idf: 0.25
+    pagerank: 0.20
+    domain_authority: 0.15
+    recency: 0.15
+    keyword_density: 0.10
+    link_structure: 0.10
+    regional_relevance: 0.05
+
+# Server Settings
+server:
+  host: "127.0.0.1"
+  port: 5000
+  api_prefix: "/api"
+  debug: false
+  enable_cors: true
+
+# NLP Settings
+nlp:
+  language: "swedish"
+  enable_lemmatization: true
+  enable_compound_splitting: true
+  min_compound_length: 8
+
+# Storage Settings
+storage:
+  compression_enabled: true
+  backup_enabled: true
+  max_backups: 5
