@@ -1,0 +1,3 @@
+"""
+KSE Core Module
+"""
