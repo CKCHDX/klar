@@ -14,7 +14,6 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QTimer, pyqtSignal
 from PyQt6.QtGui import QFont, QColor
-from PyQt6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
 from gui.kse_gui_config import GUIConfig
 from gui.kse_gui_styles import Styles
