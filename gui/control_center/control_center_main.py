@@ -248,16 +248,50 @@ class ControlCenterMain(QMainWindow):
         """Load and initialize all modules"""
         logger.info("Loading modules...")
         
-        # Import module placeholders (actual modules to be implemented)
-        # For now, create placeholder widgets
-        for module_id in ControlCenterConfig.get_module_list():
-            try:
-                widget = self._create_module_placeholder(module_id)
-                self.navigation.add_module(module_id, widget)
-                self.modules[module_id] = widget
-                logger.info(f"Module loaded: {module_id}")
-            except Exception as e:
-                logger.error(f"Error loading module {module_id}: {e}")
+        # Import actual module implementations
+        try:
+            from gui.control_center.modules import (
+                PCCPrimaryControl,
+                MCSMainControlServer,
+                SCSSystemStatus,
+                ACCAuxiliaryControl,
+                SCCSecondaryControl
+            )
+            
+            # Module mapping
+            module_classes = {
+                'pcc': PCCPrimaryControl,
+                'mcs': MCSMainControlServer,
+                'scs': SCSSystemStatus,
+                'acc': ACCAuxiliaryControl,
+                'scc': SCCSecondaryControl,
+            }
+            
+            # Instantiate each module
+            for module_id, module_class in module_classes.items():
+                try:
+                    widget = module_class(self.api_client)
+                    self.navigation.add_module(module_id, widget)
+                    self.modules[module_id] = widget
+                    logger.info(f"Module loaded: {module_id}")
+                except Exception as e:
+                    logger.error(f"Error loading module {module_id}: {e}")
+                    # Fallback to placeholder
+                    widget = self._create_module_placeholder(module_id)
+                    self.navigation.add_module(module_id, widget)
+                    self.modules[module_id] = widget
+            
+        except ImportError as e:
+            logger.error(f"Failed to import modules: {e}")
+            # Fallback to placeholders
+            for module_id in ControlCenterConfig.get_module_list():
+                try:
+                    widget = self._create_module_placeholder(module_id)
+                    self.navigation.add_module(module_id, widget)
+                    self.modules[module_id] = widget
+                    logger.info(f"Placeholder loaded: {module_id}")
+                except Exception as e:
+                    logger.error(f"Error loading placeholder {module_id}: {e}")
         
         # Set initial module
         self.navigation.set_active_module('pcc')
