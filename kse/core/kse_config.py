@@ -215,3 +215,7 @@ def get_config() -> KSEConfig:
         KSEConfig instance
     """
     return KSEConfig()
+
+
+# Alias for backward compatibility with GUI code
+ConfigManager = KSEConfig
