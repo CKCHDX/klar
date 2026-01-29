@@ -31,6 +31,12 @@ from PyQt6.QtGui import QIcon, QKeySequence, QShortcut, QFont
 
 # Import search engine and security modules
 from engine.search_engine import SearchEngine
+try:
+    from engine.enhanced_search import EnhancedSearchEngine
+    ENHANCED_SEARCH_AVAILABLE = True
+except ImportError:
+    ENHANCED_SEARCH_AVAILABLE = False
+    print("[Klar] Enhanced search not available, using base search engine")
 from engine.results_page import ResultsPage
 from engine.domain_whitelist import DomainWhitelist
 from engine.demographic_detector import DemographicDetector
@@ -281,10 +287,19 @@ class SearchWorker(QThread):
     
     def run(self):
         try:
-            results = self.search_engine.search(
-                self.query,
-                demographic=self.demographic
-            )
+            # Use enhanced search if available
+            if hasattr(self.search_engine, 'search_enhanced'):
+                print("[SearchWorker] Using enhanced search with hierarchical keywords")
+                results = self.search_engine.search_enhanced(
+                    self.query,
+                    demographic=self.demographic,
+                    use_metadata=True
+                )
+            else:
+                results = self.search_engine.search(
+                    self.query,
+                    demographic=self.demographic
+                )
             results['detected_demographic'] = self.demographic
             results['confidence'] = self.metadata.get('all_scores', {})
             self.finished.emit(results)
@@ -333,8 +348,17 @@ class KlarBrowser(QMainWindow):
         self.setWindowTitle("Klar 3.1")
         self.setGeometry(100, 100, 1400, 900)
         
-        # Initialize search engine
-        self.search_engine = SearchEngine()
+        # Initialize search engine (use enhanced if available)
+        if ENHANCED_SEARCH_AVAILABLE:
+            try:
+                self.search_engine = EnhancedSearchEngine()
+                print("[Klar] ✓ Enhanced Search Engine with hierarchical keywords enabled")
+            except Exception as e:
+                print(f"[Klar] Enhanced search failed to initialize: {e}")
+                self.search_engine = SearchEngine()
+                print("[Klar] Using base search engine")
+        else:
+            self.search_engine = SearchEngine()
         self.search_worker = None
         
         # Initialize security and demographic modules

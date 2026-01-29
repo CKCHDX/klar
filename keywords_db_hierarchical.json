@@ -1,0 +1,877 @@
+{
+  "version": "4.0.0",
+  "type": "hierarchical",
+  "description": "Hierarchical keyword database for Klar 4.0 - Supports multi-level taxonomy and metadata-based search",
+  "total_keywords": 1105,
+  "total_categories": 47,
+  "hierarchy": {
+    "nyheter": {
+      "id": "nyheter",
+      "name": "Nyheter",
+      "name_en": "News",
+      "parent": null,
+      "level": 0,
+      "description": "News and current events",
+      "metadata_tags": ["news", "nyheter", "aktuellt", "media", "journalism"],
+      "keywords": [
+        "nyheter", "nyhet", "news", "senaste", "breaking", "aktuellt", "aktuella",
+        "rubrik", "rubriker", "tidning", "journalist", "rapport", "reportage",
+        "pressmeddelande", "bulletin", "flash", "extra", "liverapport"
+      ],
+      "priority_domains": ["svt.se", "dn.se", "aftonbladet.se", "expressen.se", "svd.se"],
+      "children": ["inrikes", "utrikes", "lokalt", "media"],
+      "subcategories": {
+        "inrikes": {
+          "id": "inrikes",
+          "name": "Inrikes",
+          "name_en": "Domestic",
+          "parent": "nyheter",
+          "level": 1,
+          "description": "Swedish domestic news",
+          "metadata_tags": ["sweden", "sverige", "domestic", "inrikes", "nationellt"],
+          "keywords": [
+            "inrikes", "sverige", "swedish", "stockholm", "riksdag", "regering",
+            "politik", "politiker", "demokrati", "val", "valet", "valresultat",
+            "statsminister", "minister", "parti", "partier", "socialdemokraterna",
+            "moderaterna", "centerpartiet", "vänsterpartiet", "liberalerna",
+            "sverigedemokraterna", "kristdemokraterna", "miljöpartiet"
+          ],
+          "priority_domains": ["svt.se", "dn.se", "svd.se", "regeringen.se"]
+        },
+        "utrikes": {
+          "id": "utrikes",
+          "name": "Utrikes",
+          "name_en": "International",
+          "parent": "nyheter",
+          "level": 1,
+          "description": "International news",
+          "metadata_tags": ["international", "world", "utrikes", "världen", "global"],
+          "keywords": [
+            "utrikes", "internationellt", "världen", "world", "global", "internationella",
+            "eu", "europa", "usa", "kina", "ryssland", "ukraine", "nato",
+            "fn", "united nations", "geopolitik", "konflikt", "krig", "fred",
+            "diplomati", "sanktioner", "handel", "export", "import"
+          ],
+          "priority_domains": ["svt.se", "dn.se", "expressen.se", "svd.se"]
+        },
+        "lokalt": {
+          "id": "lokalt",
+          "name": "Lokalt",
+          "name_en": "Local",
+          "parent": "nyheter",
+          "level": 1,
+          "description": "Local news",
+          "metadata_tags": ["local", "lokalt", "stad", "kommun", "region"],
+          "keywords": [
+            "lokalt", "lokala", "kommun", "kommunal", "stad", "city", "närområde",
+            "grannskap", "neighborhood", "regional", "länet", "region",
+            "stockholm", "göteborg", "malmö", "uppsala", "linköping", "västerås",
+            "örebro", "norrköping", "helsingborg", "jönköping", "umeå", "lund"
+          ],
+          "priority_domains": ["stockholm.se", "goteborg.se", "malmo.se", "uppsala.se"]
+        },
+        "media": {
+          "id": "media",
+          "name": "Media & TV",
+          "name_en": "Media & TV",
+          "parent": "nyheter",
+          "level": 1,
+          "description": "TV, radio and media outlets",
+          "metadata_tags": ["media", "tv", "television", "radio", "broadcasting"],
+          "keywords": [
+            "svt", "svt.se", "svt play", "svtplay", "svenska television",
+            "television", "tv", "public service", "public broadcasting",
+            "serie", "program", "dokumentär", "reportage", "intervju", "live",
+            "direktsändning", "kanal", "channel", "sändning", "streaming"
+          ],
+          "priority_domains": ["svt.se", "sverigesradio.se", "ur.se"]
+        }
+      }
+    },
+    "sport": {
+      "id": "sport",
+      "name": "Sport",
+      "name_en": "Sports",
+      "parent": null,
+      "level": 0,
+      "description": "Sports and athletics",
+      "metadata_tags": ["sport", "idrott", "athletics", "games", "competition"],
+      "keywords": [
+        "sport", "idrott", "match", "matcher", "tävling", "competition",
+        "vm", "em", "världsmästerskap", "europamästerskap", "os", "olympiska",
+        "spel", "spelare", "tränare", "lag", "team", "resultat", "poäng",
+        "mål", "tabeller", "tabell", "slutspel", "final", "semifinal"
+      ],
+      "priority_domains": ["svenskfotboll.se", "svt.se"],
+      "children": ["fotboll", "hockey", "vintersport", "sommaridrottter"],
+      "subcategories": {
+        "fotboll": {
+          "id": "fotboll",
+          "name": "Fotboll",
+          "name_en": "Football/Soccer",
+          "parent": "sport",
+          "level": 1,
+          "description": "Football/Soccer",
+          "metadata_tags": ["football", "soccer", "fotboll", "fifa", "uefa"],
+          "keywords": [
+            "fotboll", "football", "soccer", "allsvenskan", "superettan",
+            "premier league", "la liga", "bundesliga", "serie a", "champions league",
+            "europa league", "vm", "em", "fifa", "uefa", "landslag",
+            "anfallare", "försvarare", "mittfältare", "målvakt", "domare",
+            "offside", "frispark", "straffslag", "hörna", "inlägg", "skott"
+          ],
+          "priority_domains": ["svenskfotboll.se", "allsvenskan.se", "svt.se"]
+        },
+        "hockey": {
+          "id": "hockey",
+          "name": "Hockey",
+          "name_en": "Ice Hockey",
+          "parent": "sport",
+          "level": 1,
+          "description": "Ice hockey",
+          "metadata_tags": ["hockey", "ishockey", "ice hockey", "nhl", "shl"],
+          "keywords": [
+            "hockey", "ishockey", "ice hockey", "shl", "hockeyallsvenskan",
+            "nhl", "khl", "vm", "tre kronor", "landslaget",
+            "forward", "back", "målvakt", "goalie", "power play", "breakaway",
+            "period", "straffslag", "utvisning", "tackling", "puck"
+          ],
+          "priority_domains": ["hockeysverige.se", "shl.se", "svt.se"]
+        },
+        "vintersport": {
+          "id": "vintersport",
+          "name": "Vintersport",
+          "name_en": "Winter Sports",
+          "parent": "sport",
+          "level": 1,
+          "description": "Winter sports",
+          "metadata_tags": ["winter", "vinter", "snow", "snö", "skiing"],
+          "keywords": [
+            "skidor", "skiing", "alpint", "slalom", "störtlopp", "super-g",
+            "längdskidor", "cross-country", "skidskytte", "biathlon",
+            "snowboard", "freestyle", "backhoppning", "skicross",
+            "curling", "konståkning", "figure skating", "bandy"
+          ],
+          "priority_domains": ["skidor.com", "bandy.se", "svt.se"]
+        },
+        "sommaridrottter": {
+          "id": "sommaridrottter",
+          "name": "Sommaridrottter",
+          "name_en": "Summer Sports",
+          "parent": "sport",
+          "level": 1,
+          "description": "Summer sports",
+          "metadata_tags": ["summer", "sommar", "athletics", "friidrott"],
+          "keywords": [
+            "friidrott", "athletics", "löpning", "running", "sprint", "maraton",
+            "marathon", "häck", "längdhopp", "höjdhopp", "stavhopp",
+            "diskus", "spjut", "kula", "slägga", "tiokamp", "sjukamp",
+            "tennis", "golf", "basket", "basketball", "handboll", "handball",
+            "simning", "swimming", "rodd", "rowing", "cykling", "cycling"
+          ],
+          "priority_domains": ["friidrott.se", "svt.se"]
+        }
+      }
+    },
+    "hälsa": {
+      "id": "hälsa",
+      "name": "Hälsa",
+      "name_en": "Health",
+      "parent": null,
+      "level": 0,
+      "description": "Health and medical information",
+      "metadata_tags": ["health", "hälsa", "medical", "medicin", "healthcare"],
+      "keywords": [
+        "hälsa", "health", "medicin", "medicine", "läkare", "doctor", "doktor",
+        "sjukhus", "hospital", "sjukvård", "vård", "healthcare", "patient",
+        "behandling", "treatment", "terapi", "therapy", "rehab", "återhämtning"
+      ],
+      "priority_domains": ["1177.se", "folkhalsomyndigheten.se", "socialstyrelsen.se"],
+      "children": ["sjukdomar", "mental_hälsa", "träning", "kost"],
+      "subcategories": {
+        "sjukdomar": {
+          "id": "sjukdomar",
+          "name": "Sjukdomar",
+          "name_en": "Diseases",
+          "parent": "hälsa",
+          "level": 1,
+          "description": "Diseases and conditions",
+          "metadata_tags": ["disease", "sjukdom", "illness", "condition", "symptoms"],
+          "keywords": [
+            "sjukdom", "sjukdomar", "disease", "illness", "symptom", "symptoms",
+            "diagnos", "diagnosis", "infektion", "infection", "virus", "bakterie",
+            "covid", "corona", "influensa", "förkylning", "feber", "hosta",
+            "smärta", "pain", "värk", "huvudvärk", "magont", "illamående",
+            "allergi", "allergy", "astma", "diabetes", "cancer", "hjärtsjukdom",
+            "stroke", "blodtryck", "kolesterol", "vaccination", "vaccine", "vaccin"
+          ],
+          "priority_domains": ["1177.se", "folkhalsomyndigheten.se"]
+        },
+        "mental_hälsa": {
+          "id": "mental_hälsa",
+          "name": "Mental hälsa",
+          "name_en": "Mental Health",
+          "parent": "hälsa",
+          "level": 1,
+          "description": "Mental health and wellbeing",
+          "metadata_tags": ["mental", "psychological", "psykisk", "wellbeing", "välmående"],
+          "keywords": [
+            "mental hälsa", "mental health", "psykisk hälsa", "välmående",
+            "depression", "anxiety", "ångest", "stress", "utmattning", "utbrändhet",
+            "psykolog", "psychologist", "terapeut", "therapist", "samtalsterapi",
+            "mindfulness", "meditation", "avslappning", "sömn", "sleep",
+            "oro", "rädsla", "fobi", "panik", "panikatttack", "tvång", "ocd"
+          ],
+          "priority_domains": ["1177.se", "mind.se"]
+        },
+        "träning": {
+          "id": "träning",
+          "name": "Träning & Motion",
+          "name_en": "Exercise & Fitness",
+          "parent": "hälsa",
+          "level": 1,
+          "description": "Exercise and fitness",
+          "metadata_tags": ["exercise", "träning", "fitness", "workout", "motion"],
+          "keywords": [
+            "träning", "training", "exercise", "motion", "workout", "gym",
+            "fitness", "kondition", "cardio", "styrketräning", "strength",
+            "löpning", "running", "jogging", "promenad", "gång", "walking",
+            "yoga", "pilates", "crossfit", "hiit", "intervallträning",
+            "stretching", "töjning", "uppvärmning", "nedvarvning", "restitution"
+          ],
+          "priority_domains": ["1177.se"]
+        },
+        "kost": {
+          "id": "kost",
+          "name": "Kost & Näring",
+          "name_en": "Diet & Nutrition",
+          "parent": "hälsa",
+          "level": 1,
+          "description": "Diet and nutrition",
+          "metadata_tags": ["diet", "kost", "nutrition", "näring", "food"],
+          "keywords": [
+            "kost", "diet", "nutrition", "näring", "mat", "food", "livsmedel",
+            "näringsvärde", "nutritional value", "kalorier", "calories", "protein",
+            "kolhydrater", "carbs", "fett", "fat", "vitaminer", "vitamins",
+            "mineraler", "minerals", "fiber", "hälsosam mat", "healthy food",
+            "recept", "recipe", "vegansk", "vegan", "vegetarisk", "vegetarian",
+            "laktosfri", "glutenfri", "allergi", "allergy", "näringslära"
+          ],
+          "priority_domains": ["1177.se", "livsmedelsverket.se"]
+        }
+      }
+    },
+    "utbildning": {
+      "id": "utbildning",
+      "name": "Utbildning",
+      "name_en": "Education",
+      "parent": null,
+      "level": 0,
+      "description": "Education and learning",
+      "metadata_tags": ["education", "utbildning", "learning", "school", "university"],
+      "keywords": [
+        "utbildning", "education", "skola", "school", "lärande", "learning",
+        "studier", "studies", "kurs", "kurser", "course", "program", "examen"
+      ],
+      "priority_domains": ["kth.se", "liu.se", "uu.se", "su.se", "lu.se"],
+      "children": ["grundskola", "gymnasium", "högskola", "forskning"],
+      "subcategories": {
+        "grundskola": {
+          "id": "grundskola",
+          "name": "Grundskola",
+          "name_en": "Primary School",
+          "parent": "utbildning",
+          "level": 1,
+          "description": "Primary and elementary education",
+          "metadata_tags": ["primary", "grundskola", "elementary", "barn", "children"],
+          "keywords": [
+            "grundskola", "primary school", "elementary", "årskurs", "grade",
+            "mellanstadiet", "lågstadiet", "högstadiet", "elev", "student",
+            "lärare", "teacher", "klassrum", "classroom", "betyg", "grades",
+            "matematik", "svenska", "engelska", "no", "so", "slöjd", "idrott"
+          ],
+          "priority_domains": ["skolverket.se"]
+        },
+        "gymnasium": {
+          "id": "gymnasium",
+          "name": "Gymnasium",
+          "name_en": "High School",
+          "parent": "utbildning",
+          "level": 1,
+          "description": "Secondary/high school education",
+          "metadata_tags": ["highschool", "gymnasium", "secondary", "upper"],
+          "keywords": [
+            "gymnasium", "gymnasiet", "high school", "secondary school",
+            "gymnasieprogram", "naturvetenskap", "samhällsvetenskap", "estetiska",
+            "teknikprogrammet", "ekonomi", "handel", "vård", "barn", "fritid",
+            "gymnasiearbete", "högskoleförberedande", "yrkesförberedande"
+          ],
+          "priority_domains": ["skolverket.se"]
+        },
+        "högskola": {
+          "id": "högskola",
+          "name": "Högskola & Universitet",
+          "name_en": "University & College",
+          "parent": "utbildning",
+          "level": 1,
+          "description": "Higher education",
+          "metadata_tags": ["university", "högskola", "universitet", "college", "higher"],
+          "keywords": [
+            "universitet", "university", "högskola", "college", "akademi",
+            "kandidat", "kandidatexamen", "bachelor", "master", "magister",
+            "doktor", "doktorsexamen", "phd", "doktorand", "forskarutbildning",
+            "campus", "tentamen", "tenta", "exam", "seminarium", "föreläsning",
+            "lecture", "kth", "liu", "chalmers", "lund", "uppsala", "stockholm",
+            "ltu", "mälardalens", "högskola", "örebro", "linneuniversitetet"
+          ],
+          "priority_domains": ["kth.se", "liu.se", "uu.se", "su.se", "lu.se", "chalmers.se"]
+        },
+        "forskning": {
+          "id": "forskning",
+          "name": "Forskning",
+          "name_en": "Research",
+          "parent": "utbildning",
+          "level": 1,
+          "description": "Academic research",
+          "metadata_tags": ["research", "forskning", "science", "vetenskap", "study"],
+          "keywords": [
+            "forskning", "research", "studie", "study", "vetenskaplig", "scientific",
+            "forskare", "researcher", "professor", "docent", "artikel", "paper",
+            "publikation", "publication", "tidskrift", "journal", "peer review",
+            "metod", "methodology", "hypotes", "hypothesis", "experiment", "analys",
+            "resultat", "findings", "slutsats", "conclusion", "projekt", "bidrag"
+          ],
+          "priority_domains": ["uu.se", "kth.se", "liu.se", "vetenskapsradet.se"]
+        }
+      }
+    },
+    "myndigheter": {
+      "id": "myndigheter",
+      "name": "Myndigheter",
+      "name_en": "Government",
+      "parent": null,
+      "level": 0,
+      "description": "Government and public services",
+      "metadata_tags": ["government", "myndighet", "public", "offentlig", "service"],
+      "keywords": [
+        "myndighet", "myndigheter", "government", "offentlig", "public",
+        "statlig", "state", "kommunal", "municipal", "service", "tjänst"
+      ],
+      "priority_domains": ["regeringen.se", "riksdagen.se"],
+      "children": ["skatt", "polis", "försäkring", "arbete"],
+      "subcategories": {
+        "skatt": {
+          "id": "skatt",
+          "name": "Skatt & Ekonomi",
+          "name_en": "Tax & Finance",
+          "parent": "myndigheter",
+          "level": 1,
+          "description": "Taxation and public finance",
+          "metadata_tags": ["tax", "skatt", "finance", "ekonomi", "deklaration"],
+          "keywords": [
+            "skatt", "tax", "skatteverket", "deklaration", "skattedeklaration",
+            "tax return", "inkomstskatt", "income tax", "moms", "vat",
+            "arbetsgivaravgift", "preliminärskatt", "slutskatt", "skattetabell",
+            "avdrag", "deduction", "skattereduktion", "skatteavtal", "egenföretagare",
+            "f-skatt", "fa-skatt", "moms", "bokföring", "accounting"
+          ],
+          "priority_domains": ["skatteverket.se"]
+        },
+        "polis": {
+          "id": "polis",
+          "name": "Polis & Rättsväsen",
+          "name_en": "Police & Justice",
+          "parent": "myndigheter",
+          "level": 1,
+          "description": "Police and justice system",
+          "metadata_tags": ["police", "polis", "law", "justice", "legal"],
+          "keywords": [
+            "polis", "polisen", "police", "brott", "crime", "kriminalitet",
+            "anmälan", "report", "polisanmälan", "utredning", "investigation",
+            "brottsutredning", "domstol", "court", "åklagare", "prosecutor",
+            "advokat", "lawyer", "rättegång", "trial", "dom", "verdict",
+            "straff", "punishment", "fängelse", "prison", "böter", "fine"
+          ],
+          "priority_domains": ["polisen.se", "domstol.se"]
+        },
+        "försäkring": {
+          "id": "försäkring",
+          "name": "Försäkring & Pension",
+          "name_en": "Insurance & Pension",
+          "parent": "myndigheter",
+          "level": 1,
+          "description": "Social insurance and pensions",
+          "metadata_tags": ["insurance", "försäkring", "pension", "social", "welfare"],
+          "keywords": [
+            "försäkringskassan", "fk", "socialförsäkring", "social insurance",
+            "sjukpenning", "sick pay", "föräldrapenning", "parental leave",
+            "vab", "vård av barn", "pension", "pensionsmyndigheten",
+            "tjänstepension", "allmän pension", "privat pension", "ppm",
+            "premiepension", "garantipension", "ålderspension", "sjukersättning",
+            "aktivitetsersättning", "bostadstillägg", "underhållsstöd"
+          ],
+          "priority_domains": ["forsakringskassan.se", "pensionsmyndigheten.se"]
+        },
+        "arbete": {
+          "id": "arbete",
+          "name": "Arbete & Jobb",
+          "name_en": "Employment",
+          "parent": "myndigheter",
+          "level": 1,
+          "description": "Employment services",
+          "metadata_tags": ["employment", "arbete", "jobb", "work", "career"],
+          "keywords": [
+            "arbetsförmedlingen", "af", "jobb", "job", "arbete", "work",
+            "anställning", "employment", "arbetsgivare", "employer", "arbetssökande",
+            "job seeker", "cv", "ansökan", "application", "intervju", "interview",
+            "a-kassa", "unemployment", "arbetslöshet", "platsbank", "lediga jobb",
+            "rekrytering", "recruitment", "praktik", "internship", "trainee"
+          ],
+          "priority_domains": ["arbetsformedlingen.se", "ams.se"]
+        }
+      }
+    },
+    "boende": {
+      "id": "boende",
+      "name": "Boende",
+      "name_en": "Housing",
+      "parent": null,
+      "level": 0,
+      "description": "Housing and real estate",
+      "metadata_tags": ["housing", "boende", "real estate", "fastighet", "hem"],
+      "keywords": [
+        "boende", "housing", "bostäder", "lägenhet", "apartment", "hus", "house",
+        "villa", "hyra", "rent", "köpa", "buy", "sälja", "sell", "bostadsrätt",
+        "radhus", "townhouse", "flyttning", "moving", "hem", "home"
+      ],
+      "priority_domains": ["hemnet.se", "blocket.se"],
+      "children": ["köpa_bostad", "hyra_bostad", "inredning"],
+      "subcategories": {
+        "köpa_bostad": {
+          "id": "köpa_bostad",
+          "name": "Köpa bostad",
+          "name_en": "Buy Property",
+          "parent": "boende",
+          "level": 1,
+          "description": "Buying property",
+          "metadata_tags": ["buy", "köpa", "purchase", "property", "fastighet"],
+          "keywords": [
+            "köpa", "buy", "purchase", "köp", "bostadsköp", "hemnet", "booli",
+            "budgivning", "bidding", "mäklare", "realtor", "besiktning",
+            "inspection", "kontantinsats", "down payment", "bolån", "mortgage",
+            "ränta", "interest", "amortering", "pantbrev", "lagfart",
+            "nyproduktion", "new construction", "andrahandsbostad"
+          ],
+          "priority_domains": ["hemnet.se", "booli.se"]
+        },
+        "hyra_bostad": {
+          "id": "hyra_bostad",
+          "name": "Hyra bostad",
+          "name_en": "Rent Property",
+          "parent": "boende",
+          "level": 1,
+          "description": "Renting property",
+          "metadata_tags": ["rent", "hyra", "rental", "lease", "tenant"],
+          "keywords": [
+            "hyra", "rent", "rental", "hyresgäst", "tenant", "hyresvärd",
+            "landlord", "hyresrätt", "första hand", "andra hand", "sublet",
+            "månadshyra", "monthly rent", "hyreskontrakt", "lease", "hyresrätt",
+            "uppsägningstid", "notice period", "deposition", "deposit",
+            "bostadskö", "queue", "blocket", "hyra ut", "rent out"
+          ],
+          "priority_domains": ["blocket.se", "qasa.se"]
+        },
+        "inredning": {
+          "id": "inredning",
+          "name": "Inredning & Möbler",
+          "name_en": "Interior & Furniture",
+          "parent": "boende",
+          "level": 1,
+          "description": "Interior design and furniture",
+          "metadata_tags": ["interior", "inredning", "furniture", "möbler", "design"],
+          "keywords": [
+            "inredning", "interior", "design", "möbler", "furniture", "hem",
+            "home decor", "ikea", "jysk", "mio", "soffa", "sofa", "säng", "bed",
+            "bord", "table", "stol", "chair", "skåp", "cabinet", "garderob",
+            "wardrobe", "kök", "kitchen", "badrum", "bathroom", "mattor", "rugs",
+            "gardiner", "curtains", "belysning", "lighting", "lampor", "lamps"
+          ],
+          "priority_domains": ["ikea.com", "jysk.se", "mio.se"]
+        }
+      }
+    },
+    "shopping": {
+      "id": "shopping",
+      "name": "Shopping",
+      "name_en": "Shopping",
+      "parent": null,
+      "level": 0,
+      "description": "Shopping and e-commerce",
+      "metadata_tags": ["shopping", "handla", "buy", "köpa", "e-commerce"],
+      "keywords": [
+        "shopping", "handla", "köpa", "buy", "butik", "store", "affär", "shop",
+        "webbutik", "online shop", "e-handel", "e-commerce", "pris", "price",
+        "rabatt", "discount", "rea", "sale", "erbjudande", "offer", "kampanj"
+      ],
+      "priority_domains": ["prisjakt.nu", "pricerunner.se"],
+      "children": ["mat", "kläder", "elektronik", "prisjämförelse"],
+      "subcategories": {
+        "mat": {
+          "id": "mat",
+          "name": "Mat & Livsmedel",
+          "name_en": "Food & Groceries",
+          "parent": "shopping",
+          "level": 1,
+          "description": "Food and groceries",
+          "metadata_tags": ["food", "mat", "grocery", "livsmedel", "matbutik"],
+          "keywords": [
+            "mat", "food", "livsmedel", "groceries", "matbutik", "supermarket",
+            "ica", "coop", "hemköp", "willys", "lidl", "recept", "recipe",
+            "matlagning", "cooking", "ingredienser", "ingredients", "färsk", "fresh",
+            "ekologisk", "organic", "närproducerat", "local", "matkasse", "meal kit",
+            "frukost", "lunch", "middag", "dessert", "bakning", "baking"
+          ],
+          "priority_domains": ["ica.se", "coop.se", "hemkop.se", "willys.se"]
+        },
+        "kläder": {
+          "id": "kläder",
+          "name": "Kläder & Mode",
+          "name_en": "Clothes & Fashion",
+          "parent": "shopping",
+          "level": 1,
+          "description": "Clothing and fashion",
+          "metadata_tags": ["clothes", "kläder", "fashion", "mode", "style"],
+          "keywords": [
+            "kläder", "clothes", "fashion", "mode", "style", "klädbutik",
+            "h&m", "hm", "zara", "kappahl", "lindex", "gina tricot", "åhléns",
+            "jacka", "jacket", "byxor", "pants", "kjol", "skirt", "klänning",
+            "dress", "tröja", "sweater", "t-shirt", "skor", "shoes", "sneakers",
+            "stövlar", "boots", "sandaler", "sandals", "accessoarer", "accessories"
+          ],
+          "priority_domains": ["hm.com", "zara.com", "zalando.se"]
+        },
+        "elektronik": {
+          "id": "elektronik",
+          "name": "Elektronik",
+          "name_en": "Electronics",
+          "parent": "shopping",
+          "level": 1,
+          "description": "Electronics and gadgets",
+          "metadata_tags": ["electronics", "elektronik", "gadgets", "tech", "teknik"],
+          "keywords": [
+            "elektronik", "electronics", "dator", "computer", "laptop", "pc",
+            "mobil", "phone", "smartphone", "iphone", "samsung", "tablet", "ipad",
+            "tv", "television", "ljud", "audio", "hörlurar", "headphones",
+            "högtalare", "speakers", "kamera", "camera", "spel", "gaming",
+            "playstation", "xbox", "nintendo", "switch", "elgiganten", "netonnet",
+            "webhallen", "inet", "komplett", "mediamarkt"
+          ],
+          "priority_domains": ["elgiganten.se", "netonnet.se", "webhallen.com", "inet.se"]
+        },
+        "prisjämförelse": {
+          "id": "prisjämförelse",
+          "name": "Prisjämförelse",
+          "name_en": "Price Comparison",
+          "parent": "shopping",
+          "level": 1,
+          "description": "Price comparison services",
+          "metadata_tags": ["price", "pris", "comparison", "jämförelse", "compare"],
+          "keywords": [
+            "prisjakt", "pricerunner", "jämföra priser", "compare prices",
+            "prisjämförelse", "price comparison", "billigast", "cheapest",
+            "lägsta pris", "lowest price", "bästa pris", "best price",
+            "produktjämförelse", "product comparison", "recensioner", "reviews",
+            "betyg", "ratings", "omdömen", "testresultat", "test results"
+          ],
+          "priority_domains": ["prisjakt.nu", "pricerunner.se"]
+        }
+      }
+    },
+    "resa": {
+      "id": "resa",
+      "name": "Resa & Turism",
+      "name_en": "Travel & Tourism",
+      "parent": null,
+      "level": 0,
+      "description": "Travel and tourism",
+      "metadata_tags": ["travel", "resa", "tourism", "turism", "vacation"],
+      "keywords": [
+        "resa", "resor", "travel", "semester", "vacation", "semestra", "trip",
+        "utflykt", "destination", "resmål", "turistmål", "turism", "tourism"
+      ],
+      "priority_domains": ["visitsweden.com", "booking.com"],
+      "children": ["boende_resa", "transport", "destination"],
+      "subcategories": {
+        "boende_resa": {
+          "id": "boende_resa",
+          "name": "Boende",
+          "name_en": "Accommodation",
+          "parent": "resa",
+          "level": 1,
+          "description": "Travel accommodation",
+          "metadata_tags": ["hotel", "hotell", "accommodation", "boende", "lodging"],
+          "keywords": [
+            "hotell", "hotel", "boende", "accommodation", "booking", "boka",
+            "bed and breakfast", "b&b", "airbnb", "vandrarhem", "hostel",
+            "stf", "scandic", "quality", "elite", "clarion", "resort", "spa",
+            "rum", "room", "svit", "suite", "enkelrum", "dubbelrum", "frukost",
+            "breakfast", "all inclusive", "halvpension", "helpension"
+          ],
+          "priority_domains": ["booking.com", "hotels.com", "airbnb.se", "stf.se"]
+        },
+        "transport": {
+          "id": "transport",
+          "name": "Transport",
+          "name_en": "Transportation",
+          "parent": "resa",
+          "level": 1,
+          "description": "Travel transportation",
+          "metadata_tags": ["transport", "travel", "flyg", "tåg", "buss"],
+          "keywords": [
+            "flyg", "flight", "flygbiljett", "plane ticket", "flygplats", "airport",
+            "arlanda", "landvetter", "bromma", "sas", "norwegian", "ryanair",
+            "tåg", "train", "sj", "tågbiljett", "train ticket", "buss", "bus",
+            "swebus", "flixbus", "färja", "ferry", "bil", "car", "hyrbil",
+            "rental car", "hertz", "avis", "europcar", "sixt"
+          ],
+          "priority_domains": ["sj.se", "swebus.se", "flixbus.se", "swedavia.se"]
+        },
+        "destination": {
+          "id": "destination",
+          "name": "Destinationer",
+          "name_en": "Destinations",
+          "parent": "resa",
+          "level": 1,
+          "description": "Travel destinations",
+          "metadata_tags": ["destination", "resmål", "place", "plats", "visit"],
+          "keywords": [
+            "stockholm", "göteborg", "malmö", "uppsala", "lund", "kiruna",
+            "åre", "gotland", "visby", "öland", "smögen", "marstrand",
+            "abisko", "icehotel", "archipelago", "skärgård", "västkusten",
+            "west coast", "dalarna", "siljan", "lappland", "lapland",
+            "sevärdheter", "attractions", "guide", "turism", "tourism"
+          ],
+          "priority_domains": ["visitsweden.com", "visitstockholm.com", "visitgoteborg.com"]
+        }
+      }
+    },
+    "miljö": {
+      "id": "miljö",
+      "name": "Miljö & Klimat",
+      "name_en": "Environment & Climate",
+      "parent": null,
+      "level": 0,
+      "description": "Environment and climate",
+      "metadata_tags": ["environment", "miljö", "climate", "klimat", "sustainability"],
+      "keywords": [
+        "miljö", "environment", "klimat", "climate", "klimatändring", "climate change",
+        "hållbarhet", "sustainability", "återvinning", "recycling", "naturvård",
+        "conservation", "ekologi", "ecology", "grön", "green", "eco"
+      ],
+      "priority_domains": ["naturvardsverket.se", "smhi.se"],
+      "children": ["väder", "återvinning", "energi"],
+      "subcategories": {
+        "väder": {
+          "id": "väder",
+          "name": "Väder",
+          "name_en": "Weather",
+          "parent": "miljö",
+          "level": 1,
+          "description": "Weather information",
+          "metadata_tags": ["weather", "väder", "forecast", "prognos", "meteorology"],
+          "keywords": [
+            "väder", "weather", "prognos", "forecast", "smhi", "temperatur",
+            "temperature", "regn", "rain", "snö", "snow", "vind", "wind",
+            "sol", "sun", "moln", "clouds", "storm", "dimma", "fog", "åska",
+            "thunder", "varning", "warning", "vadvarning", "klimat", "climate"
+          ],
+          "priority_domains": ["smhi.se"]
+        },
+        "återvinning": {
+          "id": "återvinning",
+          "name": "Återvinning",
+          "name_en": "Recycling",
+          "parent": "miljö",
+          "level": 1,
+          "description": "Recycling and waste",
+          "metadata_tags": ["recycling", "återvinning", "waste", "avfall", "reuse"],
+          "keywords": [
+            "återvinning", "recycling", "återvinna", "recycle", "avfall", "waste",
+            "sopor", "trash", "pant", "deposit", "miljöstation", "recycling center",
+            "kompost", "compost", "elektronikåtervinning", "e-waste", "glas",
+            "glass", "papper", "paper", "kartong", "cardboard", "plast", "plastic",
+            "metall", "metal", "textil", "textile", "möbler", "furniture"
+          ],
+          "priority_domains": ["naturvardsverket.se"]
+        },
+        "energi": {
+          "id": "energi",
+          "name": "Energi",
+          "name_en": "Energy",
+          "parent": "miljö",
+          "level": 1,
+          "description": "Energy and power",
+          "metadata_tags": ["energy", "energi", "power", "kraft", "renewable"],
+          "keywords": [
+            "energi", "energy", "el", "electricity", "elpris", "electricity price",
+            "solenergi", "solar", "solceller", "solar panels", "vindkraft",
+            "wind power", "vattenkraft", "hydropower", "kärnkraft", "nuclear",
+            "förnybar energi", "renewable energy", "energibesparing", "energy saving",
+            "isolering", "insulation", "värmepump", "heat pump", "led", "energimärkning"
+          ],
+          "priority_domains": ["energimyndigheten.se", "naturvardsverket.se"]
+        }
+      }
+    },
+    "kultur": {
+      "id": "kultur",
+      "name": "Kultur & Nöje",
+      "name_en": "Culture & Entertainment",
+      "parent": null,
+      "level": 0,
+      "description": "Culture and entertainment",
+      "metadata_tags": ["culture", "kultur", "entertainment", "nöje", "arts"],
+      "keywords": [
+        "kultur", "culture", "nöje", "entertainment", "konst", "art", "event",
+        "evenemang", "festival", "utställning", "exhibition"
+      ],
+      "priority_domains": ["spotify.com", "nationalmuseum.se"],
+      "children": ["musik", "film", "konst", "museum"],
+      "subcategories": {
+        "musik": {
+          "id": "musik",
+          "name": "Musik",
+          "name_en": "Music",
+          "parent": "kultur",
+          "level": 1,
+          "description": "Music",
+          "metadata_tags": ["music", "musik", "song", "låt", "band"],
+          "keywords": [
+            "musik", "music", "låt", "song", "artist", "musiker", "musician",
+            "band", "konsert", "concert", "festival", "musikfestival", "spelning",
+            "gig", "turné", "tour", "album", "singel", "single", "spotify",
+            "tidal", "apple music", "streaming", "podcast", "radio", "p3", "p4",
+            "rock", "pop", "hiphop", "rap", "jazz", "klassisk", "classical",
+            "electronic", "elektronisk", "metal", "folk", "indie"
+          ],
+          "priority_domains": ["spotify.com", "tidal.com", "sverigesradio.se"]
+        },
+        "film": {
+          "id": "film",
+          "name": "Film & Bio",
+          "name_en": "Movies & Cinema",
+          "parent": "kultur",
+          "level": 1,
+          "description": "Movies and cinema",
+          "metadata_tags": ["movie", "film", "cinema", "bio", "theater"],
+          "keywords": [
+            "film", "movie", "bio", "biograf", "cinema", "sf", "filmstaden",
+            "premier", "premiere", "trailer", "recension", "review", "betyg",
+            "rating", "imdb", "netflix", "hbo", "disney", "viaplay", "cmore",
+            "streaming", "streama", "dokumentär", "documentary", "thriller",
+            "action", "drama", "komedi", "comedy", "skräck", "horror", "sci-fi"
+          ],
+          "priority_domains": ["sf.se", "filmstaden.se", "sverigesbiografer.se"]
+        },
+        "konst": {
+          "id": "konst",
+          "name": "Konst",
+          "name_en": "Art",
+          "parent": "kultur",
+          "level": 1,
+          "description": "Visual arts",
+          "metadata_tags": ["art", "konst", "painting", "sculpture", "gallery"],
+          "keywords": [
+            "konst", "art", "målning", "painting", "skulptur", "sculpture",
+            "fotografi", "photography", "grafik", "graphics", "design", "konstgalleri",
+            "gallery", "galleri", "utställning", "exhibition", "vernissage",
+            "konstnär", "artist", "målare", "painter", "skulptör", "sculptor",
+            "fotograf", "photographer", "modern konst", "contemporary art"
+          ],
+          "priority_domains": ["nationalmuseum.se", "modernamuseet.se"]
+        },
+        "museum": {
+          "id": "museum",
+          "name": "Museum",
+          "name_en": "Museums",
+          "parent": "kultur",
+          "level": 1,
+          "description": "Museums",
+          "metadata_tags": ["museum", "museer", "exhibition", "utställning", "history"],
+          "keywords": [
+            "museum", "museer", "utställning", "exhibition", "historia", "history",
+            "nationalmuseum", "moderna museet", "nordiska museet", "vasamuseet",
+            "skansen", "abba museet", "tekniska museet", "historiska museet",
+            "naturhistoriska", "nobel", "kultur", "kultur historia", "arkeologi",
+            "archaeology", "konservator", "curator", "guidning", "tour"
+          ],
+          "priority_domains": ["nationalmuseum.se", "modernamuseet.se", "vasamuseet.se"]
+        }
+      }
+    }
+  },
+  "metadata_search": {
+    "enabled": true,
+    "description": "Metadata-based search like Google - indexes HTML meta tags for better discovery",
+    "indexed_fields": [
+      "title",
+      "description",
+      "keywords",
+      "og:title",
+      "og:description",
+      "og:type",
+      "twitter:title",
+      "twitter:description",
+      "article:tag",
+      "article:section"
+    ],
+    "search_weights": {
+      "title": 2.0,
+      "description": 1.5,
+      "keywords": 1.8,
+      "og:title": 1.7,
+      "og:description": 1.3,
+      "article:tag": 1.2,
+      "content": 1.0
+    }
+  },
+  "domain_metadata": {
+    "description": "Domain-specific metadata for enhanced search results",
+    "domains": {
+      "svt.se": {
+        "type": "news_media",
+        "tags": ["news", "public_service", "swedish", "tv", "streaming"],
+        "subpages_priority": ["nyheter", "sport", "kultur", "vader"]
+      },
+      "1177.se": {
+        "type": "health",
+        "tags": ["health", "medical", "symptoms", "healthcare", "public_service"],
+        "subpages_priority": ["hitta-vard", "sjukdomar", "regler-och-rattigheter"]
+      },
+      "hemnet.se": {
+        "type": "marketplace",
+        "tags": ["housing", "real_estate", "buy", "sell", "apartments"],
+        "subpages_priority": ["salj", "kopa", "vardera"]
+      },
+      "prisjakt.nu": {
+        "type": "comparison",
+        "tags": ["shopping", "price_comparison", "products", "reviews"],
+        "subpages_priority": ["kategori", "produkt", "butiker"]
+      }
+    }
+  },
+  "relevance_boosters": {
+    "wikipedia": 1.5,
+    "official_domain": 1.3,
+    "news": 1.2,
+    "government": 1.15,
+    "health": 1.1,
+    "hierarchical_match": 1.4,
+    "metadata_match": 1.3
+  },
+  "stopwords": [
+    "och", "eller", "men", "att", "det", "som", "pa", "på", "i", "av", "till",
+    "for", "för", "med", "en", "ett", "den", "de", "vara", "har", "kan",
+    "ar", "är", "om", "sa", "så", "nar", "när", "var", "vad", "hur"
+  ]
+}
