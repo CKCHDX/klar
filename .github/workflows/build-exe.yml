@@ -31,7 +31,24 @@ jobs:
           if (-not (Test-Path "domains.json")) { throw "Missing domains.json" }
           if (-not (Test-Path "klar.ico")) { throw "Missing klar.ico" }
           if (-not (Test-Path "engine")) { throw "Missing engine directory" }
-          Write-Host "All required files verified"
+          Write-Host "All required files found"
+          
+          # Validate JSON files
+          try {
+            Get-Content "keywords_db.json" -Raw | ConvertFrom-Json | Out-Null
+            Write-Host "keywords_db.json is valid"
+          } catch {
+            throw "keywords_db.json has syntax errors: $_"
+          }
+          
+          try {
+            Get-Content "domains.json" -Raw | ConvertFrom-Json | Out-Null
+            Write-Host "domains.json is valid"
+          } catch {
+            throw "domains.json has syntax errors: $_"
+          }
+          
+          Write-Host "All files verified successfully"
         shell: pwsh
       
       - name: Build executable with PyInstaller
@@ -40,10 +57,10 @@ jobs:
             --onefile `
             --windowed `
             --icon=klar.ico `
-            --add-data "keywords_db.json;." `
-            --add-data "domains.json;." `
-            --add-data "klar.ico;." `
-            --add-data "engine;engine" `
+            --add-data "keywords_db.json:." `
+            --add-data "domains.json:." `
+            --add-data "klar.ico:." `
+            --add-data "engine:engine" `
             --hidden-import=PyQt6.QtCore `
             --hidden-import=PyQt6.QtGui `
             --hidden-import=PyQt6.QtWidgets `
