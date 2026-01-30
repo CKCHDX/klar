@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Page with Images and Videos</title>
+    <link rel="stylesheet" href="https://example.com/style.css">
+</head>
+<body>
+    <h1>Test Page: Images and Videos</h1>
+    
+    <h2>Images</h2>
+    <p>Testing image loading from various sources:</p>
+    
+    <h3>External Image (HTTP)</h3>
+    <img src="http://via.placeholder.com/300x200" alt="Placeholder Image" width="300" height="200">
+    
+    <h3>Data URI Image</h3>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA
+AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO
+9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot">
+    
+    <h2>Videos</h2>
+    <p>Testing video element support:</p>
+    
+    <h3>Simple Video</h3>
+    <video width="400" height="300" src="http://example.com/video.mp4" controls>
+        Your browser does not support the video tag.
+    </video>
+    
+    <h3>Video with Multiple Sources</h3>
+    <video width="400" height="300" controls>
+        <source src="http://example.com/video.mp4" type="video/mp4">
+        <source src="http://example.com/video.webm" type="video/webm">
+        Your browser does not support the video tag.
+    </video>
+    
+    <h2>External Resources</h2>
+    <p>This page also loads:</p>
+    <ul>
+        <li>External CSS file</li>
+        <li>External JavaScript file (see below)</li>
+    </ul>
+    
+    <script src="https://example.com/script.js"></script>
+</body>
+</html>
