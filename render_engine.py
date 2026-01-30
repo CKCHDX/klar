@@ -150,7 +150,7 @@ class RenderEngine:
         text = node.text.strip()
         if text:
             # Simple text rendering (no word wrap for now)
-            rect = QRect(context.x, context.y, context.viewport_width - context.x, 100)
+            rect = QRect(int(context.x), int(context.y), int(context.viewport_width - context.x), 100)
             context.painter.drawText(rect, Qt.TextFlag.TextWordWrap, text)
             
             # Move cursor down
@@ -169,7 +169,7 @@ class RenderEngine:
         """
         color = QColor(bg_color)
         context.painter.fillRect(
-            QRect(context.x, context.y, context.viewport_width, 50),
+            QRect(int(context.x), int(context.y), int(context.viewport_width), 50),
             QBrush(color)
         )
 
