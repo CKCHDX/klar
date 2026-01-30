@@ -127,7 +127,9 @@ class IndexerPipeline:
         Search the index
         
         Args:
-            query: Search query (raw string or pre-processed list of terms)
+            query: Search query. Can be either:
+                   - str: Raw query string that will be processed through NLP pipeline
+                   - List[str]: Pre-processed terms (already tokenized, lemmatized, and lowercased)
             max_results: Maximum number of results
         
         Returns:
@@ -136,13 +138,13 @@ class IndexerPipeline:
         # Handle pre-processed terms (list) or raw query (string)
         if isinstance(query, list):
             query_terms = query
-            query_str = ' '.join(query_terms)
+            query_str = ' '.join(query_terms) if query_terms else ''
         else:
             query_str = query
             query_terms = self.nlp.process_query(query)
         
         if not query_terms:
-            logger.warning(f"No valid terms in query: {query_str}")
+            logger.warning(f"No valid terms in query: {query_str if query_str else '(empty)'}")
             return []
         
         logger.info(f"Searching for: {query_str} -> {query_terms}")
