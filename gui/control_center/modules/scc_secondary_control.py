@@ -43,7 +43,7 @@ class AnalyticsCard(QFrame):
             icon_label.setStyleSheet(f"""
                 QLabel {{
                     color: {GUIConfig.COLORS['primary']};
-                    font-size: 20pt;
+                    font-size: {GUIConfig.get_font_size('header')}pt;
                 }}
             """)
             header_layout.addWidget(icon_label)
@@ -62,10 +62,11 @@ class AnalyticsCard(QFrame):
         
         # Primary value
         self.value_label = QLabel("--")
+        value_font_size = GUIConfig.get_font_size('header') + 8  # Slightly larger than header
         self.value_label.setStyleSheet(f"""
             QLabel {{
                 color: {GUIConfig.COLORS['text_primary']};
-                font-size: 24pt;
+                font-size: {value_font_size}pt;
                 font-weight: bold;
             }}
         """)

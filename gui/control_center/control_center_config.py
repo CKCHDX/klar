@@ -7,6 +7,7 @@ from typing import Dict, Any, List
 from pathlib import Path
 import json
 import logging
+import os
 from gui.kse_gui_config import GUIConfig
 
 logger = logging.getLogger(__name__)
@@ -23,9 +24,12 @@ class ControlCenterConfig:
     MIN_HEIGHT = 700
     
     # API configuration
+    # Support environment variable for remote server configuration
+    # Set KSE_SERVER_URL environment variable to override default
+    # Example: export KSE_SERVER_URL=http://192.168.1.100:5000
     # Note: Using HTTP for localhost development. For production/remote servers,
     # update to HTTPS to ensure encrypted communication.
-    API_BASE_URL = "http://localhost:5000"
+    API_BASE_URL = os.getenv("KSE_SERVER_URL", "http://localhost:5000")
     API_TIMEOUT = 30  # seconds
     API_RETRY_COUNT = 3
     API_RETRY_DELAY = 1.0  # seconds (exponential backoff base)

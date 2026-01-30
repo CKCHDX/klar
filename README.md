@@ -14,6 +14,7 @@
 - **👉 [START HERE](START_HERE.md)** - Documentation hub and navigation guide
 - **⚡ [QUICKSTART](QUICKSTART.md)** - Get up and running in 10 minutes
 - **🚢 [KSE-DEPLOYMENT](KSE-DEPLOYMENT.md)** - Production deployment guide
+- **🌐 [REMOTE CLIENT GUIDE](REMOTE_CLIENT_GUIDE.md)** - Connect clients to remote servers
 - **🏗️ [KSE-Tree](KSE-Tree.md)** - Complete project structure
 - **🎨 [GUI Quick Start](GUI_QUICK_START.md)** - Control Center interface
 - **🔐 [SECURITY](SECURITY.md)** - Security and privacy details

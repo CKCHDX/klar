@@ -134,7 +134,7 @@ class NotificationWidget(QFrame):
                 background-color: transparent;
                 color: {GUIConfig.COLORS['text_secondary']};
                 border: none;
-                font-size: 14pt;
+                font-size: {GUIConfig.get_font_size('title')}pt;
                 padding: 0;
             }}
             QPushButton:hover {{

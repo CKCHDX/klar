@@ -6,6 +6,7 @@ from flask_cors import CORS
 from pathlib import Path
 from kse.core.kse_config import get_config
 from kse.core.kse_logger import KSELogger, get_logger
+from kse.core.kse_network_info import get_network_info, format_server_info
 from kse.storage.kse_storage_manager import StorageManager
 from kse.nlp.kse_nlp_core import NLPCore
 from kse.indexing.kse_indexer_pipeline import IndexerPipeline
@@ -14,11 +15,12 @@ from kse.search.kse_search_pipeline import SearchPipeline
 logger = None
 app = None
 search_pipeline = None
+network_info = None
 
 
 def create_app():
     """Create Flask application"""
-    global app, search_pipeline, logger
+    global app, search_pipeline, logger, network_info
     
     # Initialize Flask
     app = Flask(__name__)
@@ -30,6 +32,19 @@ def create_app():
     log_dir = Path(config.get("log_dir"))
     KSELogger.setup(log_dir, config.get("log_level", "INFO"), True)
     logger = get_logger(__name__, "server.log")
+    
+    # Get network information (non-blocking, best effort)
+    logger.info("Detecting network information...")
+    try:
+        network_info = get_network_info()
+        logger.info(f"Network info: {network_info}")
+    except Exception as e:
+        logger.warning(f"Failed to detect network info: {e}")
+        network_info = {
+            'public_ip': None,
+            'local_ip': None,
+            'hostname': 'unknown'
+        }
     
     # Enable CORS
     if config.get("server.enable_cors", True):
@@ -90,7 +105,34 @@ def register_routes():
         return jsonify({
             'status': 'healthy',
             'version': '3.0.0',
-            'index_stats': stats
+            'index_stats': stats,
+            'network_info': network_info
+        })
+    
+    @app.route('/api/server/info', methods=['GET'])
+    def server_info():
+        """Server information endpoint including network details"""
+        config = get_config()
+        host = config.get("server.host", "127.0.0.1")
+        port = config.get("server.port", 5000)
+        
+        return jsonify({
+            'status': 'running',
+            'version': '3.0.0',
+            'host': host,
+            'port': port,
+            'network': network_info,
+            'endpoints': [
+                '/api/search?q=query',
+                '/api/health',
+                '/api/stats',
+                '/api/history',
+                '/api/server/info',
+                '/api/cache/clear',
+                '/api/cache/stats',
+                '/api/ranking/weights',
+                '/api/monitoring/status'
+            ]
         })
     
     @app.route('/api/stats', methods=['GET'])
@@ -156,11 +198,13 @@ def register_routes():
         return jsonify({
             'name': 'KSE API',
             'version': '3.0.0',
+            'network': network_info,
             'endpoints': [
                 '/api/search?q=query',
                 '/api/health',
                 '/api/stats',
                 '/api/history',
+                '/api/server/info',
                 '/api/cache/clear',
                 '/api/cache/stats',
                 '/api/ranking/weights',
@@ -178,10 +222,19 @@ def main():
     port = config.get("server.port", 5000)
     debug = config.get("server.debug", False)
     
+    # Display network information
+    if network_info:
+        info_text = format_server_info(host, port, network_info)
+        print(info_text)
+    else:
+        print(f"\nKSE Server starting on http://{host}:{port}")
+    
     logger.info(f"Starting KSE Server on {host}:{port}")
-    print(f"\nKSE Server starting on http://{host}:{port}")
+    
+    # Display API endpoints
     print(f"API endpoints:")
     print(f"  - GET  http://{host}:{port}/api/search?q=<query>")
+    print(f"  - GET  http://{host}:{port}/api/server/info")
     print(f"  - GET  http://{host}:{port}/api/health")
     print(f"  - GET  http://{host}:{port}/api/stats")
     print(f"  - GET  http://{host}:{port}/api/history")
@@ -189,6 +242,11 @@ def main():
     print(f"  - GET  http://{host}:{port}/api/cache/stats")
     print(f"  - GET  http://{host}:{port}/api/ranking/weights")
     print(f"  - GET  http://{host}:{port}/api/monitoring/status")
+    
+    if network_info and network_info.get('public_ip'):
+        public_ip = network_info['public_ip']
+        print(f"\n👉 For remote clients, use: http://{public_ip}:{port}")
+    
     print()
     
     app.run(host=host, port=port, debug=debug)

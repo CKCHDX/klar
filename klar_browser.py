@@ -7,7 +7,10 @@ A lightweight browser client with integrated search functionality
 import sys
 import logging
 import requests
+import json
+import os
 from datetime import datetime
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from PyQt6.QtWidgets import (
@@ -215,9 +218,24 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Browser Settings")
         self.setModal(True)
-        self.resize(450, 250)
+        self.resize(450, 300)
+        
+        # Config file location
+        self.config_file = Path.home() / '.kse' / 'klar_browser_config.json'
         
         layout = QVBoxLayout(self)
+        
+        # Info label
+        info_label = QLabel(
+            "Configure the KSE server connection.\n\n"
+            "Examples:\n"
+            "  • Local: http://localhost:5000\n"
+            "  • Remote IP: http://192.168.1.100:5000\n"
+            "  • Remote hostname: http://my-server.com:5000"
+        )
+        info_label.setWordWrap(True)
+        info_label.setStyleSheet("color: #666; padding: 10px; background-color: #f0f0f0; border-radius: 5px;")
+        layout.addWidget(info_label)
         
         # Server settings
         server_group = QGroupBox("Server Configuration")
@@ -254,9 +272,51 @@ class SettingsDialog(QDialog):
         
         layout.addLayout(button_layout)
     
+    def save_config(self):
+        """Save configuration to file"""
+        try:
+            self.config_file.parent.mkdir(parents=True, exist_ok=True)
+            config = {
+                'server_url': self.server_url_input.text().strip()
+            }
+            with open(self.config_file, 'w') as f:
+                json.dump(config, f, indent=2)
+            logger.info("Configuration saved successfully")
+        except PermissionError:
+            error_msg = f"Permission denied: Cannot write to {self.config_file}"
+            logger.error(error_msg)
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self, 
+                "Save Failed", 
+                f"Could not save configuration:\n{error_msg}\n\n"
+                "Please check file permissions."
+            )
+        except Exception as e:
+            error_msg = f"Failed to save config: {e}"
+            logger.error(error_msg)
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self, 
+                "Save Failed", 
+                f"Could not save configuration:\n{error_msg}"
+            )
+    
     def _test_connection(self):
         """Test connection to server"""
         url = self.server_url_input.text().strip()
+        
+        # Basic URL validation
+        if not url:
+            self.connection_status.setText("✗ Please enter a server URL")
+            self.connection_status.setStyleSheet("color: #f44336; padding: 5px;")
+            return
+        
+        if not (url.startswith('http://') or url.startswith('https://')):
+            self.connection_status.setText("✗ URL must start with http:// or https://")
+            self.connection_status.setStyleSheet("color: #f44336; padding: 5px;")
+            return
+        
         try:
             response = requests.get(f"{url}/api/health", timeout=5)
             if response.status_code == 200:
@@ -269,6 +329,11 @@ class SettingsDialog(QDialog):
             self.connection_status.setText(f"✗ Connection failed: {str(e)}")
             self.connection_status.setStyleSheet("color: #f44336; padding: 5px;")
     
+    def accept(self):
+        """Save and close"""
+        self.save_config()
+        super().accept()
+    
     def get_server_url(self) -> str:
         """Get configured server URL"""
         return self.server_url_input.text().strip()
@@ -280,8 +345,11 @@ class KlarBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         
+        # Configuration file
+        self.config_file = Path.home() / '.kse' / 'klar_browser_config.json'
+        
         # Configuration
-        self.server_url = "http://localhost:5000"
+        self.server_url = self.load_config()
         self.search_history = []
         self.current_results = []
         self.search_worker = None
@@ -302,7 +370,34 @@ class KlarBrowser(QMainWindow):
         # Show welcome message
         self._show_welcome()
         
-        logger.info("Klar Browser initialized")
+        logger.info(f"Klar Browser initialized with server: {self.server_url}")
+    
+    def load_config(self) -> str:
+        """Load server URL from config file"""
+        # Priority 1: Environment variable (highest priority)
+        env_url = os.getenv("KSE_SERVER_URL")
+        if env_url:
+            logger.info(f"Using server URL from environment: {env_url}")
+            return env_url
+        
+        # Priority 2: Config file
+        try:
+            if self.config_file.exists():
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+                    url = config.get('server_url')
+                    if url:
+                        logger.info(f"Loaded server URL from config: {url}")
+                        return url
+        except json.JSONDecodeError as e:
+            logger.warning(f"Config file corrupted, using defaults: {e}")
+        except Exception as e:
+            logger.error(f"Failed to load config: {e}")
+        
+        # Priority 3: Default
+        default_url = "http://localhost:5000"
+        logger.info(f"Using default server URL: {default_url}")
+        return default_url
     
     def _create_menu_bar(self):
         """Create menu bar"""
