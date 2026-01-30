@@ -2,13 +2,14 @@
 """
 Klar Browser - Android Version
 A lightweight browser client for Android with integrated search functionality
-Built with Kivy for cross-platform compatibility targeting Android 16 (API 34)
+Built with Kivy for cross-platform compatibility targeting Android 14 (API 34)
 """
 
 import json
 import logging
 from pathlib import Path
 from urllib.parse import urlparse
+from threading import Thread
 
 import requests
 from kivy.app import App
@@ -84,7 +85,7 @@ class SearchResult(BoxLayout):
         self.add_widget(snippet_label)
         
         # Score badge if available
-        if score:
+        if score is not None:
             score_label = Label(
                 text=f"Score: {score:.2f}",
                 size_hint_y=None,
@@ -285,7 +286,7 @@ class KlarBrowserAndroid(BoxLayout):
         about_text = """Klar Browser for Android
 
 Version: 1.0.0
-Target: Android 16 (API 34)
+Target: Android 14 (API 34)
 
 A lightweight search browser client for the Klar Search Engine.
 
@@ -340,11 +341,13 @@ Built with Kivy framework for Android compatibility.
         self.status_label.text = f'Searching for: {query}...'
         self.results_container.clear_widgets()
         
-        # Perform search in background thread
-        Clock.schedule_once(lambda dt: self._execute_search(query), 0.1)
+        # Perform search in background thread to avoid blocking UI
+        thread = Thread(target=self._execute_search, args=(query,))
+        thread.daemon = True
+        thread.start()
     
     def _execute_search(self, query):
-        """Execute search API call"""
+        """Execute search API call in background thread"""
         try:
             url = f"{self.server_url}/api/search"
             params = {'q': query}
@@ -356,7 +359,7 @@ Built with Kivy framework for Android compatibility.
             data = response.json()
             results = data.get('results', [])
             
-            # Update UI with results
+            # Update UI with results (schedule on main thread)
             Clock.schedule_once(
                 lambda dt: self._display_results(results, query), 0
             )

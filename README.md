@@ -5,7 +5,7 @@ A modern web-based search browser for the KSE (Klar Search Engine) with a beauti
 ## Platform Support
 
 - **Desktop** (Windows, macOS, Linux): Full-featured web-based UI with PyQt6
-- **Android** (API 21+, targeting Android 16/API 34): Mobile-optimized Kivy version
+- **Android** (API 21+, targeting Android 14/API 34): Mobile-optimized Kivy version
 
 See [BUILD_ANDROID.md](BUILD_ANDROID.md) for instructions on building the Android APK.
 
@@ -142,7 +142,7 @@ The UI features:
 - requests == 2.31.0
 - Buildozer (for building APK)
 - Android SDK/NDK (automatically downloaded by buildozer)
-- Target: Android 16 (API 34), Minimum: Android 5.0 (API 21)
+- Target: Android 14 (API 34), Minimum: Android 5.0 (API 21)
 
 ## Development
 

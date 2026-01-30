@@ -1,6 +1,6 @@
 # Building Klar Browser for Android
 
-This guide explains how to build the Klar Browser as an Android APK targeting Android 16 (API level 34).
+This guide explains how to build the Klar Browser as an Android APK targeting Android 14 (API level 34).
 
 ## Overview
 
@@ -124,10 +124,10 @@ buildozer android debug
 
 The build is configured in `buildozer.spec`:
 
-- **Target API**: 34 (Android 16)
+- **Target API**: 34 (Android 14)
 - **Minimum API**: 21 (Android 5.0)
 - **Architectures**: arm64-v8a, armeabi-v7a (64-bit and 32-bit ARM)
-- **Permissions**: INTERNET, ACCESS_NETWORK_STATE, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE
+- **Permissions**: INTERNET, ACCESS_NETWORK_STATE
 - **Orientation**: Portrait
 - **Package**: org.kse.klarbrowser
 
@@ -271,8 +271,8 @@ For Google Play Store distribution:
 # Generate keystore (first time only)
 keytool -genkey -v -keystore my-release-key.keystore -alias klar -keyalg RSA -keysize 2048 -validity 10000
 
-# Sign the APK
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore \
+# Sign the APK with SHA256 (required for Google Play Store)
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA256 -keystore my-release-key.keystore \
     bin/klarbrowser-1.0.0-arm64-v8a_armeabi-v7a-release-unsigned.apk klar
 
 # Align the APK
