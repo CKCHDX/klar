@@ -4,10 +4,10 @@ Simple Web Browser for KSE Search Engine with modern visual design system.
 
 ## Features
 
-- Modern PyQt6-based interface for desktop
+- Modern PyQt6-based interface for desktop (Windows, Linux, macOS)
 - Kivy-based mobile interface for Android
 - KSE search engine integration
-- Cross-platform support (Windows, Linux, Android)
+- Cross-platform support
 
 ## Installation
 
