@@ -119,11 +119,10 @@ jobs:
       run: |
         # Create a simple placeholder icon and presplash
         python3 << 'PYTHON'
-        from PIL import Image, ImageDraw
+        from PIL import Image
         
         # Create icon (512x512)
         icon = Image.new('RGB', (512, 512), color=(59, 130, 246))
-        draw = ImageDraw.Draw(icon)
         icon.save('icon.png')
         
         # Create presplash (800x600)
