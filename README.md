@@ -4,35 +4,98 @@ A custom web browser with a built-from-scratch render engine to replace QT WebEn
 
 ## Features
 
-- Custom HTML parser and renderer
-- Basic CSS support
-- URL navigation
-- HTTP/HTTPS request handling
-- Custom rendering pipeline (no WebEngine dependency)
+- ✅ **Custom HTML Parser** - Built from scratch using BeautifulSoup and html5lib
+- ✅ **Custom Rendering Pipeline** - No QT WebEngine dependency
+- ✅ **CSS Support** - Basic CSS parsing and style computation
+- ✅ **URL Navigation** - Enter domains in the address bar
+- ✅ **HTTP/HTTPS Support** - Fetch content from the web
+- ✅ **Browser Controls** - Back, forward, and refresh navigation
+- ✅ **DOM Tree Construction** - Full HTML document object model
+- ✅ **Text Rendering** - Headers, paragraphs, lists, and formatting
 
-## Installation
+## Quick Start
+
+### Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Usage
+### Run the Browser
 
 ```bash
 python main.py
 ```
 
-Enter a URL in the address bar and press Enter to navigate to the website.
+Enter a URL in the address bar (e.g., `example.com`) and press Enter to navigate.
+
+## Screenshots
+
+The browser successfully renders:
+- HTML headings with proper sizing
+- Paragraphs with spacing
+- Bold and italic text
+- Lists (ordered and unordered)
+- Navigation controls
+- Scrollable content viewport
 
 ## Architecture
 
-- `main.py` - Main application entry point
-- `render_engine.py` - Core rendering engine
-- `html_parser.py` - HTML parsing and DOM construction
-- `css_parser.py` - CSS parsing and style computation
-- `http_client.py` - HTTP request handler
+### Core Components
+
+- `main.py` - Application entry point
 - `browser_window.py` - Main browser window UI
+- `render_engine.py` - Core rendering engine and pipeline
+- `html_parser.py` - HTML parsing and DOM tree construction
+- `css_parser.py` - CSS parsing and style computation
+- `http_client.py` - HTTP/HTTPS request handler
+
+### How It Works
+
+1. **Fetch** - HTTP client fetches HTML content from URLs
+2. **Parse** - HTML parser builds a DOM tree structure
+3. **Style** - CSS parser computes styles for each node
+4. **Render** - Render engine paints content to the viewport
 
 ## Testing
 
-To test the render engine, simply run the application and navigate to any URL (e.g., http://example.com).
+### Test the Render Engine
+
+```bash
+# Test with sample HTML
+python test_render.py
+
+# Test with a domain (requires network)
+python test_domain.py
+```
+
+### Automated Testing
+
+The test scripts will:
+1. Load HTML content
+2. Render to the viewport
+3. Generate screenshots
+4. Verify rendering functionality
+
+## Documentation
+
+For detailed usage instructions, see [USAGE.md](USAGE.md)
+
+## Project Goal
+
+This project demonstrates how to build a custom render engine from scratch, replacing QT WebEngine with a pure Python implementation. It's designed for:
+- Learning how browsers work
+- Understanding rendering pipelines
+- Testing custom HTML rendering
+- Educational purposes
+
+## Limitations
+
+- Basic CSS support (no complex layouts)
+- No JavaScript execution
+- Text-based rendering (images not supported yet)
+- Best for simple HTML documents
+
+## Contributing
+
+This is a demonstration project showing render engine architecture and implementation.
