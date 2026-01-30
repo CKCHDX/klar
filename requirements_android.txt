@@ -1,0 +1,10 @@
+# Android build requirements
+# These are specified in buildozer.spec, but listed here for reference
+kivy==2.2.1
+requests==2.31.0
+certifi
+
+# Desktop version requirements (PyQt6)
+# Note: PyQt6 is NOT compatible with Android
+# PyQt6>=6.4.0
+# PyQt6-WebEngine>=6.4.0
