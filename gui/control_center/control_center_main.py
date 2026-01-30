@@ -322,7 +322,7 @@ class ControlCenterMain(QMainWindow):
         placeholder = QLabel("Module implementation coming soon...")
         placeholder.setStyleSheet(f"""
             color: {GUIConfig.COLORS['text_secondary']};
-            font-size: 14pt;
+            font-size: {GUIConfig.get_font_size('title')}pt;
             padding: 20px;
         """)
         placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)

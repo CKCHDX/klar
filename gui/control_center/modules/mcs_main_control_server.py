@@ -51,7 +51,7 @@ class ServerControlPanel(QFrame):
         self.status_indicator.setStyleSheet(f"""
             QLabel {{
                 color: {GUIConfig.COLORS['error']};
-                font-size: 16pt;
+                font-size: {GUIConfig.get_font_size('header')}pt;
             }}
         """)
         status_layout.addWidget(self.status_indicator)
@@ -118,7 +118,7 @@ class ServerControlPanel(QFrame):
             self.status_indicator.setStyleSheet(f"""
                 QLabel {{
                     color: {GUIConfig.COLORS['success']};
-                    font-size: 16pt;
+                    font-size: {GUIConfig.get_font_size('header')}pt;
                 }}
             """)
             self.status_text.setText("Running")
@@ -131,7 +131,7 @@ class ServerControlPanel(QFrame):
             self.status_indicator.setStyleSheet(f"""
                 QLabel {{
                     color: {GUIConfig.COLORS['error']};
-                    font-size: 16pt;
+                    font-size: {GUIConfig.get_font_size('header')}pt;
                 }}
             """)
             self.status_text.setText("Stopped")

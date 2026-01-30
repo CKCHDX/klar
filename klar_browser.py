@@ -7,7 +7,10 @@ A lightweight browser client with integrated search functionality
 import sys
 import logging
 import requests
+import json
+import os
 from datetime import datetime
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 
 from PyQt6.QtWidgets import (
@@ -215,9 +218,24 @@ class SettingsDialog(QDialog):
         super().__init__(parent)
         self.setWindowTitle("Browser Settings")
         self.setModal(True)
-        self.resize(450, 250)
+        self.resize(450, 300)
+        
+        # Config file location
+        self.config_file = Path.home() / '.kse' / 'klar_browser_config.json'
         
         layout = QVBoxLayout(self)
+        
+        # Info label
+        info_label = QLabel(
+            "Configure the KSE server connection.\n\n"
+            "Examples:\n"
+            "  • Local: http://localhost:5000\n"
+            "  • Remote IP: http://192.168.1.100:5000\n"
+            "  • Remote hostname: http://my-server.com:5000"
+        )
+        info_label.setWordWrap(True)
+        info_label.setStyleSheet("color: #666; padding: 10px; background-color: #f0f0f0; border-radius: 5px;")
+        layout.addWidget(info_label)
         
         # Server settings
         server_group = QGroupBox("Server Configuration")
@@ -254,6 +272,18 @@ class SettingsDialog(QDialog):
         
         layout.addLayout(button_layout)
     
+    def save_config(self):
+        """Save configuration to file"""
+        try:
+            self.config_file.parent.mkdir(parents=True, exist_ok=True)
+            config = {
+                'server_url': self.server_url_input.text().strip()
+            }
+            with open(self.config_file, 'w') as f:
+                json.dump(config, f, indent=2)
+        except Exception as e:
+            logger.error(f"Failed to save config: {e}")
+    
     def _test_connection(self):
         """Test connection to server"""
         url = self.server_url_input.text().strip()
@@ -269,6 +299,11 @@ class SettingsDialog(QDialog):
             self.connection_status.setText(f"✗ Connection failed: {str(e)}")
             self.connection_status.setStyleSheet("color: #f44336; padding: 5px;")
     
+    def accept(self):
+        """Save and close"""
+        self.save_config()
+        super().accept()
+    
     def get_server_url(self) -> str:
         """Get configured server URL"""
         return self.server_url_input.text().strip()
@@ -280,8 +315,11 @@ class KlarBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         
+        # Configuration file
+        self.config_file = Path.home() / '.kse' / 'klar_browser_config.json'
+        
         # Configuration
-        self.server_url = "http://localhost:5000"
+        self.server_url = self.load_config()
         self.search_history = []
         self.current_results = []
         self.search_worker = None
@@ -302,7 +340,22 @@ class KlarBrowser(QMainWindow):
         # Show welcome message
         self._show_welcome()
         
-        logger.info("Klar Browser initialized")
+        logger.info(f"Klar Browser initialized with server: {self.server_url}")
+    
+    def load_config(self) -> str:
+        """Load server URL from config file"""
+        try:
+            if self.config_file.exists():
+                with open(self.config_file, 'r') as f:
+                    config = json.load(f)
+                    url = config.get('server_url', 'http://localhost:5000')
+                    logger.info(f"Loaded server URL from config: {url}")
+                    return url
+        except Exception as e:
+            logger.error(f"Failed to load config: {e}")
+        
+        # Return default if config doesn't exist or fails to load
+        return os.getenv("KSE_SERVER_URL", "http://localhost:5000")
     
     def _create_menu_bar(self):
         """Create menu bar"""
