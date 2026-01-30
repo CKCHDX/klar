@@ -79,13 +79,15 @@ android.presplash_color = #1a1a1f
 #icon.adaptive_background.filename = %(source.dir)s/data/icon_bg.png
 
 # (list) Permissions
-android.permissions = INTERNET,ACCESS_NETWORK_STATE,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
+# Note: WRITE_EXTERNAL_STORAGE and READ_EXTERNAL_STORAGE are deprecated on Android 10+ (API 29+)
+# Since we use private storage (android.private_storage = True), these are not needed
+android.permissions = INTERNET,ACCESS_NETWORK_STATE
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
 
 # (int) Target Android API, should be as high as possible.
-# Android 16 corresponds to API level 34
+# Android 14 corresponds to API level 34
 android.api = 34
 
 # (int) Minimum API your APK / AAB will support.
@@ -263,20 +265,6 @@ android.allow_backup = True
 
 # (str) XML file for custom backup rules (see official auto backup documentation)
 # android.backup_rules =
-
-# (str) If True, then skip trying to update the Android sdk
-# This can be useful to avoid excess Internet downloads or save time
-# when an update is due and you just want to test/build your package
-# android.skip_update = False
-
-# (bool) If True, then automatically accept SDK license
-# agreements. This is intended for automation only. If set to False,
-# the default, you will be shown the license when first running
-# buildozer.
-# android.accept_sdk_license = False
-
-# (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
-# android.arch = armeabi-v7a
 
 #
 # Python for android (p4a) specific
