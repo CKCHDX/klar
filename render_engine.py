@@ -1,8 +1,9 @@
 """
 Custom Render Engine - Core rendering pipeline
 """
-from PyQt6.QtGui import QPainter, QColor, QFont, QPen, QBrush, QPixmap
+from PyQt6.QtGui import QPainter, QColor, QFont, QPen, QBrush, QPixmap, QPolygon
 from PyQt6.QtCore import Qt, QRect, QPoint
+from urllib.parse import urljoin
 from html_parser import HTMLParserEngine
 from css_parser import CSSParser
 from resource_loader import ResourceLoader
@@ -11,6 +12,14 @@ from resource_loader import ResourceLoader
 DEFAULT_LINE_SPACING = 5  # Vertical spacing between lines of text
 DEFAULT_RECT_HEIGHT = 100  # Default height for text bounding rectangle
 DEFAULT_BG_HEIGHT = 50  # Default background block height
+DEFAULT_RIGHT_MARGIN = 20  # Right margin for content
+DEFAULT_VIDEO_WIDTH = 400  # Default video width
+DEFAULT_VIDEO_HEIGHT = 300  # Default video height
+DEFAULT_IMAGE_PLACEHOLDER_WIDTH = 200  # Default image placeholder width
+DEFAULT_IMAGE_PLACEHOLDER_HEIGHT = 100  # Default image placeholder height
+VIDEO_TEXT_SPACING = 5  # Spacing between video and text
+VIDEO_TEXT_HEIGHT = 20  # Height of video text area
+VIDEO_BOTTOM_SPACING = 30  # Total bottom spacing for video
 
 
 class RenderEngine:
@@ -252,7 +261,6 @@ class RenderEngine:
             return
         
         # Resolve URL
-        from urllib.parse import urljoin
         if self.current_url and not src.startswith('data:'):
             img_url = urljoin(self.current_url, src)
         else:
@@ -275,7 +283,7 @@ class RenderEngine:
             img_height = int(height) if height and height.isdigit() else pixmap.height()
             
             # Limit maximum size
-            max_width = int(context.viewport_width - context.x - 20)
+            max_width = int(context.viewport_width - context.x - DEFAULT_RIGHT_MARGIN)
             if img_width > max_width:
                 # Scale proportionally
                 scale = max_width / img_width
@@ -288,12 +296,6 @@ class RenderEngine:
             
             # Move cursor down
             context.y += img_height + DEFAULT_LINE_SPACING
-            
-            # Get alt text in case image fails to display
-            alt_text = node.get_attr('alt')
-            if alt_text:
-                # Store for potential fallback
-                pass
         else:
             # Render alt text or placeholder if image fails
             alt_text = node.get_attr('alt', '[Image]')
@@ -308,8 +310,8 @@ class RenderEngine:
             context: RenderContext
         """
         # Draw a simple rectangle with text
-        placeholder_width = 200
-        placeholder_height = 100
+        placeholder_width = DEFAULT_IMAGE_PLACEHOLDER_WIDTH
+        placeholder_height = DEFAULT_IMAGE_PLACEHOLDER_HEIGHT
         
         # Draw border
         context.painter.setPen(QPen(QColor('#cccccc'), 2))
@@ -348,7 +350,6 @@ class RenderEngine:
             return
         
         # Resolve URL
-        from urllib.parse import urljoin
         if self.current_url:
             video_url = urljoin(self.current_url, src)
         else:
@@ -358,11 +359,11 @@ class RenderEngine:
         width = node.get_attr('width')
         height = node.get_attr('height')
         
-        video_width = int(width) if width and width.isdigit() else 400
-        video_height = int(height) if height and height.isdigit() else 300
+        video_width = int(width) if width and width.isdigit() else DEFAULT_VIDEO_WIDTH
+        video_height = int(height) if height and height.isdigit() else DEFAULT_VIDEO_HEIGHT
         
         # Limit maximum size
-        max_width = int(context.viewport_width - context.x - 20)
+        max_width = int(context.viewport_width - context.x - DEFAULT_RIGHT_MARGIN)
         if video_width > max_width:
             scale = max_width / video_width
             video_width = max_width
@@ -381,7 +382,6 @@ class RenderEngine:
         center_y = rect.center().y()
         play_size = min(video_width, video_height) // 4
         
-        from PyQt6.QtGui import QPolygon
         play_triangle = QPolygon([
             QPoint(center_x - play_size // 2, center_y - play_size // 2),
             QPoint(center_x - play_size // 2, center_y + play_size // 2),
@@ -396,11 +396,12 @@ class RenderEngine:
         context.painter.setPen(QPen(QColor('#666666')))
         font = QFont('Arial', 9)
         context.painter.setFont(font)
-        text_rect = QRect(int(context.x), int(context.y + video_height + 5), video_width, 20)
-        context.painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft, f"Video: {src}")
+        text_rect = QRect(int(context.x), int(context.y + video_height + VIDEO_TEXT_SPACING), 
+                         video_width, VIDEO_TEXT_HEIGHT)
+        context.painter.drawText(text_rect, Qt.AlignmentFlag.AlignLeft, f"Video: {video_url}")
         
         # Move cursor down
-        context.y += video_height + 30
+        context.y += video_height + VIDEO_BOTTOM_SPACING
 
 
 class RenderContext:

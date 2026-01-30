@@ -14,7 +14,11 @@ class ResourceLoader:
     
     def __init__(self, http_client=None):
         self.http_client = http_client or HTTPClient()
-        self.cache = {}  # Simple in-memory cache
+        # Separate caches for different resource types to avoid collisions
+        self.image_cache = {}
+        self.css_cache = {}
+        self.js_cache = {}
+        self.video_cache = {}
         
     def load_image(self, url, base_url=None):
         """
@@ -36,8 +40,8 @@ class ResourceLoader:
             url = urljoin(base_url, url)
         
         # Check cache
-        if url in self.cache:
-            return self.cache[url]
+        if url in self.image_cache:
+            return self.image_cache[url]
         
         # Fetch image
         response = self.http_client.fetch(url, binary=True)
@@ -45,7 +49,7 @@ class ResourceLoader:
             # Create QPixmap from binary data
             pixmap = self._bytes_to_pixmap(response['content'])
             if pixmap and not pixmap.isNull():
-                self.cache[url] = pixmap
+                self.image_cache[url] = pixmap
                 return pixmap
         
         return None
@@ -66,13 +70,13 @@ class ResourceLoader:
             url = urljoin(base_url, url)
         
         # Check cache
-        if url in self.cache:
-            return self.cache[url]
+        if url in self.css_cache:
+            return self.css_cache[url]
         
         # Fetch CSS
         response = self.http_client.fetch(url, binary=False)
         if response['success'] and response['content']:
-            self.cache[url] = response['content']
+            self.css_cache[url] = response['content']
             return response['content']
         
         return None
@@ -93,13 +97,13 @@ class ResourceLoader:
             url = urljoin(base_url, url)
         
         # Check cache
-        if url in self.cache:
-            return self.cache[url]
+        if url in self.js_cache:
+            return self.js_cache[url]
         
         # Fetch JavaScript
         response = self.http_client.fetch(url, binary=False)
         if response['success'] and response['content']:
-            self.cache[url] = response['content']
+            self.js_cache[url] = response['content']
             return response['content']
         
         return None
@@ -211,17 +215,24 @@ class ResourceLoader:
             base_url: Base URL for resolving relative URLs
             
         Returns:
-            dict: Dictionary of resource lists by type
+            dict: Dictionary of resource lists by type (deduplicated)
         """
         resources = {
-            'images': [],
-            'videos': [],
-            'css': [],
-            'scripts': []
+            'images': set(),
+            'videos': set(),
+            'css': set(),
+            'scripts': set()
         }
         
         self._extract_resources_recursive(dom_tree, resources, base_url)
-        return resources
+        
+        # Convert sets back to lists
+        return {
+            'images': list(resources['images']),
+            'videos': list(resources['videos']),
+            'css': list(resources['css']),
+            'scripts': list(resources['scripts'])
+        }
     
     def _extract_resources_recursive(self, node, resources, base_url):
         """
@@ -240,20 +251,20 @@ class ResourceLoader:
             src = node.get_attr('src')
             if src:
                 full_url = urljoin(base_url, src) if base_url else src
-                resources['images'].append(full_url)
+                resources['images'].add(full_url)
         
         elif node.tag == 'video':
             src = node.get_attr('src')
             if src:
                 full_url = urljoin(base_url, src) if base_url else src
-                resources['videos'].append(full_url)
+                resources['videos'].add(full_url)
             # Also check for <source> children
             for child in node.children:
                 if child.tag == 'source':
                     src = child.get_attr('src')
                     if src:
                         full_url = urljoin(base_url, src) if base_url else src
-                        resources['videos'].append(full_url)
+                        resources['videos'].add(full_url)
         
         elif node.tag == 'link':
             rel = node.get_attr('rel')
@@ -261,18 +272,21 @@ class ResourceLoader:
                 href = node.get_attr('href')
                 if href:
                     full_url = urljoin(base_url, href) if base_url else href
-                    resources['css'].append(full_url)
+                    resources['css'].add(full_url)
         
         elif node.tag == 'script':
             src = node.get_attr('src')
             if src:
                 full_url = urljoin(base_url, src) if base_url else src
-                resources['scripts'].append(full_url)
+                resources['scripts'].add(full_url)
         
         # Process children
         for child in node.children:
             self._extract_resources_recursive(child, resources, base_url)
     
     def clear_cache(self):
-        """Clear the resource cache"""
-        self.cache.clear()
+        """Clear all resource caches"""
+        self.image_cache.clear()
+        self.css_cache.clear()
+        self.js_cache.clear()
+        self.video_cache.clear()
