@@ -12,6 +12,10 @@ A custom web browser with a built-from-scratch render engine to replace QT WebEn
 - ✅ **Browser Controls** - Back, forward, and refresh navigation
 - ✅ **DOM Tree Construction** - Full HTML document object model
 - ✅ **Text Rendering** - Headers, paragraphs, lists, and formatting
+- ✅ **Image Loading** - Support for images from HTTP/HTTPS and data URIs
+- ✅ **Video Support** - Video elements with visual placeholders
+- ✅ **External Resources** - Loads external CSS and JavaScript files
+- ✅ **Resource Caching** - In-memory caching of loaded resources
 
 ## Quick Start
 
@@ -49,13 +53,15 @@ The browser successfully renders:
 - `html_parser.py` - HTML parsing and DOM tree construction
 - `css_parser.py` - CSS parsing and style computation
 - `http_client.py` - HTTP/HTTPS request handler
+- `resource_loader.py` - External resource loading and caching
 
 ### How It Works
 
 1. **Fetch** - HTTP client fetches HTML content from URLs
 2. **Parse** - HTML parser builds a DOM tree structure
-3. **Style** - CSS parser computes styles for each node
-4. **Render** - Render engine paints content to the viewport
+3. **Load Resources** - Resource loader fetches external images, videos, CSS, and JavaScript
+4. **Style** - CSS parser computes styles for each node
+5. **Render** - Render engine paints content to the viewport
 
 ## Testing
 
@@ -93,7 +99,7 @@ This project demonstrates how to build a custom render engine from scratch, repl
 
 - Basic CSS support (no complex layouts)
 - No JavaScript execution
-- Text-based rendering (images not supported yet)
+- Video elements show placeholders (no video playback)
 - Best for simple HTML documents
 
 ## Contributing

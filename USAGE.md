@@ -85,6 +85,8 @@ The browser automatically loads a welcome page on startup that demonstrates:
 - Text formatting (strong, b, em, i)
 - Divs and spans
 - Links (a)
+- Images (img)
+- Videos (video)
 
 ✅ **CSS Properties**:
 - Font size
@@ -104,6 +106,9 @@ The browser automatically loads a welcome page on startup that demonstrates:
 - Address bar
 - Status bar
 - Scrollable viewport
+- Image loading (HTTP, HTTPS, data URIs)
+- Video placeholders
+- External CSS and JavaScript loading
 
 ## Limitations
 
@@ -112,8 +117,8 @@ This is a demonstration render engine with some limitations:
 - **Limited CSS Support**: Only basic CSS properties are supported
 - **No JavaScript**: JavaScript execution is not implemented
 - **Simple Layout**: Complex layouts may not render correctly
-- **No Image Loading**: Images are not currently rendered
-- **Text-Only**: Best suited for text-based content
+- **Video Placeholders**: Videos show as placeholders without playback
+- **Text-Focused**: Best suited for text-based content with images
 
 ## Testing URLs
 
