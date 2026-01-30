@@ -33,10 +33,18 @@ def create_app():
     KSELogger.setup(log_dir, config.get("log_level", "INFO"), True)
     logger = get_logger(__name__, "server.log")
     
-    # Get network information
+    # Get network information (non-blocking, best effort)
     logger.info("Detecting network information...")
-    network_info = get_network_info()
-    logger.info(f"Network info: {network_info}")
+    try:
+        network_info = get_network_info()
+        logger.info(f"Network info: {network_info}")
+    except Exception as e:
+        logger.warning(f"Failed to detect network info: {e}")
+        network_info = {
+            'public_ip': None,
+            'local_ip': None,
+            'hostname': 'unknown'
+        }
     
     # Enable CORS
     if config.get("server.enable_cors", True):
@@ -215,8 +223,12 @@ def main():
     debug = config.get("server.debug", False)
     
     # Display network information
-    info_text = format_server_info(host, port, network_info)
-    print(info_text)
+    if network_info:
+        info_text = format_server_info(host, port, network_info)
+        print(info_text)
+    else:
+        print(f"\nKSE Server starting on http://{host}:{port}")
+    
     logger.info(f"Starting KSE Server on {host}:{port}")
     
     # Display API endpoints

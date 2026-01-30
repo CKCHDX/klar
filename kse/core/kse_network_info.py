@@ -21,6 +21,7 @@ def get_public_ip() -> Optional[str]:
         str: Public IP address, or None if detection fails
     """
     # List of public IP detection services (in order of preference)
+    # Using HTTPS for security
     services = [
         'https://api.ipify.org',
         'https://icanhazip.com',
@@ -28,18 +29,24 @@ def get_public_ip() -> Optional[str]:
         'https://ident.me',
     ]
     
+    # Reduced timeout to avoid long server startup delays
+    timeout = 2
+    
     for service in services:
         try:
-            response = requests.get(service, timeout=3)
+            response = requests.get(service, timeout=timeout, verify=True)
             if response.status_code == 200:
                 ip = response.text.strip()
                 logger.info(f"Public IP detected: {ip} (via {service})")
                 return ip
+        except requests.exceptions.SSLError as e:
+            logger.debug(f"SSL error from {service}: {e}")
+            continue
         except Exception as e:
             logger.debug(f"Failed to get IP from {service}: {e}")
             continue
     
-    logger.warning("Could not detect public IP address from any service")
+    logger.warning("Could not detect public IP address from any service. This is normal if server has no internet access.")
     return None
 
 
@@ -59,6 +66,15 @@ def get_local_ip() -> Optional[str]:
         s.close()
         return local_ip
     except Exception as e:
+        # Fallback method for restricted networks
+        try:
+            hostname = socket.gethostname()
+            local_ip = socket.gethostbyname(hostname)
+            if local_ip != "127.0.0.1":
+                return local_ip
+        except Exception:
+            pass
+        
         logger.error(f"Failed to detect local IP: {e}")
         return None
 

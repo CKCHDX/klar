@@ -49,10 +49,11 @@ server:
 ```
 
 **Security Note:** When exposing the server to the network:
-- Use HTTPS in production (not HTTP)
-- Consider adding authentication
-- Use a firewall to restrict access
+- **Use HTTPS in production** (not HTTP) - Configure SSL/TLS certificates
+- Consider adding authentication to sensitive endpoints
+- Use a firewall to restrict access to trusted IPs/networks
 - Keep the server software updated
+- Disable or restrict `/api/server/info` endpoint in production if exposing internal network details is a concern
 
 ### 1.2 Start the Server
 
@@ -205,25 +206,30 @@ API_BASE_URL = os.getenv("KSE_SERVER_URL", "http://localhost:5000")
 **Client Setup:**
 - Server URL: `http://192.168.1.100:5000`
 
+**Note:** HTTP is acceptable for local networks, but HTTPS is still recommended for sensitive data.
+
 ### Scenario 2: Public Internet Access
 
 **Use Case:** Server in a data center, clients connecting from anywhere.
 
+**⚠️ IMPORTANT: Do NOT expose port 5000 directly to the internet. Use a reverse proxy with HTTPS.**
+
 **Server Setup:**
-- Server listens on: `0.0.0.0:5000`
-- Public IP: `203.0.113.45` (example)
-- **Required:** Configure firewall to allow port 5000
-- **Recommended:** Use reverse proxy (nginx) with HTTPS
+- Server listens on: `127.0.0.1:5000` (localhost only, not exposed)
+- Nginx/Apache reverse proxy handles HTTPS on port 443
+- Public domain: `search.example.com`
 
 **Client Setup:**
-- Server URL: `https://my-kse-server.com:5000`
+- Server URL: `https://search.example.com` (no port needed, uses default 443)
 
-**Security Checklist:**
-- [ ] Use HTTPS (not HTTP)
-- [ ] Add authentication (JWT, API keys)
-- [ ] Configure firewall rules
-- [ ] Use rate limiting
-- [ ] Monitor for abuse
+**Critical Security Checklist:**
+- [ ] **MUST** use HTTPS (not HTTP) - Get SSL certificate from Let's Encrypt
+- [ ] **MUST** use reverse proxy (nginx/Apache) - Never expose Flask directly
+- [ ] Add authentication (JWT, API keys, or user login)
+- [ ] Configure firewall rules - Block direct access to port 5000
+- [ ] Use rate limiting to prevent abuse
+- [ ] Monitor logs for suspicious activity
+- [ ] Keep all software updated
 
 ### Scenario 3: Development Team
 

@@ -281,12 +281,42 @@ class SettingsDialog(QDialog):
             }
             with open(self.config_file, 'w') as f:
                 json.dump(config, f, indent=2)
+            logger.info("Configuration saved successfully")
+        except PermissionError:
+            error_msg = f"Permission denied: Cannot write to {self.config_file}"
+            logger.error(error_msg)
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self, 
+                "Save Failed", 
+                f"Could not save configuration:\n{error_msg}\n\n"
+                "Please check file permissions."
+            )
         except Exception as e:
-            logger.error(f"Failed to save config: {e}")
+            error_msg = f"Failed to save config: {e}"
+            logger.error(error_msg)
+            from PyQt6.QtWidgets import QMessageBox
+            QMessageBox.warning(
+                self, 
+                "Save Failed", 
+                f"Could not save configuration:\n{error_msg}"
+            )
     
     def _test_connection(self):
         """Test connection to server"""
         url = self.server_url_input.text().strip()
+        
+        # Basic URL validation
+        if not url:
+            self.connection_status.setText("✗ Please enter a server URL")
+            self.connection_status.setStyleSheet("color: #f44336; padding: 5px;")
+            return
+        
+        if not (url.startswith('http://') or url.startswith('https://')):
+            self.connection_status.setText("✗ URL must start with http:// or https://")
+            self.connection_status.setStyleSheet("color: #f44336; padding: 5px;")
+            return
+        
         try:
             response = requests.get(f"{url}/api/health", timeout=5)
             if response.status_code == 200:
@@ -344,18 +374,30 @@ class KlarBrowser(QMainWindow):
     
     def load_config(self) -> str:
         """Load server URL from config file"""
+        # Priority 1: Environment variable (highest priority)
+        env_url = os.getenv("KSE_SERVER_URL")
+        if env_url:
+            logger.info(f"Using server URL from environment: {env_url}")
+            return env_url
+        
+        # Priority 2: Config file
         try:
             if self.config_file.exists():
                 with open(self.config_file, 'r') as f:
                     config = json.load(f)
-                    url = config.get('server_url', 'http://localhost:5000')
-                    logger.info(f"Loaded server URL from config: {url}")
-                    return url
+                    url = config.get('server_url')
+                    if url:
+                        logger.info(f"Loaded server URL from config: {url}")
+                        return url
+        except json.JSONDecodeError as e:
+            logger.warning(f"Config file corrupted, using defaults: {e}")
         except Exception as e:
             logger.error(f"Failed to load config: {e}")
         
-        # Return default if config doesn't exist or fails to load
-        return os.getenv("KSE_SERVER_URL", "http://localhost:5000")
+        # Priority 3: Default
+        default_url = "http://localhost:5000"
+        logger.info(f"Using default server URL: {default_url}")
+        return default_url
     
     def _create_menu_bar(self):
         """Create menu bar"""
