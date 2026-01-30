@@ -1,0 +1,84 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install briefcase
+        
+    - name: Create Briefcase configuration
+      run: |
+        cat > pyproject.toml << 'EOF'
+        [tool.briefcase]
+        project_name = "Klar Browser"
+        bundle = "org.kse"
+        version = "1.0.0"
+        
+        [tool.briefcase.app.klarbrowser]
+        formal_name = "Klar Browser"
+        description = "Modern web-based search browser for KSE Search Engine"
+        sources = ["klar_browser"]
+        requires = [
+            "PyQt6>=6.4.0",
+            "PyQt6-WebEngine>=6.4.0",
+            "requests>=2.28.0"
+        ]
+        
+        [tool.briefcase.app.klarbrowser.android]
+        permission = ["android.permission.INTERNET", "android.permission.ACCESS_NETWORK_STATE"]
+        build_gradle_dependencies = []
+        EOF
+        
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+        
+    - name: Install Android SDK
+      uses: android-actions/setup-android@v2
+      
+    - name: Build Android APK
+      run: |
+        briefcase create android
+        briefcase build android
+        briefcase package android
+        
+    - name: Verify APK exists
+      run: |
+        if [ ! -f "android/*.apk" ]; then
+          echo "Build failed: APK not found"
+          exit 1
+        fi
+        
+    - name: Upload Android APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: klar-browser-android
+        path: android/*.apk
+        retention-days: 30
+
