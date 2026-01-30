@@ -75,9 +75,15 @@ def test_css_selector_matching():
     assert parser._selector_matches('div', div_node), "Element selector failed"
     print("✓ Element selector works")
     
-    # Test class selector
+    # Test class selector with string
     assert parser._selector_matches('.highlight', div_node), "Class selector failed"
-    print("✓ Class selector works")
+    print("✓ Class selector works (string format)")
+    
+    # Test class selector with list (as BeautifulSoup returns)
+    div_node_list = DOMNode('div', {'class': ['highlight', 'important']})
+    assert parser._selector_matches('.highlight', div_node_list), "Class selector with list failed"
+    assert parser._selector_matches('.important', div_node_list), "Class selector with list (second class) failed"
+    print("✓ Class selector works (list format)")
     
     # Test id selector
     assert parser._selector_matches('#special', h1_node), "ID selector failed"
@@ -86,6 +92,29 @@ def test_css_selector_matching():
     # Test non-matching
     assert not parser._selector_matches('span', div_node), "Non-matching selector failed"
     print("✓ Non-matching selector works")
+    
+    # Test with actual HTML parsing through BeautifulSoup
+    from html_parser import HTMLParserEngine
+    html_parser = HTMLParserEngine()
+    html = '<div><p class="test-class">Hello</p></div>'
+    dom = html_parser.parse(html)
+    
+    # Find the p tag
+    def find_p(node):
+        if node.tag == 'p':
+            return node
+        for child in node.children:
+            result = find_p(child)
+            if result:
+                return result
+        return None
+    
+    p_tag = find_p(dom)
+    if p_tag:
+        # Verify BeautifulSoup returns list for class
+        assert isinstance(p_tag.attrs.get('class'), list), "BeautifulSoup should return list for class"
+        assert parser._selector_matches('.test-class', p_tag), "Class selector with BeautifulSoup parsing failed"
+        print("✓ Class selector works with BeautifulSoup parsed HTML")
     
     print()
 

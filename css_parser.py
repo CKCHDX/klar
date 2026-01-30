@@ -106,13 +106,19 @@ class CSSParser:
             
         Returns:
             tuple: (id_count, class_count, element_count)
+            
+        Note:
+            This is a simplified specificity calculation for basic selectors.
+            It works correctly for simple selectors (element, .class, #id)
+            but may not handle complex compound selectors perfectly.
+            For compound selectors like 'div.class', the element part may not be counted.
         """
         # Simple specificity calculation
         # More specific = higher priority
         id_count = selector.count('#')
         class_count = selector.count('.')
-        # Count elements (rough approximation)
-        element_count = len([s for s in selector.split() if s and not s.startswith('.') and not s.startswith('#')])
+        # Count element selectors (parts that don't contain . or #)
+        element_count = len([s for s in selector.split() if s and '.' not in s and '#' not in s])
         
         return (id_count, class_count, element_count)
     
@@ -144,13 +150,13 @@ class CSSParser:
             node_classes = node.get_attr('class', '')
             # Handle both list and string formats
             if isinstance(node_classes, list):
-                # BeautifulSoup returns a list for class attribute
-                pass
+                # BeautifulSoup returns a list for class attribute - use directly
+                return selector[1:] in node_classes
             elif isinstance(node_classes, str):
                 node_classes = node_classes.split()
+                return selector[1:] in node_classes
             else:
-                node_classes = []
-            return selector[1:] in node_classes
+                return False
         
         # Element selector
         return selector.lower() == node.tag.lower()
@@ -186,6 +192,11 @@ class CSSParser:
             
         Returns:
             dict: Computed styles
+            
+        Note:
+            This method has O(M) complexity where M is the number of stylesheet rules.
+            For very large stylesheets, consider pre-sorting rules by specificity
+            or implementing selector indexing for better performance.
         """
         # Start with default styles
         styles = self.default_styles.copy()
