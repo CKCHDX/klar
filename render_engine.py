@@ -52,11 +52,18 @@ class RenderEngine:
         self.current_url = url
         self.dom_tree = self.html_parser.parse(html_content)
         
+        # Clear previous stylesheets
+        self.css_parser.clear_stylesheets()
+        
+        # Extract and apply inline <style> tags
+        if self.dom_tree:
+            self._extract_inline_styles()
+        
         # Extract and load external resources
         if self.dom_tree and url:
             self._load_external_resources()
         
-        # Compute styles for all nodes
+        # Compute styles for all nodes (after all stylesheets are loaded)
         if self.dom_tree:
             self.css_parser.compute_styles_recursive(self.dom_tree)
     
@@ -234,7 +241,8 @@ class RenderEngine:
             css_content = self.resource_loader.load_css(css_url, self.current_url)
             if css_content:
                 self.loaded_resources['css'].append(css_content)
-                # TODO: Parse and apply external CSS styles
+                # Parse and apply external CSS styles
+                self.css_parser.add_stylesheet(css_content)
         
         # Load JavaScript files (for completeness, not executed)
         for js_url in resources['scripts']:
@@ -247,6 +255,59 @@ class RenderEngine:
             video_meta = self.resource_loader.load_video_metadata(video_url, self.current_url)
             if video_meta:
                 self.loaded_resources['videos'][video_url] = video_meta
+    
+    def _extract_inline_styles(self):
+        """Extract and parse inline <style> tags from the DOM tree"""
+        if not self.dom_tree:
+            return
+        
+        self._extract_inline_styles_recursive(self.dom_tree)
+    
+    def _extract_inline_styles_recursive(self, node):
+        """
+        Recursively extract inline <style> tags
+        
+        Args:
+            node: DOM node to process
+        """
+        if not node:
+            return
+        
+        # Check if this is a <style> tag
+        if node.tag == 'style':
+            # Extract text content from style tag
+            css_content = self._get_text_content(node)
+            if css_content:
+                self.css_parser.add_stylesheet(css_content)
+        
+        # Process children
+        for child in node.children:
+            self._extract_inline_styles_recursive(child)
+    
+    def _get_text_content(self, node):
+        """
+        Get all text content from a node and its children
+        
+        Args:
+            node: DOM node
+            
+        Returns:
+            str: Combined text content
+        """
+        text_parts = []
+        
+        if node.tag == 'text' and node.text:
+            return node.text
+        
+        for child in node.children:
+            if child.tag == 'text' and child.text:
+                text_parts.append(child.text)
+            else:
+                child_text = self._get_text_content(child)
+                if child_text:
+                    text_parts.append(child_text)
+        
+        return ''.join(text_parts)
     
     def _render_image(self, node, context):
         """
