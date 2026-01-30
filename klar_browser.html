@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klar - Search Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0f172a;
+            --secondary: #020617;
+            --accent: #00e5ff;
+            --accent-warm: #ff6b35;
+            --accent-cold: #4f46e5;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e0;
+            --border: #475569;
+            --grid: rgba(79, 70, 229, 0.08);
+        }
+
+        body.light-mode {
+            --primary: #f8fafc;
+            --secondary: #fffbfe;
+            --accent: #0090d9;
+            --accent-warm: #ff4500;
+            --accent-cold: #5b4ba8;
+            --surface: #e2e8f0;
+            --surface-hover: #cbd5e0;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border: #cbd5e0;
+            --grid: rgba(79, 70, 229, 0.05);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: var(--primary);
+            background-image: 
+                linear-gradient(
+                    135deg,
+                    var(--grid) 1px,
+                    transparent 1px
+                ),
+                linear-gradient(
+                    45deg,
+                    var(--grid) 1px,
+                    transparent 1px
+                );
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            color: var(--text-primary);
+            font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-weight: 400;
+            line-height: 1.5;
+            letter-spacing: -0.5px;
+        }
+
+        /* Unique grid visualization */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(
+                    to right,
+                    transparent 0%,
+                    var(--grid) 50%,
+                    transparent 100%
+                ),
+                linear-gradient(
+                    to bottom,
+                    transparent 0%,
+                    var(--grid) 50%,
+                    transparent 100%
+                );
+            background-size: 1px 100%, 100% 1px;
+            background-attachment: fixed;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Animated particles in background */
+        .particle-field {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        /* Hero section */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            flex: 1;
+            padding: 40px 20px;
+            gap: 48px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Logo - Unique geometric design */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Unique compass/nord indicator */
+        .compass {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .compass-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 8s linear infinite;
+        }
+
+        .compass-needle {
+            position: absolute;
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(to top, var(--accent-warm), var(--accent));
+            left: 50%;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%);
+            border-radius: 2px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .compass-point {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-cold);
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%);
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .logo-text {
+            font-size: 52px;
+            font-weight: 700;
+            letter-spacing: -2px;
+            background: linear-gradient(
+                135deg,
+                var(--accent) 0%,
+                var(--accent-cold) 100%
+            );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            word-spacing: 0.2em;
+        }
+
+        /* Tagline */
+        .tagline {
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        /* Search container with unique design */
+        .search-container {
+            width: 100%;
+            max-width: 680px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Unique search input with side indicators */
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 2px;
+            padding: 18px 20px;
+            gap: 16px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-bar::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: linear-gradient(
+                to bottom,
+                var(--accent),
+                var(--accent-cold)
+            );
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .search-bar:focus-within::before {
+            transform: scaleY(1);
+        }
+
+        .search-bar:focus-within {
+            border-color: var(--accent);
+            background: var(--surface-hover);
+            box-shadow: 
+                inset 0 0 20px rgba(0, 229, 255, 0.05),
+                0 0 30px rgba(0, 229, 255, 0.1);
+        }
+
+        .search-icon {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-secondary);
+            stroke-width: 2;
+            flex-shrink: 0;
+            transition: stroke 0.3s ease;
+        }
+
+        .search-bar:focus-within .search-icon {
+            stroke: var(--accent);
+        }
+
+        .search-bar input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 17px;
+            outline: none;
+            font-weight: 400;
+            letter-spacing: -0.3px;
+        }
+
+        .search-bar input::placeholder {
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Search indicators - shows active searches */
+        .search-indicators {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-left: auto;
+            padding-left: 16px;
+            border-left: 1px solid var(--border);
+        }
+
+        .indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: var(--accent);
+            width: 8px;
+            height: 8px;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        /* Quick actions - unique layout */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .action-btn {
+            padding: 10px 16px;
+            background: transparent;
+            border: 1.5px solid var(--border);
+            border-radius: 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--accent);
+            opacity: 0.1;
+            transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+
+        .action-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .action-btn:hover::before {
+            left: 0;
+        }
+
+        /* Results area */
+        .results-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            padding: 40px 20px;
+            gap: 16px;
+            flex-direction: column;
+            background: var(--primary);
+            position: relative;
+            z-index: 2;
+        }
+
+        .results-container.active {
+            display: flex;
+        }
+
+        .results-container::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .results-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .results-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 0;
+            transition: background 0.2s ease;
+        }
+
+        .results-container::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        /* Results header */
+        .results-header {
+            max-width: 900px;
+            margin: 0 auto 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .results-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .results-meta {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Result cards - unique design */
+        .result-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 3px solid transparent;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(
+                to right,
+                var(--accent),
+                var(--accent-cold),
+                transparent
+            );
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .result-item:hover {
+            background: var(--surface-hover);
+            border-left-color: var(--accent);
+            box-shadow: 0 8px 32px rgba(0, 229, 255, 0.08);
+            transform: translateX(4px);
+        }
+
+        .result-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .result-domain {
+            font-size: 11px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .result-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            line-height: 1.4;
+            letter-spacing: -0.5px;
+        }
+
+        .result-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .result-footer {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            align-items: center;
+        }
+
+        .result-badge {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 2px;
+            font-weight: 600;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary);
+            border-top: 1px solid var(--border);
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            background-color: rgba(15, 23, 42, 0.8);
+        }
+
+        .footer-left {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Theme toggle - unique design */
+        .theme-toggle {
+            width: 44px;
+            height: 28px;
+            background: var(--surface);
+            border: 1.5px solid var(--border);
+            border-radius: 0;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 2px;
+        }
+
+        .theme-toggle::before {
+            content: '';
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(
+                135deg,
+                var(--accent),
+                var(--accent-cold)
+            );
+            border-radius: 1px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .theme-toggle.light {
+            border-color: var(--accent);
+            background: var(--accent);
+        }
+
+        .theme-toggle.light::before {
+            background: var(--primary);
+            transform: translateX(16px);
+        }
+
+        /* Icon buttons */
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: 1.5px solid var(--border);
+            border-radius: 0;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .icon-btn:hover {
+            background: var(--surface-hover);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Stats */
+        .stats {
+            font-size: 12px;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            min-width: 120px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo-text {
+                font-size: 40px;
+            }
+
+            .search-container {
+                max-width: 95%;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 12px;
+                padding: 16px 20px;
+            }
+
+            .footer-left,
+            .footer-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .result-item {
+                padding: 16px;
+            }
+
+            .result-title {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                gap: 32px;
+                padding: 20px 16px;
+            }
+
+            .logo-container {
+                gap: 12px;
+            }
+
+            .logo-icon {
+                width: 48px;
+                height: 48px;
+            }
+
+            .logo-text {
+                font-size: 36px;
+            }
+
+            .search-bar {
+                padding: 16px 16px;
+            }
+
+            .search-indicators {
+                display: none;
+            }
+
+            .quick-actions {
+                gap: 8px;
+            }
+
+            .action-btn {
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-item {
+            animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+        }
+
+        .result-item:nth-child(1) { animation-delay: 0.05s; }
+        .result-item:nth-child(2) { animation-delay: 0.1s; }
+        .result-item:nth-child(3) { animation-delay: 0.15s; }
+        .result-item:nth-child(n+4) { animation-delay: 0.2s; }
+
+        /* Selection */
+        ::selection {
+            background: var(--accent);
+            color: var(--primary);
+        }
+
+        /* Utility */
+        .hidden {
+            display: none !important;
+        }
+
+        body.light-mode .logo-icon {
+            filter: brightness(0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="particle-field" id="particleField"></div>
+
+    <div class="container">
+        <div class="hero">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <div class="compass">
+                        <div class="compass-ring"></div>
+                        <div class="compass-needle"></div>
+                        <div class="compass-point"></div>
+                    </div>
+                </div>
+                <div class="logo-text">KLAR</div>
+            </div>
+
+
+            <div class="search-container">
+                <div class="search-wrapper">
+                    <div class="search-bar">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            placeholder="Vad söker du?"
+                            autocomplete="off"
+                        >
+                        <div class="search-indicators">
+                            <div class="indicator"></div>
+                            <div class="indicator"></div>
+                            <div class="indicator"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <button class="action-btn" onclick="handleSearch()">Sök</button>
+                    <button class="action-btn" onclick="handleLucky()">Känslan Säger</button>
+                    <button class="action-btn" onclick="togglePrivacy()">Privat läge</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <div class="results-title">Sökresultat för "<span id="queryText"></span>"</div>
+                <div class="results-meta"><span id="resultCount">0</span> resultat</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-left">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Växla tema"></button>
+            <span class="stats" id="stats"></span>
+        </div>
+        <div class="footer-right">
+            <button class="icon-btn" title="Inställningar" onclick="showSettings()">⚙</button>
+            <button class="icon-btn" title="Om Klar" onclick="showAbout()">?</button>
+        </div>
+    </div>
+
+    <script>
+        // Particle field animation
+        function createParticles() {
+            const field = document.getElementById('particleField');
+            const particleCount = window.innerWidth > 1024 ? 30 : 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${3 + Math.random() * 5}s ease-in-out infinite`;
+                particle.style.animationDelay = Math.random() * 2 + 's';
+                field.appendChild(particle);
+            }
+        }
+
+        // Add float animation dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0%, 100% { opacity: 0; transform: translate(0, 0) scale(1); }
+                50% { opacity: 0.6; }
+                25% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px); }
+                75% { transform: translate(${Math.random() * 100 - 50}px, ${Math.random() * -100}px); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        createParticles();
+
+        // Initialize theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-mode');
+            document.getElementById('themeToggle').classList.add('light');
+        }
+
+        const searchInput = document.getElementById('searchInput');
+        const resultsContainer = document.getElementById('resultsContainer');
+
+        // Search handlers
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        function handleSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+
+            // Simulate search delay
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach(ind => ind.classList.add('active'));
+
+            setTimeout(() => {
+                const mockResults = [
+                    {
+                        domain: 'sverige.se',
+                        title: 'Sverige - Officiell webbplats för regeringen',
+                        description: 'Den primära informationskällan för statlig service och information om Sverige.'
+                    },
+                    {
+                        domain: 'naturvårdsverket.se',
+                        title: 'Naturvårdsverket - Miljö och Hållbarhet',
+                        description: 'Sveriges centrum för miljöfrågor och hållbar utveckling.'
+                    },
+                    {
+                        domain: 'github.com/CKCHDX',
+                        title: 'CKCHDX - Open Source Development',
+                        description: 'Nordic-focused development projects and cybersecurity research.',
+                        badge: 'Dev'
+                    }
+                ];
+
+                displayResults(mockResults, query);
+                indicators.forEach(ind => ind.classList.remove('active'));
+            }, 800);
+        }
+
+        function displayResults(results, query) {
+            document.getElementById('queryText').textContent = query;
+            document.getElementById('resultCount').textContent = results.length;
+            document.getElementById('stats').textContent = `${results.length} resultat hittades`;
+
+            const resultsDiv = document.getElementById('resultsContainer');
+            const headerDiv = resultsDiv.querySelector('.results-header');
+            
+            resultsDiv.innerHTML = '';
+            resultsDiv.appendChild(headerDiv);
+
+            results.forEach((result) => {
+                const resultEl = document.createElement('div');
+                resultEl.className = 'result-item';
+                resultEl.innerHTML = `
+                    <div class="result-domain">${result.domain}</div>
+                    <div class="result-title">${result.title}</div>
+                    <div class="result-description">${result.description}</div>
+                    <div class="result-footer">
+                        <span>https://${result.domain}</span>
+                        ${result.badge ? `<span class="result-badge">${result.badge}</span>` : ''}
+                    </div>
+                `;
+                resultEl.onclick = () => window.open('https://' + result.domain, '_blank');
+                resultsDiv.appendChild(resultEl);
+            });
+
+            resultsDiv.classList.add('active');
+        }
+
+        function handleLucky() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+            alert('Tar dig till det mest relevanta resultatet för: ' + query);
+        }
+
+        function togglePrivacy() {
+            const isPrivate = document.body.style.opacity === '0.95';
+            document.body.style.opacity = isPrivate ? '1' : '0.95';
+            document.body.style.filter = isPrivate ? 'none' : 'blur(1px)';
+        }
+
+        function toggleTheme() {
+            const isDark = document.body.classList.toggle('light-mode');
+            const toggle = document.getElementById('themeToggle');
+            
+            if (isDark) {
+                toggle.classList.add('light');
+                localStorage.setItem('theme', 'light');
+            } else {
+                toggle.classList.remove('light');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function showSettings() {
+            alert('Inställningar\n\n• Språk\n• Sökregion\n• Privacyinställningar\n• Tema\n\nKommer snart');
+        }
+
+        function showAbout() {
+            alert('KLAR - Nordic Search Engine\nVersion 1.0\n\nEn sökmotor byggd av nordiska användare för nordiska värden.\nPrivacy. Integritet. Transparens.');
+        }
+
+        // Clear results on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                resultsContainer.classList.remove('active');
+                searchInput.value = '';
+                searchInput.focus();
+            }
+        });
+
+        searchInput.focus();
+    </script>
+</body>
+</html>
