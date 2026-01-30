@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Klar Browser - Simple Web Browser for KSE Search Engine
-A lightweight browser client with integrated search functionality
+Modern redesign with enhanced visual design system
 """
 
 import sys
@@ -18,10 +18,11 @@ from PyQt6.QtWidgets import (
     QLineEdit, QPushButton, QTextBrowser, QLabel, QScrollArea,
     QFrame, QSplitter, QListWidget, QListWidgetItem, QMessageBox,
     QStatusBar, QToolBar, QMenu, QDialog, QTextEdit, QGroupBox,
-    QGridLayout
+    QGridLayout, QStackedWidget
 )
-from PyQt6.QtCore import Qt, QUrl, QTimer, pyqtSignal, QThread, QSize
-from PyQt6.QtGui import QIcon, QFont, QKeySequence, QAction, QTextOption
+from PyQt6.QtCore import Qt, QUrl, QTimer, pyqtSignal, QThread, QSize, QPropertyAnimation, QEasingCurve
+from PyQt6.QtGui import QIcon, QFont, QKeySequence, QAction, QTextOption, QColor
+from PyQt6.QtWidgets import QApplication
 
 # Setup logging
 logging.basicConfig(
@@ -67,7 +68,7 @@ class SearchWorker(QThread):
 
 
 class ResultCard(QFrame):
-    """Search result card widget"""
+    """Search result card widget with modern design"""
     
     clicked = pyqtSignal(str)
     
@@ -78,46 +79,49 @@ class ResultCard(QFrame):
         
         self.setStyleSheet("""
             ResultCard {
-                background-color: white;
-                border: 1px solid #e0e0e0;
-                border-radius: 8px;
-                padding: 12px;
-                margin: 4px;
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(45, 166, 178, 0.03) 100%);
+                border: 1px solid rgba(59, 130, 246, 0.15);
+                border-radius: 12px;
+                padding: 16px;
+                margin: 6px 0px;
             }
             ResultCard:hover {
-                background-color: #f5f5f5;
-                border-color: #1976d2;
+                background: linear-gradient(135deg, rgba(59, 130, 246, 0.12) 0%, rgba(45, 166, 178, 0.08) 100%);
+                border-color: rgba(59, 130, 246, 0.3);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
             }
         """)
         
-        self.setFrameShape(QFrame.Shape.StyledPanel)
-        self.setMaximumHeight(150)
+        self.setFrameShape(QFrame.Shape.NoFrame)
+        self.setMaximumHeight(160)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
         
         layout = QVBoxLayout(self)
-        layout.setSpacing(8)
+        layout.setSpacing(10)
         layout.setContentsMargins(12, 12, 12, 12)
         
         # Title
         title = QLabel(result.get('title', 'No Title'))
         title.setStyleSheet("""
             QLabel {
-                color: #1976d2;
-                font-size: 16pt;
-                font-weight: bold;
-                text-decoration: underline;
+                color: #3b82f6;
+                font-size: 16px;
+                font-weight: 600;
+                letter-spacing: -0.5px;
             }
         """)
         title.setWordWrap(True)
-        title.setMaximumHeight(60)
-        title.setCursor(Qt.CursorShape.PointingHandCursor)
+        title.setMaximumHeight(50)
         layout.addWidget(title)
         
         # URL
         url_label = QLabel(self.url)
         url_label.setStyleSheet("""
             QLabel {
-                color: #388e3c;
-                font-size: 10pt;
+                color: #32b8c6;
+                font-size: 11px;
+                font-weight: 500;
+                text-decoration: none;
             }
         """)
         url_label.setTextFormat(Qt.TextFormat.PlainText)
@@ -126,28 +130,40 @@ class ResultCard(QFrame):
         # Snippet
         snippet = result.get('snippet', result.get('text', ''))
         if snippet:
-            snippet_label = QLabel(snippet[:200] + ('...' if len(snippet) > 200 else ''))
+            snippet_label = QLabel(snippet[:220] + ('...' if len(snippet) > 220 else ''))
             snippet_label.setStyleSheet("""
                 QLabel {
-                    color: #424242;
-                    font-size: 11pt;
+                    color: #62748f;
+                    font-size: 12px;
+                    line-height: 1.5;
                 }
             """)
             snippet_label.setWordWrap(True)
             snippet_label.setTextFormat(Qt.TextFormat.PlainText)
             layout.addWidget(snippet_label)
         
-        # Score (if available)
+        # Score badge
         score = result.get('score', 0)
         if score:
-            score_label = QLabel(f"Relevance: {score:.2f}")
-            score_label.setStyleSheet("""
+            score_container = QWidget()
+            score_layout = QHBoxLayout(score_container)
+            score_layout.setContentsMargins(0, 0, 0, 0)
+            score_layout.setSpacing(0)
+            
+            score_badge = QLabel(f"Relevance: {score:.0%}")
+            score_badge.setStyleSheet("""
                 QLabel {
-                    color: #757575;
-                    font-size: 9pt;
+                    background: rgba(59, 130, 246, 0.2);
+                    color: #3b82f6;
+                    font-size: 10px;
+                    font-weight: 600;
+                    padding: 4px 8px;
+                    border-radius: 4px;
                 }
             """)
-            layout.addWidget(score_label)
+            score_layout.addWidget(score_badge)
+            score_layout.addStretch()
+            layout.addWidget(score_container)
     
     def mousePressEvent(self, event):
         """Handle click on result card"""
@@ -157,41 +173,52 @@ class ResultCard(QFrame):
 
 
 class SearchHistoryDialog(QDialog):
-    """Search history dialog"""
+    """Search history dialog with modern styling"""
     
     def __init__(self, history: List[str], parent=None):
         super().__init__(parent)
         self.setWindowTitle("Search History")
         self.setModal(True)
         self.resize(500, 400)
+        self.setStyleSheet(self._get_dialog_styles())
         
         layout = QVBoxLayout(self)
+        layout.setSpacing(16)
+        layout.setContentsMargins(24, 24, 24, 24)
         
         # Title
         title = QLabel("Recent Searches")
-        title.setStyleSheet("font-size: 14pt; font-weight: bold; padding: 10px;")
+        title_font = QFont("Segoe UI", 14, QFont.Weight.Bold)
+        title.setFont(title_font)
+        title.setStyleSheet("color: #3b82f6;")
         layout.addWidget(title)
         
         # History list
         self.history_list = QListWidget()
         self.history_list.setStyleSheet("""
             QListWidget {
-                border: 1px solid #e0e0e0;
-                border-radius: 4px;
-                padding: 4px;
-                font-size: 11pt;
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 8px;
+                padding: 6px;
+                font-size: 12px;
+                background: #f8fafc;
             }
             QListWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #f0f0f0;
+                padding: 10px;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+                color: #62748f;
             }
             QListWidget::item:hover {
-                background-color: #e3f2fd;
+                background-color: rgba(59, 130, 246, 0.08);
+            }
+            QListWidget::item:selected {
+                background-color: rgba(59, 130, 246, 0.15);
+                color: #3b82f6;
             }
         """)
         
         for query in history:
-            item = QListWidgetItem(query)
+            item = QListWidgetItem("🔍 " + query)
             self.history_list.addItem(item)
         
         layout.addWidget(self.history_list)
@@ -201,57 +228,162 @@ class SearchHistoryDialog(QDialog):
         button_layout.addStretch()
         
         clear_btn = QPushButton("Clear History")
+        clear_btn.setStyleSheet(self._get_secondary_button_style())
         clear_btn.clicked.connect(self.history_list.clear)
         button_layout.addWidget(clear_btn)
         
         close_btn = QPushButton("Close")
+        close_btn.setStyleSheet(self._get_primary_button_style())
         close_btn.clicked.connect(self.accept)
         button_layout.addWidget(close_btn)
         
         layout.addLayout(button_layout)
+    
+    @staticmethod
+    def _get_dialog_styles():
+        return """
+            QDialog {
+                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            }
+        """
+    
+    @staticmethod
+    def _get_primary_button_style():
+        return """
+            QPushButton {
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 16px;
+                font-weight: 600;
+                font-size: 11px;
+            }
+            QPushButton:hover {
+                background: #60a5fa;
+            }
+            QPushButton:pressed {
+                background: #2563eb;
+            }
+        """
+    
+    @staticmethod
+    def _get_secondary_button_style():
+        return """
+            QPushButton {
+                background: #e2e8f0;
+                color: #62748f;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 16px;
+                font-weight: 600;
+                font-size: 11px;
+            }
+            QPushButton:hover {
+                background: #cbd5e1;
+            }
+        """
 
 
 class SettingsDialog(QDialog):
-    """Settings dialog"""
+    """Settings dialog with modern design"""
     
     def __init__(self, current_url: str, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Browser Settings")
         self.setModal(True)
-        self.resize(450, 300)
+        self.resize(500, 350)
+        self.setStyleSheet("""
+            QDialog {
+                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            }
+        """)
         
         # Config file location
         self.config_file = Path.home() / '.kse' / 'klar_browser_config.json'
         
         layout = QVBoxLayout(self)
+        layout.setSpacing(18)
+        layout.setContentsMargins(24, 24, 24, 24)
         
         # Info label
         info_label = QLabel(
-            "Configure the KSE server connection.\n\n"
+            "🌐 Configure the KSE server connection.\n\n"
             "Examples:\n"
             "  • Local: http://localhost:5000\n"
             "  • Remote IP: http://192.168.1.100:5000\n"
             "  • Remote hostname: http://my-server.com:5000"
         )
         info_label.setWordWrap(True)
-        info_label.setStyleSheet("color: #666; padding: 10px; background-color: #f0f0f0; border-radius: 5px;")
+        info_label.setStyleSheet("""
+            QLabel {
+                background: rgba(59, 130, 246, 0.08);
+                color: #62748f;
+                padding: 12px;
+                border-radius: 6px;
+                border-left: 4px solid #3b82f6;
+            }
+        """)
         layout.addWidget(info_label)
         
         # Server settings
         server_group = QGroupBox("Server Configuration")
+        server_group.setStyleSheet("""
+            QGroupBox {
+                color: #3b82f6;
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 8px;
+                padding-top: 12px;
+                padding-left: 12px;
+                padding-right: 12px;
+                margin-top: 6px;
+                font-weight: 600;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 3px 0 3px;
+            }
+        """)
         server_layout = QGridLayout(server_group)
         
         server_layout.addWidget(QLabel("KSE Server URL:"), 0, 0)
         self.server_url_input = QLineEdit(current_url)
         self.server_url_input.setPlaceholderText("http://localhost:5000")
+        self.server_url_input.setStyleSheet("""
+            QLineEdit {
+                padding: 8px 12px;
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 6px;
+                background: white;
+                color: #3b82f6;
+            }
+            QLineEdit:focus {
+                border: 2px solid #3b82f6;
+                background: rgba(59, 130, 246, 0.02);
+            }
+        """)
         server_layout.addWidget(self.server_url_input, 0, 1)
         
         test_btn = QPushButton("Test Connection")
+        test_btn.setStyleSheet("""
+            QPushButton {
+                background: rgba(59, 130, 246, 0.2);
+                color: #3b82f6;
+                border: 1px solid rgba(59, 130, 246, 0.3);
+                border-radius: 6px;
+                padding: 6px 12px;
+                font-weight: 600;
+            }
+            QPushButton:hover {
+                background: rgba(59, 130, 246, 0.3);
+            }
+        """)
         test_btn.clicked.connect(self._test_connection)
         server_layout.addWidget(test_btn, 1, 1)
         
         self.connection_status = QLabel("Not tested")
-        self.connection_status.setStyleSheet("color: #757575; padding: 5px;")
+        self.connection_status.setStyleSheet("color: #62748f; padding: 5px;")
         server_layout.addWidget(self.connection_status, 2, 0, 1, 2)
         
         layout.addWidget(server_group)
@@ -263,10 +395,36 @@ class SettingsDialog(QDialog):
         button_layout.addStretch()
         
         save_btn = QPushButton("Save")
+        save_btn.setStyleSheet("""
+            QPushButton {
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 20px;
+                font-weight: 600;
+            }
+            QPushButton:hover {
+                background: #60a5fa;
+            }
+        """)
         save_btn.clicked.connect(self.accept)
         button_layout.addWidget(save_btn)
         
         cancel_btn = QPushButton("Cancel")
+        cancel_btn.setStyleSheet("""
+            QPushButton {
+                background: #e2e8f0;
+                color: #62748f;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 20px;
+                font-weight: 600;
+            }
+            QPushButton:hover {
+                background: #cbd5e1;
+            }
+        """)
         cancel_btn.clicked.connect(self.reject)
         button_layout.addWidget(cancel_btn)
         
@@ -282,31 +440,15 @@ class SettingsDialog(QDialog):
             with open(self.config_file, 'w') as f:
                 json.dump(config, f, indent=2)
             logger.info("Configuration saved successfully")
-        except PermissionError:
-            error_msg = f"Permission denied: Cannot write to {self.config_file}"
-            logger.error(error_msg)
-            from PyQt6.QtWidgets import QMessageBox
-            QMessageBox.warning(
-                self, 
-                "Save Failed", 
-                f"Could not save configuration:\n{error_msg}\n\n"
-                "Please check file permissions."
-            )
         except Exception as e:
             error_msg = f"Failed to save config: {e}"
             logger.error(error_msg)
-            from PyQt6.QtWidgets import QMessageBox
-            QMessageBox.warning(
-                self, 
-                "Save Failed", 
-                f"Could not save configuration:\n{error_msg}"
-            )
+            QMessageBox.warning(self, "Save Failed", f"Could not save configuration:\n{error_msg}")
     
     def _test_connection(self):
         """Test connection to server"""
         url = self.server_url_input.text().strip()
         
-        # Basic URL validation
         if not url:
             self.connection_status.setText("✗ Please enter a server URL")
             self.connection_status.setStyleSheet("color: #f44336; padding: 5px;")
@@ -340,7 +482,7 @@ class SettingsDialog(QDialog):
 
 
 class KlarBrowser(QMainWindow):
-    """Main Klar Browser window"""
+    """Main Klar Browser window with modern design"""
     
     def __init__(self):
         super().__init__()
@@ -355,32 +497,29 @@ class KlarBrowser(QMainWindow):
         self.search_worker = None
         
         # Setup window
-        self.setWindowTitle("Klar Browser - KSE Search Client")
-        self.setGeometry(100, 100, 1200, 800)
+        self.setWindowTitle("Klar Browser - KSE Search")
+        self.setGeometry(100, 100, 1300, 850)
         
         # Setup UI
         self._create_menu_bar()
-        self._create_toolbar()
         self._create_central_widget()
-        self._create_status_bar()
-        
-        # Apply styling
         self._apply_styles()
         
         # Show welcome message
         self._show_welcome()
         
+        # Check server
+        QTimer.singleShot(500, self._check_server_connection)
+        
         logger.info(f"Klar Browser initialized with server: {self.server_url}")
     
     def load_config(self) -> str:
         """Load server URL from config file"""
-        # Priority 1: Environment variable (highest priority)
         env_url = os.getenv("KSE_SERVER_URL")
         if env_url:
             logger.info(f"Using server URL from environment: {env_url}")
             return env_url
         
-        # Priority 2: Config file
         try:
             if self.config_file.exists():
                 with open(self.config_file, 'r') as f:
@@ -389,12 +528,9 @@ class KlarBrowser(QMainWindow):
                     if url:
                         logger.info(f"Loaded server URL from config: {url}")
                         return url
-        except json.JSONDecodeError as e:
-            logger.warning(f"Config file corrupted, using defaults: {e}")
-        except Exception as e:
-            logger.error(f"Failed to load config: {e}")
+        except:
+            logger.warning("Config file error, using defaults")
         
-        # Priority 3: Default
         default_url = "http://localhost:5000"
         logger.info(f"Using default server URL: {default_url}")
         return default_url
@@ -402,6 +538,24 @@ class KlarBrowser(QMainWindow):
     def _create_menu_bar(self):
         """Create menu bar"""
         menubar = self.menuBar()
+        menubar.setStyleSheet("""
+            QMenuBar {
+                background: white;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+                color: #62748f;
+            }
+            QMenuBar::item:selected {
+                background: rgba(59, 130, 246, 0.08);
+            }
+            QMenu {
+                background: white;
+                border: 1px solid rgba(59, 130, 246, 0.15);
+                border-radius: 6px;
+            }
+            QMenu::item:selected {
+                background: rgba(59, 130, 246, 0.12);
+            }
+        """)
         
         # File menu
         file_menu = menubar.addMenu("&File")
@@ -432,25 +586,99 @@ class KlarBrowser(QMainWindow):
         settings_action.setShortcut(QKeySequence("Ctrl+,"))
         settings_action.triggered.connect(self._show_settings)
         tools_menu.addAction(settings_action)
-        
-        tools_menu.addSeparator()
-        
-        clear_action = QAction("&Clear Results", self)
-        clear_action.triggered.connect(self._clear_results)
-        tools_menu.addAction(clear_action)
-        
-        # Help menu
-        help_menu = menubar.addMenu("&Help")
-        
-        about_action = QAction("&About", self)
-        about_action.triggered.connect(self._show_about)
-        help_menu.addAction(about_action)
     
-    def _create_toolbar(self):
-        """Create toolbar"""
-        toolbar = QToolBar("Main Toolbar")
-        toolbar.setMovable(False)
-        toolbar.setIconSize(QSize(24, 24))
+    def _create_central_widget(self):
+        """Create central widget with modern design"""
+        central = QWidget()
+        self.setCentralWidget(central)
+        
+        layout = QVBoxLayout(central)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        
+        # Top bar with search
+        top_bar = self._create_top_bar()
+        layout.addWidget(top_bar)
+        
+        # Results area
+        self.stacked_widget = QStackedWidget()
+        
+        # Welcome page
+        self.welcome_page = QWidget()
+        welcome_layout = QVBoxLayout(self.welcome_page)
+        welcome_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.welcome_widget = None
+        self.stacked_widget.addWidget(self.welcome_page)
+        
+        # Results page
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setStyleSheet("""
+            QScrollArea {
+                border: none;
+                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            }
+            QScrollBar:vertical {
+                border: none;
+                background: transparent;
+                width: 8px;
+            }
+            QScrollBar::handle:vertical {
+                background: rgba(59, 130, 246, 0.4);
+                border-radius: 4px;
+            }
+            QScrollBar::handle:vertical:hover {
+                background: rgba(59, 130, 246, 0.6);
+            }
+        """)
+        
+        self.results_widget = QWidget()
+        self.results_layout = QVBoxLayout(self.results_widget)
+        self.results_layout.setSpacing(8)
+        self.results_layout.setContentsMargins(24, 24, 24, 24)
+        self.results_layout.addStretch()
+        
+        scroll.setWidget(self.results_widget)
+        self.stacked_widget.addWidget(scroll)
+        
+        layout.addWidget(self.stacked_widget)
+        
+        # Status bar
+        self.status_bar = QStatusBar()
+        self.status_bar.setStyleSheet("""
+            QStatusBar {
+                background: white;
+                border-top: 1px solid rgba(59, 130, 246, 0.1);
+                color: #62748f;
+            }
+        """)
+        
+        self.connection_label = QLabel("⚫ Disconnected")
+        self.connection_label.setStyleSheet("color: #f44336; padding: 4px 8px;")
+        self.status_bar.addPermanentWidget(self.connection_label)
+        
+        self.setStatusBar(self.status_bar)
+    
+    def _create_top_bar(self):
+        """Create top search bar with modern design"""
+        top_bar = QWidget()
+        top_bar.setStyleSheet("""
+            QWidget {
+                background: linear-gradient(135deg, white 0%, #f8fafc 100%);
+                border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            }
+        """)
+        
+        layout = QHBoxLayout(top_bar)
+        layout.setContentsMargins(24, 12, 24, 12)
+        layout.setSpacing(12)
+        
+        # Logo
+        logo = QLabel("🔍 Klar")
+        logo_font = QFont("Segoe UI", 14, QFont.Weight.Bold)
+        logo.setFont(logo_font)
+        logo.setStyleSheet("color: #3b82f6;")
+        layout.addWidget(logo, 0, Qt.AlignmentFlag.AlignLeft)
         
         # Search input
         self.search_input = QLineEdit()
@@ -458,177 +686,136 @@ class KlarBrowser(QMainWindow):
         self.search_input.setMinimumWidth(400)
         self.search_input.setStyleSheet("""
             QLineEdit {
-                padding: 8px 12px;
-                border: 2px solid #e0e0e0;
-                border-radius: 24px;
-                font-size: 12pt;
-                background-color: white;
+                padding: 10px 14px;
+                border: 2px solid rgba(59, 130, 246, 0.2);
+                border-radius: 8px;
+                font-size: 12px;
+                background: white;
+                color: #3b82f6;
+                selection-background-color: rgba(59, 130, 246, 0.3);
             }
             QLineEdit:focus {
-                border-color: #1976d2;
+                border: 2px solid #3b82f6;
+                background: rgba(59, 130, 246, 0.01);
+            }
+            QLineEdit::placeholder {
+                color: #94a3b8;
             }
         """)
         self.search_input.returnPressed.connect(self._perform_search)
-        toolbar.addWidget(self.search_input)
+        layout.addWidget(self.search_input, 1)
         
         # Search button
-        search_btn = QPushButton("🔍 Search")
+        search_btn = QPushButton("Search")
+        search_btn.setFixedWidth(100)
         search_btn.setStyleSheet("""
             QPushButton {
-                background-color: #1976d2;
+                background: #3b82f6;
                 color: white;
                 border: none;
-                border-radius: 4px;
-                padding: 8px 16px;
-                font-size: 11pt;
-                font-weight: bold;
+                border-radius: 8px;
+                padding: 10px 16px;
+                font-weight: 600;
+                font-size: 12px;
             }
             QPushButton:hover {
-                background-color: #1565c0;
+                background: #60a5fa;
             }
             QPushButton:pressed {
-                background-color: #0d47a1;
+                background: #2563eb;
             }
         """)
         search_btn.clicked.connect(self._perform_search)
-        toolbar.addWidget(search_btn)
-        
-        toolbar.addSeparator()
-        
-        # Clear button
-        clear_btn = QPushButton("✕ Clear")
-        clear_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #757575;
-                color: white;
-                border: none;
-                border-radius: 4px;
-                padding: 8px 16px;
-                font-size: 11pt;
-            }
-            QPushButton:hover {
-                background-color: #616161;
-            }
-        """)
-        clear_btn.clicked.connect(self._clear_results)
-        toolbar.addWidget(clear_btn)
-        
-        toolbar.addSeparator()
+        layout.addWidget(search_btn)
         
         # Settings button
-        settings_btn = QPushButton("⚙ Settings")
+        settings_btn = QPushButton("⚙")
+        settings_btn.setFixedSize(40, 40)
+        settings_btn.setStyleSheet("""
+            QPushButton {
+                background: rgba(59, 130, 246, 0.1);
+                color: #3b82f6;
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 6px;
+                font-size: 16px;
+            }
+            QPushButton:hover {
+                background: rgba(59, 130, 246, 0.2);
+            }
+        """)
         settings_btn.clicked.connect(self._show_settings)
-        toolbar.addWidget(settings_btn)
+        layout.addWidget(settings_btn, 0, Qt.AlignmentFlag.AlignRight)
         
-        self.addToolBar(toolbar)
-    
-    def _create_central_widget(self):
-        """Create central widget with results area"""
-        central = QWidget()
-        self.setCentralWidget(central)
-        
-        layout = QVBoxLayout(central)
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(12)
-        
-        # Results header
-        header_layout = QHBoxLayout()
-        
-        self.results_label = QLabel("Enter a search query to begin")
-        self.results_label.setStyleSheet("""
-            QLabel {
-                color: #424242;
-                font-size: 12pt;
-                padding: 8px;
-            }
-        """)
-        header_layout.addWidget(self.results_label)
-        
-        header_layout.addStretch()
-        
-        # Search time label
-        self.search_time_label = QLabel("")
-        self.search_time_label.setStyleSheet("""
-            QLabel {
-                color: #757575;
-                font-size: 10pt;
-                padding: 8px;
-            }
-        """)
-        header_layout.addWidget(self.search_time_label)
-        
-        layout.addLayout(header_layout)
-        
-        # Results scroll area
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("""
-            QScrollArea {
-                border: none;
-                background-color: #fafafa;
-            }
-        """)
-        
-        self.results_widget = QWidget()
-        self.results_layout = QVBoxLayout(self.results_widget)
-        self.results_layout.setSpacing(8)
-        self.results_layout.setContentsMargins(8, 8, 8, 8)
-        self.results_layout.addStretch()
-        
-        scroll.setWidget(self.results_widget)
-        layout.addWidget(scroll)
-    
-    def _create_status_bar(self):
-        """Create status bar"""
-        self.status_bar = QStatusBar()
-        self.setStatusBar(self.status_bar)
-        
-        # Connection status
-        self.connection_label = QLabel("⚫ Disconnected")
-        self.connection_label.setStyleSheet("color: #f44336; padding: 4px;")
-        self.status_bar.addPermanentWidget(self.connection_label)
-        
-        # Check server on startup
-        QTimer.singleShot(500, self._check_server_connection)
+        return top_bar
     
     def _apply_styles(self):
         """Apply global styles"""
         self.setStyleSheet("""
             QMainWindow {
-                background-color: #fafafa;
-            }
-            QMenuBar {
-                background-color: white;
-                border-bottom: 1px solid #e0e0e0;
-            }
-            QToolBar {
-                background-color: white;
-                border-bottom: 1px solid #e0e0e0;
-                padding: 8px;
-                spacing: 8px;
-            }
-            QStatusBar {
-                background-color: white;
-                border-top: 1px solid #e0e0e0;
+                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
             }
         """)
     
     def _show_welcome(self):
         """Show welcome message"""
-        welcome = QLabel("""
-            <div style='text-align: center; padding: 40px;'>
-                <h1 style='color: #1976d2; font-size: 32pt;'>Welcome to Klar Browser</h1>
-                <p style='color: #424242; font-size: 14pt; margin-top: 20px;'>
-                    Your gateway to the KSE Search Engine
-                </p>
-                <p style='color: #757575; font-size: 12pt; margin-top: 30px;'>
-                    Enter a search query above to get started
-                </p>
-            </div>
-        """)
-        welcome.setTextFormat(Qt.TextFormat.RichText)
-        welcome.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.results_layout.insertWidget(0, welcome)
+        welcome = QWidget()
+        welcome_layout = QVBoxLayout(welcome)
+        welcome_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        welcome_layout.setSpacing(24)
+        
+        # Logo/Title
+        title = QLabel("Klar Browser")
+        title_font = QFont("Segoe UI", 48, QFont.Weight.Bold)
+        title.setFont(title_font)
+        title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setStyleSheet("color: #3b82f6; margin-bottom: 12px;")
+        welcome_layout.addWidget(title)
+        
+        # Subtitle
+        subtitle = QLabel("Your gateway to the KSE Search Engine")
+        subtitle_font = QFont("Segoe UI", 16)
+        subtitle.setFont(subtitle_font)
+        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle.setStyleSheet("color: #62748f;")
+        welcome_layout.addWidget(subtitle)
+        
+        welcome_layout.addSpacing(40)
+        
+        # Features
+        features_widget = QWidget()
+        features_layout = QHBoxLayout(features_widget)
+        features_layout.setSpacing(20)
+        features = [
+            ("🚀", "Fast & Efficient"),
+            ("🔒", "Privacy Focused"),
+            ("🎯", "Accurate Results"),
+        ]
+        
+        for icon, text in features:
+            feature = QLabel(f"{icon}\n{text}")
+            feature.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            feature.setStyleSheet("""
+                QLabel {
+                    background: rgba(59, 130, 246, 0.08);
+                    border-radius: 8px;
+                    padding: 20px;
+                    font-weight: 600;
+                    color: #3b82f6;
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                }
+            """)
+            features_layout.addWidget(feature)
+        
+        welcome_layout.addWidget(features_widget)
+        
+        welcome_layout.addStretch()
+        
+        # Replace welcome page widget
+        while self.welcome_page.layout().count():
+            self.welcome_page.layout().takeAt(0).widget().deleteLater()
+        self.welcome_page.layout().addWidget(welcome)
+        
+        self.stacked_widget.setCurrentIndex(0)
     
     def _focus_search(self):
         """Focus on search input"""
@@ -650,22 +837,22 @@ class KlarBrowser(QMainWindow):
                 self.search_history.pop()
         
         # Clear previous results
-        self._clear_results(keep_header=True)
+        self._clear_results()
         
-        # Show loading message
+        # Show loading
         loading = QLabel("🔍 Searching...")
         loading.setStyleSheet("""
             QLabel {
-                color: #1976d2;
-                font-size: 16pt;
-                font-weight: bold;
+                color: #3b82f6;
+                font-size: 16px;
+                font-weight: 600;
                 padding: 40px;
             }
         """)
         loading.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.results_layout.insertWidget(0, loading)
         
-        self.results_label.setText(f"Searching for: {query}")
+        self.stacked_widget.setCurrentIndex(1)
         self.status_bar.showMessage(f"Searching for: {query}")
         
         # Start search worker
@@ -678,8 +865,7 @@ class KlarBrowser(QMainWindow):
     
     def _on_search_completed(self, data: Dict[str, Any]):
         """Handle search completion"""
-        # Clear loading message
-        self._clear_results(keep_header=True)
+        self._clear_results()
         
         results = data.get('results', [])
         query = data.get('query', '')
@@ -688,57 +874,57 @@ class KlarBrowser(QMainWindow):
         
         self.current_results = results
         
-        # Update header
-        self.results_label.setText(f"Found {total} result(s) for: {query}")
-        self.search_time_label.setText(f"Search time: {search_time:.3f}s")
+        # Add header
+        header = QLabel(f"<b>{total} result(s)</b> for <b>{query}</b> · {search_time:.3f}s")
+        header.setStyleSheet("""
+            QLabel {
+                color: #3b82f6;
+                font-size: 13px;
+                padding: 12px 0px;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+                margin-bottom: 8px;
+            }
+        """)
+        self.results_layout.insertWidget(0, header)
         
         if total == 0:
-            # No results
-            no_results = QLabel("""
-                <div style='text-align: center; padding: 40px;'>
-                    <p style='color: #757575; font-size: 18pt;'>
-                        No results found
-                    </p>
-                    <p style='color: #9e9e9e; font-size: 12pt; margin-top: 20px;'>
-                        Try different keywords or check your spelling
-                    </p>
-                </div>
+            no_results = QLabel("No results found. Try different keywords.")
+            no_results.setStyleSheet("""
+                QLabel {
+                    color: #94a3b8;
+                    font-size: 14px;
+                    padding: 40px;
+                    text-align: center;
+                }
             """)
-            no_results.setTextFormat(Qt.TextFormat.RichText)
             no_results.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.results_layout.insertWidget(0, no_results)
+            self.results_layout.insertWidget(1, no_results)
         else:
-            # Display results
             for i, result in enumerate(results):
                 card = ResultCard(result)
                 card.clicked.connect(self._on_result_clicked)
-                self.results_layout.insertWidget(i, card)
+                self.results_layout.insertWidget(i + 1, card)
         
-        self.status_bar.showMessage(f"Search completed: {total} result(s) found", 5000)
+        self.status_bar.showMessage(f"Found {total} result(s)", 3000)
         logger.info(f"Search completed: {total} results")
     
     def _on_search_error(self, error: str):
         """Handle search error"""
-        self._clear_results(keep_header=True)
+        self._clear_results()
         
-        error_label = QLabel(f"""
-            <div style='text-align: center; padding: 40px;'>
-                <p style='color: #f44336; font-size: 16pt; font-weight: bold;'>
-                    Search Error
-                </p>
-                <p style='color: #757575; font-size: 12pt; margin-top: 20px;'>
-                    {error}
-                </p>
-            </div>
+        error_label = QLabel(f"<b>Search Error</b><br>{error}")
+        error_label.setStyleSheet("""
+            QLabel {
+                color: #f44336;
+                font-size: 14px;
+                padding: 40px;
+                text-align: center;
+            }
         """)
-        error_label.setTextFormat(Qt.TextFormat.RichText)
         error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.results_layout.insertWidget(0, error_label)
         
-        self.results_label.setText("Search failed")
         self.status_bar.showMessage(f"Error: {error}", 5000)
-        
-        QMessageBox.warning(self, "Search Error", error)
         logger.error(f"Search error: {error}")
     
     def _on_result_clicked(self, url: str):
@@ -746,19 +932,25 @@ class KlarBrowser(QMainWindow):
         logger.info(f"Result clicked: {url}")
         self.status_bar.showMessage(f"Opening: {url}", 3000)
         
-        # Show result details dialog
         dialog = QDialog(self)
         dialog.setWindowTitle("Result Details")
         dialog.resize(700, 500)
+        dialog.setStyleSheet("""
+            QDialog {
+                background: white;
+            }
+        """)
         
         layout = QVBoxLayout(dialog)
+        layout.setSpacing(12)
+        layout.setContentsMargins(16, 16, 16, 16)
         
         # URL
-        url_label = QLabel(f"<b>URL:</b> <a href='{url}'>{url}</a>")
+        url_label = QLabel(f"<b>URL:</b> <a href='{url}' style='color: #3b82f6;'>{url}</a>")
         url_label.setTextFormat(Qt.TextFormat.RichText)
         url_label.setOpenExternalLinks(True)
         url_label.setWordWrap(True)
-        url_label.setStyleSheet("padding: 10px; font-size: 11pt;")
+        url_label.setStyleSheet("padding: 8px; font-size: 11px;")
         layout.addWidget(url_label)
         
         # Find full result
@@ -766,51 +958,63 @@ class KlarBrowser(QMainWindow):
         
         # Content
         content_label = QLabel("<b>Content:</b>")
-        content_label.setStyleSheet("padding: 10px; font-size: 11pt;")
+        content_label.setStyleSheet("padding: 8px; font-size: 11px; color: #3b82f6;")
         layout.addWidget(content_label)
         
         content_text = QTextEdit()
         content_text.setReadOnly(True)
         content_text.setPlainText(result.get('text', 'No content available'))
-        content_text.setStyleSheet("border: 1px solid #e0e0e0; border-radius: 4px; padding: 8px;")
+        content_text.setStyleSheet("""
+            QTextEdit {
+                border: 1px solid rgba(59, 130, 246, 0.2);
+                border-radius: 6px;
+                padding: 8px;
+                background: #f8fafc;
+            }
+        """)
         layout.addWidget(content_text)
         
         # Close button
         close_btn = QPushButton("Close")
+        close_btn.setStyleSheet("""
+            QPushButton {
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                padding: 8px 16px;
+                font-weight: 600;
+            }
+            QPushButton:hover {
+                background: #60a5fa;
+            }
+        """)
         close_btn.clicked.connect(dialog.accept)
         layout.addWidget(close_btn)
         
         dialog.exec()
     
-    def _clear_results(self, keep_header: bool = False):
+    def _clear_results(self):
         """Clear search results"""
-        # Remove all widgets from results layout
-        while self.results_layout.count() > (0 if not keep_header else 0):
+        while self.results_layout.count() > 1:
             item = self.results_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
-        
-        if not keep_header:
-            self.results_label.setText("Enter a search query to begin")
-            self.search_time_label.setText("")
-            self.current_results = []
+        self.current_results = []
     
     def _show_history(self):
         """Show search history"""
         if not self.search_history:
-            QMessageBox.information(
-                self,
-                "Search History",
-                "No search history available"
-            )
+            QMessageBox.information(self, "Search History", "No search history available")
             return
         
         dialog = SearchHistoryDialog(self.search_history, self)
         if dialog.exec():
-            # User can select a query from history
             selected = dialog.history_list.currentItem()
             if selected:
-                self.search_input.setText(selected.text())
+                query = selected.text().replace("🔍 ", "")
+                self.search_input.setText(query)
+                self._perform_search()
     
     def _show_settings(self):
         """Show settings dialog"""
@@ -828,39 +1032,15 @@ class KlarBrowser(QMainWindow):
             response = requests.get(f"{self.server_url}/api/health", timeout=3)
             if response.status_code == 200:
                 self.connection_label.setText("🟢 Connected")
-                self.connection_label.setStyleSheet("color: #4caf50; padding: 4px;")
+                self.connection_label.setStyleSheet("color: #4caf50; padding: 4px 8px; font-weight: 600;")
                 logger.info("Server connection successful")
             else:
                 self.connection_label.setText("🔴 Server Error")
-                self.connection_label.setStyleSheet("color: #f44336; padding: 4px;")
+                self.connection_label.setStyleSheet("color: #f44336; padding: 4px 8px;")
         except:
             self.connection_label.setText("⚫ Disconnected")
-            self.connection_label.setStyleSheet("color: #f44336; padding: 4px;")
+            self.connection_label.setStyleSheet("color: #f44336; padding: 4px 8px;")
             logger.warning("Server connection failed")
-    
-    def _show_about(self):
-        """Show about dialog"""
-        about_text = """
-        <h2>Klar Browser</h2>
-        <p><b>Version:</b> 1.0.0</p>
-        <p><b>Description:</b> A lightweight browser client for the KSE Search Engine</p>
-        <hr>
-        <p>Klar Browser provides a simple and intuitive interface for searching</p>
-        <p>and browsing content indexed by the Klar Search Engine (KSE).</p>
-        <hr>
-        <p><b>Features:</b></p>
-        <ul>
-            <li>Fast and efficient search</li>
-            <li>Clean and modern interface</li>
-            <li>Search history tracking</li>
-            <li>Configurable server connection</li>
-            <li>Real-time result display</li>
-        </ul>
-        <hr>
-        <p>© 2024 Klar Search Engine Project</p>
-        """
-        
-        QMessageBox.about(self, "About Klar Browser", about_text)
 
 
 def main():
@@ -868,15 +1048,11 @@ def main():
     app = QApplication(sys.argv)
     app.setApplicationName("Klar Browser")
     app.setOrganizationName("KSE Project")
-    
-    # Set application style
     app.setStyle('Fusion')
     
-    # Create and show browser
     browser = KlarBrowser()
     browser.show()
     
-    # Run application
     sys.exit(app.exec())
 
 
