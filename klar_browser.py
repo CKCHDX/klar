@@ -8,13 +8,11 @@ import sys
 import logging
 import requests
 import json
-import os
-from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from urllib.parse import urlparse
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QMessageBox
-from PyQt6.QtCore import Qt, QUrl, pyqtSignal, QThread, pyqtSlot, QObject
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtCore import QUrl, pyqtSignal, pyqtSlot, QObject
 from PyQt6.QtWebEngineWidgets import QWebEngineView
 from PyQt6.QtWebChannel import QWebChannel
 
@@ -64,14 +62,20 @@ class KlarBridge(QObject):
             # Emit results as JSON string
             self.search_completed.emit(json.dumps(data))
             
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError as e:
+            logger.error(f"Connection error: {e}")
             self.search_error.emit("Unable to connect to KSE server. Please ensure the server is running.")
-        except requests.exceptions.Timeout:
+        except requests.exceptions.Timeout as e:
+            logger.error(f"Timeout error: {e}")
             self.search_error.emit("Search request timed out. Please try again.")
         except requests.exceptions.RequestException as e:
+            logger.error(f"Request error: {e}")
             self.search_error.emit(f"Search error: {str(e)}")
+        except json.JSONDecodeError as e:
+            logger.error(f"JSON decode error: {e}")
+            self.search_error.emit("Invalid response from server.")
         except Exception as e:
-            logger.error(f"Unexpected error during search: {e}")
+            logger.error(f"Unexpected error during search: {e}", exc_info=True)
             self.search_error.emit(f"Unexpected error: {str(e)}")
     
     @pyqtSlot(result=str)
@@ -82,7 +86,29 @@ class KlarBridge(QObject):
     @pyqtSlot(str)
     def setServerUrl(self, url: str):
         """Set server URL and save to config"""
-        self.server_url = url.strip()
+        url = url.strip()
+        
+        # Validate URL format
+        if not url:
+            logger.warning("Empty URL provided")
+            return
+        
+        # Check for protocol
+        if not (url.startswith('http://') or url.startswith('https://')):
+            logger.warning(f"Invalid URL format (missing protocol): {url}")
+            return
+        
+        # Validate URL structure
+        try:
+            parsed = urlparse(url)
+            if not parsed.netloc:
+                logger.warning(f"Invalid URL format (no hostname): {url}")
+                return
+        except Exception as e:
+            logger.warning(f"Invalid URL format: {e}")
+            return
+        
+        self.server_url = url
         try:
             self.config_file.parent.mkdir(parents=True, exist_ok=True)
             config = {'server_url': self.server_url}
@@ -101,8 +127,12 @@ class KlarBridge(QObject):
                 return json.dumps({"status": "connected", "url": self.server_url})
             else:
                 return json.dumps({"status": "error", "url": self.server_url})
-        except:
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Health check failed: {e}")
             return json.dumps({"status": "disconnected", "url": self.server_url})
+        except Exception as e:
+            logger.error(f"Unexpected error during health check: {e}")
+            return json.dumps({"status": "error", "url": self.server_url})
 
 
 class KlarBrowser(QMainWindow):
@@ -169,9 +199,54 @@ class KlarBrowser(QMainWindow):
     <script>
         var bridge = null;
         
+        // Helper function to show notifications instead of alert
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px 24px;
+                background: ${type === 'error' ? 'var(--accent-warm)' : 'var(--accent)'};
+                color: var(--primary);
+                border-radius: 4px;
+                font-weight: 600;
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                max-width: 400px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+        }
+        
+        // Add notification animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
         // Initialize QWebChannel
         new QWebChannel(qt.webChannelTransport, function(channel) {
             bridge = channel.objects.bridge;
+            
+            // Verify bridge is connected
+            if (!bridge) {
+                console.error('Bridge object not found');
+                return;
+            }
             
             // Connect search result handler
             bridge.search_completed.connect(function(jsonResults) {
@@ -180,6 +255,7 @@ class KlarBrowser(QMainWindow):
                     handleSearchResults(data);
                 } catch(e) {
                     console.error('Error parsing search results:', e);
+                    showNotification('Failed to parse search results', 'error');
                 }
             });
             
@@ -191,28 +267,47 @@ class KlarBrowser(QMainWindow):
             console.log('Bridge connected successfully');
         });
         
-        // Override handleSearch to use bridge
-        const originalHandleSearch = handleSearch;
-        handleSearch = function() {
-            const query = searchInput.value.trim();
-            if (!query || !bridge) return;
-            
-            // Show loading indicators
-            const indicators = document.querySelectorAll('.indicator');
-            indicators.forEach(ind => ind.classList.add('active'));
-            
-            // Call Python backend
-            bridge.performSearch(query);
-        };
+        // Override handleSearch to use bridge (with validation)
+        if (typeof handleSearch === 'function') {
+            const originalHandleSearch = handleSearch;
+            handleSearch = function() {
+                const query = searchInput ? searchInput.value.trim() : '';
+                if (!query) {
+                    showNotification('Please enter a search query', 'error');
+                    return;
+                }
+                
+                if (!bridge) {
+                    showNotification('Connection not ready. Please wait...', 'error');
+                    return;
+                }
+                
+                // Show loading indicators
+                const indicators = document.querySelectorAll('.indicator');
+                indicators.forEach(ind => ind.classList.add('active'));
+                
+                // Call Python backend
+                bridge.performSearch(query);
+            };
+        } else {
+            console.error('handleSearch function not found in HTML');
+        }
         
         // Handle search results from Python
         function handleSearchResults(data) {
             const results = data.results || [];
-            const query = searchInput.value.trim();
+            const query = searchInput ? searchInput.value.trim() : '';
             
             // Clear loading indicators
             const indicators = document.querySelectorAll('.indicator');
             indicators.forEach(ind => ind.classList.remove('active'));
+            
+            // Verify displayResults function exists
+            if (typeof displayResults !== 'function') {
+                console.error('displayResults function not found in HTML');
+                showNotification('UI function missing. Please reload.', 'error');
+                return;
+            }
             
             // Convert to format expected by displayResults
             const formattedResults = results.map(result => ({
@@ -232,7 +327,7 @@ class KlarBrowser(QMainWindow):
             const indicators = document.querySelectorAll('.indicator');
             indicators.forEach(ind => ind.classList.remove('active'));
             
-            alert('Search Error: ' + errorMessage);
+            showNotification(errorMessage, 'error');
         }
         
         // Extract domain from URL
@@ -245,21 +340,25 @@ class KlarBrowser(QMainWindow):
             }
         }
         
-        // Override settings to use bridge
-        const originalShowSettings = showSettings;
-        showSettings = function() {
-            if (!bridge) {
-                alert('Bridge not connected');
-                return;
-            }
-            
-            const currentUrl = bridge.getServerUrl();
-            const newUrl = prompt('Enter KSE Server URL:', currentUrl);
-            if (newUrl && newUrl.trim()) {
-                bridge.setServerUrl(newUrl.trim());
-                alert('Server URL updated to: ' + newUrl.trim());
-            }
-        };
+        // Override settings to use bridge (with validation)
+        if (typeof showSettings === 'function') {
+            const originalShowSettings = showSettings;
+            showSettings = function() {
+                if (!bridge) {
+                    showNotification('Connection not ready', 'error');
+                    return;
+                }
+                
+                const currentUrl = bridge.getServerUrl();
+                const newUrl = prompt('Enter KSE Server URL:\\n(e.g., http://localhost:5000)', currentUrl);
+                if (newUrl && newUrl.trim()) {
+                    bridge.setServerUrl(newUrl.trim());
+                    showNotification('Server URL updated: ' + newUrl.trim(), 'info');
+                }
+            };
+        } else {
+            console.error('showSettings function not found in HTML');
+        }
     </script>
 </body>
         """
