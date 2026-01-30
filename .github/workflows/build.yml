@@ -1,0 +1,146 @@
+name: Build Executables
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    name: Build Linux Executable
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build Linux executable
+      run: |
+        pyinstaller --onefile --windowed --name klar_browser klar_browser.py
+    
+    - name: Upload Linux artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: klar-browser-linux
+        path: dist/klar_browser
+        retention-days: 30
+
+  build-windows:
+    name: Build Windows Executable
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
+    
+    - name: Build Windows executable
+      run: |
+        pyinstaller --onefile --windowed --name klar_browser klar_browser.py
+    
+    - name: Upload Windows artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: klar-browser-windows
+        path: dist/klar_browser.exe
+        retention-days: 30
+
+  build-apk:
+    name: Build APK (Optional)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          python3-pip \
+          build-essential \
+          git \
+          zip \
+          unzip \
+          openjdk-17-jdk \
+          autoconf \
+          libtool \
+          pkg-config \
+          zlib1g-dev \
+          libncurses5-dev \
+          libncursesw5-dev \
+          libtinfo5 \
+          cmake \
+          libffi-dev \
+          libssl-dev
+    
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+    
+    - name: Install Buildozer
+      run: |
+        python -m pip install --upgrade pip
+        pip install buildozer cython
+    
+    - name: Create buildozer.spec
+      run: |
+        cat > buildozer.spec << 'EOF'
+        [app]
+        title = Klar Browser
+        package.name = klarbrowser
+        package.domain = org.kse
+        source.dir = .
+        source.include_exts = py
+        version = 0.1
+        requirements = python3,kivy,pyqt6,requests
+        orientation = portrait
+        fullscreen = 0
+        android.permissions = INTERNET
+        android.api = 31
+        android.minapi = 21
+        android.ndk = 25b
+        android.accept_sdk_license = True
+        
+        [buildozer]
+        log_level = 2
+        warn_on_root = 1
+        EOF
+    
+    - name: Build APK
+      run: |
+        buildozer android debug || echo "APK build failed - PyQt6 may not be fully supported on Android"
+    
+    - name: Upload APK artifact
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: klar-browser-android
+        path: bin/*.apk
+        retention-days: 30
+        if-no-files-found: ignore
