@@ -40,8 +40,8 @@ class SearchExecutor:
         
         logger.info(f"Executing search for terms: {query_terms}")
         
-        # Search using indexer
-        results = self.indexer.search(' '.join(query_terms), max_results)
+        # Pass pre-processed terms directly to indexer to avoid double processing
+        results = self.indexer.search(query_terms, max_results)
         
         logger.info(f"Search returned {len(results)} results")
         

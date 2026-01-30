@@ -1,7 +1,7 @@
 """
 KSE Indexer Pipeline - Main indexing orchestrator
 """
-from typing import List, Dict
+from typing import List, Dict, Union
 from kse.indexing.kse_inverted_index import InvertedIndex
 from kse.indexing.kse_tf_idf_calculator import TFIDFCalculator
 from kse.indexing.kse_page_processor import PageProcessor
@@ -122,25 +122,30 @@ class IndexerPipeline:
             'total_terms': len(self.inverted_index.index)
         }
     
-    def search(self, query: str, max_results: int = 10) -> List[Dict]:
+    def search(self, query: Union[str, List[str]], max_results: int = 10) -> List[Dict]:
         """
         Search the index
         
         Args:
-            query: Search query
+            query: Search query (raw string or pre-processed list of terms)
             max_results: Maximum number of results
         
         Returns:
             List of search results
         """
-        # Process query
-        query_terms = self.nlp.process_query(query)
+        # Handle pre-processed terms (list) or raw query (string)
+        if isinstance(query, list):
+            query_terms = query
+            query_str = ' '.join(query_terms)
+        else:
+            query_str = query
+            query_terms = self.nlp.process_query(query)
         
         if not query_terms:
-            logger.warning(f"No valid terms in query: {query}")
+            logger.warning(f"No valid terms in query: {query_str}")
             return []
         
-        logger.info(f"Searching for: {query} -> {query_terms}")
+        logger.info(f"Searching for: {query_str} -> {query_terms}")
         
         # Initialize TF-IDF if not already done
         if not self.tfidf_calculator:
@@ -161,7 +166,7 @@ class IndexerPipeline:
                 'score': round(score * 100, 2)  # Convert to 0-100 scale
             })
         
-        logger.info(f"Found {len(results)} results for query: {query}")
+        logger.info(f"Found {len(results)} results for query: {query_str}")
         
         return results
     

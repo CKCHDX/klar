@@ -91,6 +91,11 @@ class SwedishLemmatizer:
         if word in self.irregular_forms:
             return self.irregular_forms[word]
         
+        # Don't lemmatize very short words (3 characters or less)
+        # These are often proper nouns, abbreviations, or already lemmatized
+        if len(word) <= 3:
+            return word
+        
         # Apply suffix rules
         # Try longest suffixes first
         for suffix, replacement in sorted(self.suffix_rules.items(), 
@@ -98,8 +103,8 @@ class SwedishLemmatizer:
                                          reverse=True):
             if word.endswith(suffix) and len(word) > len(suffix):
                 lemma = word[:-len(suffix)] + replacement
-                # Ensure result is valid (at least 2 characters)
-                if len(lemma) >= 2:
+                # Ensure result is valid (at least 3 characters to avoid over-stemming)
+                if len(lemma) >= 3:
                     return lemma
         
         # Return original if no rule matched

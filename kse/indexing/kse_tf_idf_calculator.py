@@ -65,10 +65,11 @@ class TFIDFCalculator:
         if df == 0:
             return 0.0
         
-        # Calculate IDF: log(N / df)
-        # Add 1 to avoid division by zero
+        # Calculate IDF: log(N / df) + 1
+        # Adding 1 ensures IDF is never 0, even when df == N
+        # This modification is important for small corpora
         total_docs = self.index.total_documents
-        idf = math.log((total_docs + 1) / (df + 1))
+        idf = math.log((total_docs + 1) / (df + 1)) + 1
         
         # Cache result
         self.idf_cache[term] = idf
