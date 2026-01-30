@@ -48,3 +48,6 @@ Thumbs.db
 
 # Config
 .kse/
+
+# Test files (keep in repo but ignore outputs)
+test_*.pyc
