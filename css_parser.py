@@ -3,6 +3,9 @@ CSS Parser for styling support
 """
 import re
 
+# CSS constants
+BASE_FONT_SIZE_PX = 16  # Base font size for em unit conversion
+
 
 class CSSParser:
     """Basic CSS parser for style computation"""
@@ -121,7 +124,7 @@ class CSSParser:
             if unit == 'px':
                 return value
             elif unit == 'em':
-                return value * 16  # Assume 16px base font size
+                return value * BASE_FONT_SIZE_PX
             elif unit == '%':
                 return value  # Return percentage as-is
         

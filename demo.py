@@ -8,6 +8,9 @@ from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer
 from browser_window import BrowserWindow
 
+# Timing constant
+INITIAL_DELAY_MS = 500
+
 
 def main():
     """Load demo.html in the browser"""
@@ -19,7 +22,7 @@ def main():
     def load_demo():
         # Read demo.html
         demo_path = os.path.join(os.path.dirname(__file__), 'demo.html')
-        with open(demo_path, 'r') as f:
+        with open(demo_path, 'r', encoding='utf-8') as f:
             html_content = f.read()
         
         # Load into browser
@@ -29,8 +32,8 @@ def main():
         
         print("Demo HTML loaded successfully!")
     
-    # Load demo after 500ms
-    QTimer.singleShot(500, load_demo)
+    # Load demo after initial delay
+    QTimer.singleShot(INITIAL_DELAY_MS, load_demo)
     
     sys.exit(app.exec())
 

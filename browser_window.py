@@ -170,12 +170,13 @@ class BrowserWindow(QMainWindow):
         
         self.load_url(url)
     
-    def load_url(self, url):
+    def load_url(self, url, update_history=True):
         """
         Load content from a URL
         
         Args:
             url: URL to load
+            update_history: Whether to add this URL to history (default True)
         """
         self.status_label.setText(f"Loading {url}...")
         self.status_label.repaint()
@@ -190,13 +191,16 @@ class BrowserWindow(QMainWindow):
             # Update address bar with final URL (after redirects)
             self.address_bar.setText(response['url'])
             
-            # Update history
-            self.current_url = response['url']
-            if self.history_index < len(self.history) - 1:
-                # Remove forward history
-                self.history = self.history[:self.history_index + 1]
-            self.history.append(response['url'])
-            self.history_index = len(self.history) - 1
+            # Update history only if requested
+            if update_history:
+                self.current_url = response['url']
+                if self.history_index < len(self.history) - 1:
+                    # Remove forward history
+                    self.history = self.history[:self.history_index + 1]
+                self.history.append(response['url'])
+                self.history_index = len(self.history) - 1
+            else:
+                self.current_url = response['url']
             
             # Update navigation buttons
             self.update_nav_buttons()
@@ -216,7 +220,7 @@ class BrowserWindow(QMainWindow):
             self.history_index -= 1
             url = self.history[self.history_index]
             self.address_bar.setText(url)
-            self.load_url(url)
+            self.load_url(url, update_history=False)
     
     def go_forward(self):
         """Navigate forward in history"""
@@ -224,12 +228,12 @@ class BrowserWindow(QMainWindow):
             self.history_index += 1
             url = self.history[self.history_index]
             self.address_bar.setText(url)
-            self.load_url(url)
+            self.load_url(url, update_history=False)
     
     def refresh(self):
         """Refresh current page"""
         if self.current_url:
-            self.load_url(self.current_url)
+            self.load_url(self.current_url, update_history=False)
     
     def update_nav_buttons(self):
         """Update navigation button states"""

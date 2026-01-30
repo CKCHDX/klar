@@ -8,11 +8,14 @@ from urllib.parse import urlparse, urljoin
 class HTTPClient:
     """Handles HTTP/HTTPS requests for web content"""
     
-    def __init__(self):
+    DEFAULT_TIMEOUT = 10  # Default timeout in seconds
+    
+    def __init__(self, timeout=None):
         self.session = requests.Session()
         self.session.headers.update({
             'User-Agent': 'Klar/1.0 (Custom Render Engine)'
         })
+        self.timeout = timeout or self.DEFAULT_TIMEOUT
         
     def fetch(self, url):
         """
@@ -29,7 +32,7 @@ class HTTPClient:
             if not urlparse(url).scheme:
                 url = 'http://' + url
                 
-            response = self.session.get(url, timeout=10, allow_redirects=True)
+            response = self.session.get(url, timeout=self.timeout, allow_redirects=True)
             
             return {
                 'content': response.text,
@@ -61,3 +64,16 @@ class HTTPClient:
             str: Absolute URL
         """
         return urljoin(base_url, relative_url)
+    
+    def close(self):
+        """Close the HTTP session and release resources"""
+        self.session.close()
+    
+    def __enter__(self):
+        """Context manager entry"""
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """Context manager exit - close session"""
+        self.close()
+        return False

@@ -6,6 +6,11 @@ from PyQt6.QtCore import Qt, QRect, QPoint
 from html_parser import HTMLParserEngine
 from css_parser import CSSParser
 
+# Rendering constants
+DEFAULT_LINE_SPACING = 5  # Vertical spacing between lines of text
+DEFAULT_RECT_HEIGHT = 100  # Default height for text bounding rectangle
+DEFAULT_BG_HEIGHT = 50  # Default background block height
+
 
 class RenderEngine:
     """
@@ -99,11 +104,15 @@ class RenderEngine:
         
         # Apply padding
         context.y += padding
+        saved_x = context.x
         context.x += padding
         
         # Render children
         for child in node.children:
             self._render_node(child, context)
+        
+        # Restore x position after rendering children
+        context.x = saved_x
         
         # Apply bottom margin
         context.y += margin
@@ -150,13 +159,13 @@ class RenderEngine:
         text = node.text.strip()
         if text:
             # Simple text rendering (no word wrap for now)
-            rect = QRect(int(context.x), int(context.y), int(context.viewport_width - context.x), 100)
+            rect = QRect(int(context.x), int(context.y), int(context.viewport_width - context.x), DEFAULT_RECT_HEIGHT)
             context.painter.drawText(rect, Qt.TextFlag.TextWordWrap, text)
             
             # Move cursor down
             metrics = context.painter.fontMetrics()
             text_height = metrics.boundingRect(rect, Qt.TextFlag.TextWordWrap, text).height()
-            context.y += text_height + 5
+            context.y += text_height + DEFAULT_LINE_SPACING
     
     def _render_background(self, node, context, bg_color):
         """
@@ -169,7 +178,7 @@ class RenderEngine:
         """
         color = QColor(bg_color)
         context.painter.fillRect(
-            QRect(int(context.x), int(context.y), int(context.viewport_width), 50),
+            QRect(int(context.x), int(context.y), int(context.viewport_width), DEFAULT_BG_HEIGHT),
             QBrush(color)
         )
 

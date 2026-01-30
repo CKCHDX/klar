@@ -7,6 +7,10 @@ from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer
 from browser_window import BrowserWindow
 
+# Test timing constants
+INITIAL_DELAY_MS = 500
+SCREENSHOT_DELAY_MS = 500
+
 
 def main():
     """Test the render engine with a simple HTML document"""
@@ -42,7 +46,7 @@ def main():
         window.viewport.load_html(test_html, "test:page")
         
         # Take another screenshot after loading test HTML
-        QTimer.singleShot(500, take_test_screenshot)
+        QTimer.singleShot(SCREENSHOT_DELAY_MS, take_test_screenshot)
     
     def take_test_screenshot():
         print("Taking screenshot of test page...")
@@ -53,7 +57,7 @@ def main():
         app.quit()
     
     # Take screenshot after 500ms
-    QTimer.singleShot(500, take_screenshot)
+    QTimer.singleShot(INITIAL_DELAY_MS, take_screenshot)
     
     sys.exit(app.exec())
 
