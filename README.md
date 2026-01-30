@@ -2,6 +2,13 @@
 
 A modern web-based search browser for the KSE (Klar Search Engine) with a beautiful Nordic-inspired UI.
 
+## Platform Support
+
+- **Desktop** (Windows, macOS, Linux): Full-featured web-based UI with PyQt6
+- **Android** (API 21+, targeting Android 14/API 34): Mobile-optimized Kivy version
+
+See [BUILD_ANDROID.md](BUILD_ANDROID.md) for instructions on building the Android APK.
+
 ## Features
 
 - 🎨 **Modern Web UI** - Beautiful dark/light theme with animations
@@ -12,6 +19,8 @@ A modern web-based search browser for the KSE (Klar Search Engine) with a beauti
 - 🌓 **Theme Toggle** - Dark and light modes with persistence
 
 ## Installation
+
+### Desktop Version
 
 1. Install dependencies:
 ```bash
@@ -27,12 +36,22 @@ sudo apt-get install python3-pyqt6.qtwebengine libxcb-cursor0
 sudo dnf install python3-pyqt6-webengine
 ```
 
+### Android Version
+
+See [BUILD_ANDROID.md](BUILD_ANDROID.md) for complete instructions on building the Android APK.
+
 ## Usage
+
+### Desktop Version
 
 Run the browser:
 ```bash
 python3 klar_browser.py
 ```
+
+### Android Version
+
+After building the APK (see [BUILD_ANDROID.md](BUILD_ANDROID.md)), install it on your Android device and launch the app.
 
 ## Configuration
 
@@ -86,24 +105,44 @@ The UI features:
 
 ## Technical Details
 
-### Architecture
+### Architecture (Desktop)
 - **Frontend:** HTML/CSS/JavaScript (loaded in QWebEngineView)
 - **Backend:** Python with PyQt6
 - **Communication:** QWebChannel bridge between JS and Python
 - **API:** RESTful communication with KSE server
 
+### Architecture (Android)
+- **Frontend:** Native Kivy widgets
+- **Backend:** Python with Kivy framework
+- **Communication:** Direct Python code
+- **API:** RESTful communication with KSE server
+
 ### Files
-- `klar_browser.py` - Main Python application
-- `klar_browser.html` - Complete UI design
-- `requirements.txt` - Python dependencies
+- `klar_browser.py` - Desktop Python application (PyQt6)
+- `klar_browser_android.py` - Android Python application (Kivy)
+- `main.py` - Android entry point
+- `klar_browser.html` - Desktop UI design
+- `buildozer.spec` - Android build configuration
+- `requirements.txt` - Desktop Python dependencies
+- `requirements_android.txt` - Android Python dependencies
+- `BUILD_ANDROID.md` - Android build instructions
 
 ## Requirements
 
+### Desktop
 - Python 3.8+
 - PyQt6 >= 6.4.0
 - PyQt6-WebEngine >= 6.4.0
 - requests >= 2.28.0
 - KSE Search Engine server (running separately)
+
+### Android
+- Python 3.8+
+- Kivy == 2.2.1
+- requests == 2.31.0
+- Buildozer (for building APK)
+- Android SDK/NDK (automatically downloaded by buildozer)
+- Target: Android 14 (API 34), Minimum: Android 5.0 (API 21)
 
 ## Development
 
