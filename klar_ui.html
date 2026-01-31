@@ -57,6 +57,26 @@
             min-height: 100vh;
         }
 
+        /* Custom scrollbar styling - remove white scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--primary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 0;
+            transition: background 0.2s ease;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
         body {
             overflow-x: hidden;
         }
@@ -332,9 +352,26 @@
 
         .indicator.active {
             background: var(--accent);
-            width: 8px;
-            height: 8px;
-            box-shadow: 0 0 8px var(--accent);
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .indicator.active:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .indicator.active:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            40% {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         .quick-actions {
@@ -741,9 +778,278 @@
         .hidden {
             display: none !important;
         }
+
+        /* Navigation transition overlay */
+        .nav-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-cold));
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .nav-transition.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .nav-transition-content {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        /* Enhanced result item click effect */
+        .result-item.clicking {
+            transform: scale(0.98) translateX(4px);
+            opacity: 0.7;
+        }
+
+        /* Domain blocked message */
+        .domain-blocked {
+            background: var(--surface);
+            border: 2px solid var(--accent-warm);
+            border-left: 4px solid var(--accent-warm);
+            padding: 20px;
+            max-width: 600px;
+            margin: 40px auto;
+            text-align: center;
+        }
+
+        .domain-blocked-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent-warm);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .domain-blocked-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .domain-blocked-domain {
+            color: var(--accent);
+            font-weight: 600;
+            font-family: monospace;
+        }
+
+        /* Server status indicator */
+        .server-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            z-index: 100;
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .server-status.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .server-status.always-visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .server-status.connected .status-dot {
+            background: #27ae60;
+            animation: none;
+        }
+
+        .server-status.disconnected .status-dot {
+            background: #e74c3c;
+        }
+
+        .server-status.checking .status-dot {
+            background: #f39c12;
+        }
+
+        .server-status.unstable .status-dot {
+            background: #e67e22;
+        }
+
+        .status-text {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .server-status.connected .status-text {
+            color: #27ae60;
+        }
+
+        .server-status.disconnected .status-text {
+            color: #e74c3c;
+        }
+
+        .server-status.checking .status-text {
+            color: #f39c12;
+        }
+
+        .server-status.unstable .status-text {
+            color: #e67e22;
+        }
+
+        /* Browser Navigation Bar */
+        .browser-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            gap: 8px;
+            z-index: 1000;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .browser-nav.visible {
+            transform: translateY(0);
+        }
+
+        .nav-btn {
+            width: 32px;
+            height: 32px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-size: 16px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--surface-hover);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .url-bar {
+            flex: 1;
+            height: 32px;
+            background: var(--primary);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            padding: 0 12px;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .url-bar:focus {
+            border-color: var(--accent);
+            background: var(--surface-hover);
+        }
+
+        .container.with-nav {
+            padding-top: 50px;
+        }
+
+        /* Website iframe container */
+        .website-frame-container {
+            position: fixed;
+            top: 50px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--primary);
+            z-index: 999;
+            display: none;
+        }
+
+        .website-frame-container.active {
+            display: block;
+        }
+
+        .website-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
     </style>
 </head>
 <body>
+    <!-- Browser Navigation Bar -->
+    <div class="browser-nav" id="browserNav">
+        <button class="nav-btn" id="backBtn" title="Tillbaka" disabled>←</button>
+        <button class="nav-btn" id="forwardBtn" title="Framåt" disabled>→</button>
+        <button class="nav-btn" id="reloadBtn" title="Ladda om">↻</button>
+        <button class="nav-btn" id="homeBtn" title="Hem">⌂</button>
+        <input type="text" class="url-bar" id="urlBar" placeholder="Webbadress..." />
+    </div>
+
+    <!-- Server Status Indicator -->
+    <div class="server-status checking" id="serverStatus">
+        <div class="status-dot"></div>
+        <span class="status-text">Ansluter...</span>
+    </div>
+
+    <!-- Navigation transition overlay -->
+    <div class="nav-transition" id="navTransition">
+        <div class="nav-transition-content">Navigerar...</div>
+    </div>
+
+    <!-- Website iframe container -->
+    <div class="website-frame-container" id="websiteFrameContainer">
+        <iframe class="website-frame" id="websiteFrame" sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation allow-modals allow-downloads"></iframe>
+    </div>
+
     <div class="particle-field" id="particleField"></div>
     
     <div class="container">
@@ -760,7 +1066,6 @@
                 <div class="logo-text">KLAR</div>
             </div>
             
-            <div class="tagline">Nordic Search Engine</div>
             
             <div class="search-container">
                 <div class="search-wrapper">
@@ -769,7 +1074,7 @@
                             <circle cx="11" cy="11" r="8"></circle>
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
-                        <input type="text" id="searchInput" placeholder="Vad sker du?" autocomplete="off">
+                        <input type="text" id="searchInput" placeholder="Vad vill du hitta?" autocomplete="off">
                         <div class="search-indicators">
                             <div class="indicator"></div>
                             <div class="indicator"></div>
@@ -780,8 +1085,8 @@
                 
                 <div class="quick-actions">
                     <button class="action-btn" onclick="handleSearch()">SÖK</button>
-                    <button class="action-btn" onclick="handleLucky()">KANSLAN SÄGER</button>
-                    <button class="action-btn" onclick="togglePrivacy()">INSTALLNINGAR</button>
+                    <button class="action-btn" onclick="handleLucky()">KÄNSLAN SÄGER</button>
+                    <button class="action-btn" onclick="togglePrivacy()">INSTÄLLNINGAR</button>
                 </div>
             </div>
         </div>
@@ -846,6 +1151,100 @@
         const searchInput = document.getElementById('searchInput');
         const resultsContainer = document.getElementById('resultsContainer');
         const heroSection = document.getElementById('heroSection');
+        const serverStatus = document.getElementById('serverStatus');
+
+        // Server base URL - uses public domain
+        // This allows connections from anywhere
+        let serverBaseUrl = 'http://klar.oscyra.solutions:5000';
+
+        // Server connection state
+        let serverConnected = false;
+        let lastCheckTime = 0;
+        let checkInterval = null;
+        let failedChecks = 0;
+
+        // Connect to search completion signal
+        let klarAPIReady = false;
+        
+        // Server status checker - checks if KlarAPI bridge is available
+        // (Like the backup version, we don't use fetch() for health checks)
+        function checkServerStatus() {
+            if (window.KlarAPI && window.KlarAPI.search) {
+                // KlarAPI is available, connection is working
+                serverConnected = true;
+                failedChecks = 0;
+                updateServerStatus('connected', 'Ansluten');
+                console.log('[KLAR] ✓ KlarAPI connected');
+                // Hide status after 3 seconds if connected
+                setTimeout(() => {
+                    if (serverConnected) {
+                        serverStatus.classList.remove('visible');
+                    }
+                }, 3000);
+            } else {
+                // KlarAPI not available yet
+                failedChecks++;
+                if (failedChecks >= 3) {
+                    serverConnected = false;
+                    updateServerStatus('disconnected', 'Ej ansluten');
+                    console.error('[KLAR] ✗ KlarAPI not available - Python backend not connected');
+                }
+            }
+        }
+
+        function updateServerStatus(status, text) {
+            serverStatus.className = 'server-status visible ' + status;
+            serverStatus.querySelector('.status-text').textContent = text;
+        }
+
+        // Start health checks immediately
+        checkServerStatus();
+        checkInterval = setInterval(checkServerStatus, 5000);
+
+        // Wait for KlarAPI to be ready and connect to the signal
+        function connectSearchSignal() {
+            if (window.KlarAPI && window.KlarAPI.searchComplete) {
+                window.KlarAPI.searchComplete.connect(function(response) {
+                    const indicators = document.querySelectorAll('.indicator');
+                    indicators.forEach(ind => ind.classList.remove('active'));
+                    
+                    try {
+                        const data = JSON.parse(response);
+                        displayResults(data.results || [], data.query || searchInput.value.trim());
+                    } catch (e) {
+                        console.error('Error parsing results:', e);
+                        displayResults([], searchInput.value.trim());
+                    }
+                });
+                klarAPIReady = true;
+                console.log('KlarAPI ready and connected');
+                console.log('KlarAPI connected successfully');
+
+                // Read server URL from backend config if available
+                try {
+                    if (window.KlarAPI.get_config) {
+                        const cfg = JSON.parse(window.KlarAPI.get_config());
+                        if (cfg && cfg.server_url) {
+                            serverBaseUrl = cfg.server_url.replace(/\/$/, '');
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Failed to read server config:', e);
+                }
+                
+                // Check server status immediately
+                checkServerStatus();
+                
+                // Then check every 30 seconds
+                checkInterval = setInterval(checkServerStatus, 30000);
+            } else {
+                // Retry connection after a short delay
+                setTimeout(connectSearchSignal, 100);
+            }
+        }
+        
+        // Start connection attempt
+        connectSearchSignal();
 
         // Search handler
         searchInput.addEventListener('keypress', (e) => {
@@ -858,35 +1257,187 @@
             const query = searchInput.value.trim();
             if (!query) return;
 
+            // Check server connection before searching
+            if (!serverConnected) {
+                updateServerStatus('disconnected', 'Kan ej söka - Ingen anslutning');
+                serverStatus.classList.add('always-visible');
+                setTimeout(() => {
+                    serverStatus.classList.remove('always-visible');
+                    checkServerStatus();
+                }, 3000);
+                return;
+            }
+
+            // Check if input is a URL or domain
+            if (isUrlOrDomain(query)) {
+                handleUrlNavigation(query);
+                return;
+            }
+
+            // Show loading animation
             const indicators = document.querySelectorAll('.indicator');
             indicators.forEach(ind => ind.classList.add('active'));
 
             // Make hero compact
             heroSection.classList.add('compact');
 
-            // Call Python backend
+            // Call Python backend (now async with signal response)
             if (window.KlarAPI && window.KlarAPI.search) {
-                window.KlarAPI.search(query).then(response => {
+                // Show searching status
+                updateServerStatus('checking', 'Söker...');
+                serverStatus.classList.add('visible');
+                
+                // This returns immediately, result comes via signal
+                window.KlarAPI.search(query);
+            } else {
+                console.warn('KlarAPI not available');
+                indicators.forEach(ind => ind.classList.remove('active'));
+                updateServerStatus('disconnected', 'API ej tillgänglig');
+                serverStatus.classList.add('always-visible');
+            }
+        }
+
+        // Check if input looks like a URL or domain
+        function isUrlOrDomain(text) {
+            // Check for common URL patterns
+            if (text.startsWith('http://') || text.startsWith('https://')) {
+                return true;
+            }
+            
+            // Check for domain patterns (contains dot and no spaces)
+            if (text.includes('.') && !text.includes(' ')) {
+                // Check if it looks like a domain (e.g., example.com, sub.example.com)
+                const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+                return domainPattern.test(text.split('/')[0]);
+            }
+            
+            return false;
+        }
+
+        // Handle URL navigation with domain checking
+        function handleUrlNavigation(input) {
+            // Check server connection before navigating
+            if (!serverConnected) {
+                updateServerStatus('disconnected', 'Kan ej navigera - Ingen anslutning');
+                serverStatus.classList.add('always-visible');
+                setTimeout(() => {
+                    serverStatus.classList.remove('always-visible');
+                    checkServerStatus();
+                }, 3000);
+                return;
+            }
+
+            // Show loading animation - will hide when page loads
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach(ind => ind.classList.add('active'));
+
+            // Make hero compact
+            heroSection.classList.add('compact');
+
+            // Extract domain from input
+            let domain = input;
+            if (domain.startsWith('http://') || domain.startsWith('https://')) {
+                try {
+                    const url = new URL(input);
+                    domain = url.hostname;
+                } catch (e) {
+                    domain = input;
+                }
+            } else {
+                // Extract domain part (before first /)
+                domain = domain.split('/')[0];
+            }
+
+            // Check with backend if domain is allowed
+            if (window.KlarAPI && window.KlarAPI.check_domain) {
+                window.KlarAPI.check_domain(domain).then(response => {
                     try {
                         const data = JSON.parse(response);
-                        displayResults(data.results || [], query);
+                        
+                        if (data.allowed) {
+                            // Domain is allowed, navigate using PyQt6 WebView
+                            // Loading animation will continue during navigation
+                            let fullUrl = input;
+                            if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+                                fullUrl = 'https://' + fullUrl;
+                            }
+                            
+                            // Call Python backend to navigate
+                            if (window.KlarAPI && window.KlarAPI.navigate_to) {
+                                window.KlarAPI.navigate_to(fullUrl);
+                                // Animation will hide automatically after page loads (timeout safety)
+                                setTimeout(() => {
+                                    indicators.forEach(ind => ind.classList.remove('active'));
+                                }, 5000);
+                            } else {
+                                // Fallback: open in new window
+                                window.open(fullUrl, '_blank');
+                                indicators.forEach(ind => ind.classList.remove('active'));
+                            }
+                        } else {
+                            // Domain is blocked - hide animation
+                            indicators.forEach(ind => ind.classList.remove('active'));
+                            showDomainBlocked(data.domain, data.error || data.message);
+                        }
                     } catch (e) {
-                        console.error('Error parsing results:', e);
-                        displayResults([], query);
+                        console.error('Error checking domain:', e);
+                        indicators.forEach(ind => ind.classList.remove('active'));
+                        showDomainBlocked(domain, 'Unable to verify domain');
                     }
-                    indicators.forEach(ind => ind.classList.remove('active'));
                 }).catch(err => {
-                    console.error('Search error:', err);
+                    console.error('Domain check error:', err);
                     indicators.forEach(ind => ind.classList.remove('active'));
-                    displayResults([], query);
+                    showDomainBlocked(domain, 'Connection error');
                 });
             } else {
                 console.warn('KlarAPI not available');
                 indicators.forEach(ind => ind.classList.remove('active'));
+                showDomainBlocked(domain, 'API not available');
             }
         }
 
+        // Show domain blocked message
+        function showDomainBlocked(domain, message) {
+            resultsContainer.classList.add('active');
+            
+            // Clear previous results (keep header)
+            const header = resultsContainer.querySelector('.results-header');
+            while (resultsContainer.children.length > 1) {
+                resultsContainer.removeChild(resultsContainer.lastChild);
+            }
+
+            // Update header
+            document.getElementById('queryText').textContent = domain;
+            document.getElementById('resultCount').textContent = '0';
+            document.getElementById('stats').textContent = 'Domän ej tillåten';
+
+            // Create blocked message
+            const blockedEl = document.createElement('div');
+            blockedEl.className = 'domain-blocked';
+            blockedEl.innerHTML = `
+                <div class="domain-blocked-title">⚠ Domän Blockerad</div>
+                <div class="domain-blocked-text">
+                    Domänen <span class="domain-blocked-domain">${domain}</span> är inte tillåten enligt serverns whitelist.
+                    ${message ? `<br><br>${message}` : ''}
+                </div>
+            `;
+            
+            resultsContainer.appendChild(blockedEl);
+
+            // Scroll to results
+            setTimeout(() => {
+                resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+
         function displayResults(results, query) {
+            // Hide loading animation
+            const indicators = document.querySelectorAll('.indicator');
+            indicators.forEach(ind => ind.classList.remove('active'));
+            
+            // Update server status - show success
+            updateServerStatus('connected', 'Ansluten');
+            
             // Update header
             document.getElementById('queryText').textContent = query;
             document.getElementById('resultCount').textContent = results.length;
@@ -903,20 +1454,34 @@
                 const resultEl = document.createElement('div');
                 resultEl.className = 'result-item';
                 
-                const domain = new URL('https://' + result.url).hostname.replace('www.', '');
+                // Handle URL - ensure it has proper protocol
+                let fullUrl = result.url;
+                if (!fullUrl.startsWith('http://') && !fullUrl.startsWith('https://')) {
+                    fullUrl = 'https://' + fullUrl;
+                }
+                
+                // Extract domain for display
+                let domain;
+                try {
+                    domain = new URL(fullUrl).hostname.replace('www.', '');
+                } catch (e) {
+                    domain = result.url;
+                }
                 
                 resultEl.innerHTML = `
                     <div class="result-domain">${domain}</div>
                     <div class="result-title">${result.title || 'Untitled'}</div>
                     <div class="result-description">${result.snippet || result.description || ''}</div>
                     <div class="result-footer">
-                        <span>https://${domain}</span>
+                        <span>${fullUrl}</span>
                         ${result.score ? `<span class="result-badge">Score: ${Math.round(result.score * 100)}</span>` : ''}
                     </div>
                 `;
                 
                 resultEl.style.animationDelay = (index * 0.05) + 's';
-                resultEl.onclick = () => window.open('https://' + result.url, '_blank');
+                
+                // Add click handler with smooth transition
+                resultEl.onclick = () => navigateToUrl(fullUrl, resultEl);
                 
                 resultsContainer.appendChild(resultEl);
             });
@@ -958,7 +1523,7 @@
         }
 
         function showAbout() {
-            alert('KLAR - Nordic Search Engine 1.0\n\nSkmotor byggd av nordiska användare för nordiska världen.\n\nIntegritet. Transparens. Enkelt.');
+            alert('Klar - Search Engine 1.0\n\nSökmotor byggd för sverige.\n\nIntegritet. Transparens. Enkelt.');
         }
 
         // Close results on Escape
@@ -978,6 +1543,153 @@
 
         // Focus search on load
         searchInput.focus();
+
+        // Browser navigation functionality
+        const browserNav = document.getElementById('browserNav');
+        const backBtn = document.getElementById('backBtn');
+        const forwardBtn = document.getElementById('forwardBtn');
+        const reloadBtn = document.getElementById('reloadBtn');
+        const homeBtn = document.getElementById('homeBtn');
+        const urlBar = document.getElementById('urlBar');
+        const container = document.querySelector('.container');
+        const websiteFrameContainer = document.getElementById('websiteFrameContainer');
+        const websiteFrame = document.getElementById('websiteFrame');
+
+        let isOnSearchPage = true;
+        let navigationHistory = [];
+        let historyIndex = -1;
+        let currentUrl = '';
+
+        function showBrowserNav(url) {
+            isOnSearchPage = false;
+            currentUrl = url;
+            
+            // Show navigation bar
+            browserNav.classList.add('visible');
+            container.classList.add('with-nav');
+            
+            // Show website iframe container
+            websiteFrameContainer.classList.add('active');
+            
+            // Hide search page
+            heroSection.style.display = 'none';
+            resultsContainer.style.display = 'none';
+            
+            // Update URL bar
+            urlBar.value = url;
+            
+            // Load URL in iframe
+            websiteFrame.src = url;
+            
+            updateNavButtons();
+        }
+
+        function hideBrowserNav() {
+            browserNav.classList.remove('visible');
+            container.classList.remove('with-nav');
+            websiteFrameContainer.classList.remove('active');
+            
+            // Show search page again
+            heroSection.style.display = 'flex';
+            resultsContainer.style.display = 'flex';
+            
+            isOnSearchPage = true;
+            currentUrl = '';
+        }
+
+        function updateNavButtons() {
+            backBtn.disabled = historyIndex <= 0;
+            forwardBtn.disabled = historyIndex >= navigationHistory.length - 1;
+        }
+
+        function addToHistory(url) {
+            // Remove any forward history if we're not at the end
+            if (historyIndex < navigationHistory.length - 1) {
+                navigationHistory = navigationHistory.slice(0, historyIndex + 1);
+            }
+            navigationHistory.push(url);
+            historyIndex = navigationHistory.length - 1;
+            updateNavButtons();
+        }
+
+        // Navigation button handlers
+        backBtn.addEventListener('click', () => {
+            if (historyIndex > 0) {
+                historyIndex--;
+                const url = navigationHistory[historyIndex];
+                urlBar.value = url;
+                currentUrl = url;
+                websiteFrame.src = url;
+                updateNavButtons();
+            }
+        });
+
+        forwardBtn.addEventListener('click', () => {
+            if (historyIndex < navigationHistory.length - 1) {
+                historyIndex++;
+                const url = navigationHistory[historyIndex];
+                urlBar.value = url;
+                currentUrl = url;
+                websiteFrame.src = url;
+                updateNavButtons();
+            }
+        });
+
+        reloadBtn.addEventListener('click', () => {
+            if (currentUrl) {
+                websiteFrame.src = currentUrl;
+            }
+        });
+
+        homeBtn.addEventListener('click', () => {
+            hideBrowserNav();
+            resultsContainer.classList.remove('active');
+            heroSection.classList.remove('compact');
+            searchInput.value = '';
+            searchInput.focus();
+            navigationHistory = [];
+            historyIndex = -1;
+            currentUrl = '';
+        });
+
+        urlBar.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                let url = urlBar.value.trim();
+                if (url) {
+                    // Add protocol if missing
+                    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                        url = 'https://' + url;
+                    }
+                    // Use showBrowserNav to display the navigation bar
+                    addToHistory(url);
+                    showBrowserNav(url);
+                }
+            }
+        });
+
+        // Smooth navigation function
+        function navigateToUrl(url, element) {
+            // Add clicking effect to the result item
+            if (element) {
+                element.classList.add('clicking');
+            }
+            
+            // Show transition overlay briefly
+            const transition = document.getElementById('navTransition');
+            transition.classList.add('active');
+            
+            setTimeout(() => {
+                transition.classList.remove('active');
+            }, 300);
+            
+            // Navigate using Python backend (PyQt6 WebView)
+            if (window.KlarAPI && window.KlarAPI.navigate_to) {
+                window.KlarAPI.navigate_to(url);
+            } else {
+                // Fallback: open in new window
+                window.open(url, '_blank');
+            }
+        }
     </script>
 </body>
 </html>
