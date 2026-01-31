@@ -1,0 +1,47 @@
+base_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server
+config_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\config
+crawler:
+  crawl_delay: 1.0
+  crawl_depth: 50
+  max_concurrent_requests: 10
+  max_retries: 3
+  respect_robots_txt: true
+  timeout: 10
+  user_agent: KlarBot/3.0 (+https://oscyra.solutions/klar)
+data_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\data
+enable_console_logging: true
+gui:
+  setup_completed: true
+log_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\data\logs
+log_level: INFO
+nlp:
+  enable_compound_splitting: true
+  enable_lemmatization: true
+  language: swedish
+  min_compound_length: 8
+ranking:
+  weights:
+    domain_authority: 0.15
+    keyword_density: 0.1
+    link_structure: 0.1
+    pagerank: 0.2
+    recency: 0.15
+    regional_relevance: 0.05
+    tf_idf: 0.25
+search:
+  cache_ttl: 3600
+  enable_cache: true
+  results_per_page: 10
+  search_timeout: 0.5
+server:
+  api_prefix: /api
+  debug: false
+  enable_cors: true
+  host: 0.0.0.0
+  port: 5000
+  public_url: http://klar.oscyra.solutions:5000
+storage:
+  backup_enabled: true
+  compression_enabled: true
+  max_backups: 5
+storage_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\data\storage

@@ -1,0 +1,301 @@
+2026-01-30 09:21:04 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-30 09:21:05 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.149.144.65', 'local_ip': '188.149.144.65', 'hostname': 'AID9203'}
+2026-01-30 09:21:05 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-30 09:21:05 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-30 10:58:46 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-30 10:58:46 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.149.144.65', 'local_ip': '188.149.144.65', 'hostname': 'AID9203'}
+2026-01-30 10:58:46 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-30 10:58:46 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 00:37:35 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 00:37:42 - kse.server.kse_server - INFO - Network info: {'public_ip': '151.177.91.251', 'local_ip': '192.168.1.247', 'hostname': 'AID9203'}
+2026-01-31 00:37:42 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 00:37:42 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 00:58:42 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 00:58:42 - kse.server.kse_server - INFO - Network info: {'public_ip': '151.177.91.251', 'local_ip': '192.168.1.247', 'hostname': 'AID9203'}
+2026-01-31 00:58:43 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 00:58:43 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 19:40:59 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 19:40:59 - kse.server.kse_server - INFO - Loaded 12 allowed domains
+2026-01-31 19:40:59 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 19:40:59 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 19:40:59 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 19:40:59 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 19:41:59 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 19:42:18 - kse.server.kse_server - INFO - Domain check: youtube.com - BLOCKED
+2026-01-31 19:42:27 - kse.server.kse_server - INFO - Domain check: dramacool.sh - BLOCKED
+2026-01-31 19:42:36 - kse.server.kse_server - INFO - Domain check: sverige.se - BLOCKED
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:05:50 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Last startup: 2026-01-31T20:05:50.791973
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Total documents: 10
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 20:13:59 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 20:21:57 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 20:21:58 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 20:21:58 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 20:21:58 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:21:58 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 20:21:58 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:21:58 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 20:33:20 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 20:33:21 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 20:33:21 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 20:33:21 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:33:21 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 20:33:21 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:33:21 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 20:51:58 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:13:15 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:22:42 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 21:26:53 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:29:44 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:32:22 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 22:58:25 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 22:59:12 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 22:59:12 - kse.server.kse_server - INFO - Last startup: 2026-01-31T22:58:25.763244
+2026-01-31 22:59:12 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 22:59:12 - kse.server.kse_server - INFO - Total documents: 0
+2026-01-31 22:59:12 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 22:59:12 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 22:59:12 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 22:59:13 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 22:59:13 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 22:59:13 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Last startup: 2026-01-31T22:59:17.210580
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Total documents: 4
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 22:59:34 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Last startup: 2026-01-31T22:59:34.689783
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Total documents: 4
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 23:00:20 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:01:43 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - FIRST RUN DETECTED
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - Welcome to Klar Search Engine - Sveriges Sökmotor
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - This is the initial setup. The server will index domains...
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - SETUP COMPLETE! Klar Search Engine is ready.
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - ============================================================
+2026-01-31 23:03:46 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Last startup: 2026-01-31T23:03:46.224491
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Total documents: 0
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 23:04:23 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Last startup: 2026-01-31T23:04:26.963340
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Total documents: 10
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 23:14:06 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:15:43 - kse.server.kse_server - INFO - Domain check: svt.dr - BLOCKED
+2026-01-31 23:15:45 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Last startup: 2026-01-31T23:14:06.699707
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Total documents: 10
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 23:18:45 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:19:04 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:20:14 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:40:32 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:46:20 - kse.server.kse_server - INFO - Klar Search Engine - Starting up...
+2026-01-31 23:46:20 - kse.server.kse_server - INFO - Last startup: 2026-01-31T23:18:45.185645
+2026-01-31 23:46:20 - kse.server.kse_server - INFO - Indexed domains: 13
+2026-01-31 23:46:20 - kse.server.kse_server - INFO - Total documents: 10
+2026-01-31 23:46:20 - kse.server.kse_server - INFO - Loading allowed domains...
+2026-01-31 23:46:20 - kse.server.kse_server - INFO - Loaded 13 allowed domains
+2026-01-31 23:46:20 - kse.server.kse_server - INFO - Detecting network information...
+2026-01-31 23:46:21 - kse.server.kse_server - INFO - Network info: {'public_ip': '188.148.255.138', 'local_ip': '188.148.255.138', 'hostname': 'AID9203'}
+2026-01-31 23:46:21 - kse.server.kse_server - INFO - Monitoring enabled
+2026-01-31 23:46:21 - kse.server.kse_server - INFO - KSE Server initialized
+2026-01-31 23:49:06 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:52:49 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:54:25 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:56:27 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:57:38 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-01-31 23:59:25 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-02-01 00:02:24 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-02-01 00:02:29 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-02-01 00:05:25 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED
+2026-02-01 00:05:35 - kse.server.kse_server - INFO - Domain check: svt.se - ALLOWED

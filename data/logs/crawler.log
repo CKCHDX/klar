@@ -1,0 +1,1255 @@
+2026-01-30 09:20:38 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-30 09:20:38 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 1 domains
+2026-01-30 09:20:38 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-30 09:20:38 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://svt.se
+2026-01-30 09:20:40 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://svt.se/nyheter/inrikes/fordubbling-av-antalet-sjalvskador-bland-unga-tjejer
+2026-01-30 09:20:42 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://svt.se/nyheter/lokalt/ost/aldre-man-anhallen-for-mord-i-linkoping
+2026-01-30 09:20:44 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://svt.se/nyheter/inrikes/senaste-nytt-i-morgonstudion-folj-sandningen-har-uisf4r
+2026-01-30 09:20:46 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://svt.se/nyheter/snabbkollen/trots-loftet-anfall-mot-ukraina
+2026-01-30 09:20:49 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://svt.se/nyheter/snabbkollen/kuba-rasar-mot-amerikanskt-tullhot
+2026-01-30 09:20:51 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://svt.se/nyheter/snabbkollen/poliser-anvands-som-vardtaxi
+2026-01-30 09:20:53 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://svt.se/nyheter/lokalt/vasternorrland/ornskoldsvik-lamnas-utan-polis-regionen-anvander-dem-som-taxi
+2026-01-30 09:20:55 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://svt.se/nyheter/lokalt/vasternorrland/har-testar-svts-reporter-polisens-plastbur-svart-att-andas
+2026-01-30 09:20:57 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://svt.se/nyheter/om/protester-i-iran
+2026-01-30 09:21:00 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svt.se: 10 pages, 0 failed
+2026-01-30 10:57:46 - kse.crawler.kse_url_processor - INFO - Loaded 10 visited URLs
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 10 visited URLs
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 3 domains
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Dynamic speed adjustment enabled
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - No robots.txt delay found for svt.se, using default: 2.0s
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svt.se: 0 pages, 0 failed
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://regeringen.se
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - No robots.txt delay found for regeringen.se, using default: 2.0s
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Completed crawl of regeringen.se: 0 pages, 0 failed
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Starting crawl of riksdagen.se from https://riksdagen.se
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - No robots.txt delay found for riksdagen.se, using default: 2.0s
+2026-01-30 10:57:46 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://riksdagen.se
+2026-01-30 10:57:49 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: https://www.riksdagen.se/sv/sok/?doktyp=sfs&dokstat=g%C3%A4llande+sfs
+2026-01-30 10:57:51 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://www.riksdagen.se/sv/sa-fungerar-riksdagen/demokrati/sveriges-grundlagar-och-riksdagsordningen/
+2026-01-30 10:57:53 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://www.riksdagen.se/sv/aktuellt/
+2026-01-30 10:57:55 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/_H6D1plan/
+2026-01-30 10:57:58 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://www.riksdagen.se/sv/sok/?avd=dokument
+2026-01-30 10:58:01 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/arbetsprovning-med-bibehallen-sjukpenning_hd01sfu9/
+2026-01-30 10:58:03 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/utokade-registerkontroller-vid-anstallning-i_hd01juu22/
+2026-01-30 10:58:05 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://www.riksdagen.se/sv/webb-tv/video/sarskild-debatt/sarskild-debatt-om-euron_hdc120260127sd/
+2026-01-30 10:58:07 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://www.riksdagen.se/sv/aktuellt/aktuelltnotiser/2026/jan/28/talmannen-gor-officiellt-besok-i-portugal_cmsd312c603-dbe6-4d25-8400-e90c1a0ef5b8sv/
+2026-01-30 10:58:10 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://riksdagen.se/sv/?jm5Q2CmPMUOT1gkmXhpShw=from%3D2026-01-29
+2026-01-30 10:58:12 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://riksdagen.se/sv/?jm5Q2CmPMUOT1gkmXhpShw=from%3D2026-01-31
+2026-01-30 10:58:15 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/session/2026/jan/30/paces-session-i-strasbourg_rdhdc220260126ss1/
+2026-01-30 10:58:18 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/
+2026-01-30 10:58:23 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://www.riksdagen.se/sv/sa-fungerar-riksdagen/utskotten-och-eu-namnden/
+2026-01-30 10:58:26 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://www.riksdagen.se/sv/webb-tv/video/fragestund/fragestund_hdc120260129fs/
+2026-01-30 10:58:29 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://www.riksdagen.se/sv/webb-tv/video/interpellationsdebatt/likvardigt-stod-till-barn-och-unga-med-npf_hd10272/
+2026-01-30 10:58:31 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://www.riksdagen.se/sv/webb-tv/video/interpellationsdebatt/en-trygg-miljo-i-forskolan_hd10231/
+2026-01-30 10:58:34 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://www.riksdagen.se/sv/webb-tv/video/interpellationsdebatt/forandringar-av-det-statliga-bolaget-samhall_hd10280/
+2026-01-30 10:58:36 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://www.riksdagen.se/sv/sok/?avd=webbtv
+2026-01-30 10:58:39 - kse.crawler.kse_crawler_core - INFO - Completed crawl of riksdagen.se: 20 pages, 0 failed
+2026-01-31 00:37:29 - kse.crawler.kse_url_processor - INFO - Loaded 30 visited URLs
+2026-01-31 00:37:29 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 30 visited URLs
+2026-01-31 00:37:29 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 1 domains
+2026-01-31 00:37:29 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 00:37:29 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svt.se: 0 pages, 0 failed
+2026-01-31 00:43:28 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 00:43:28 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 12 domains
+2026-01-31 00:43:28 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 00:43:28 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://svt.se
+2026-01-31 00:43:31 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://svt.se/nyheter/utrikes/nu-slapps-filerna-ur-epstein-utredningen?inlagg=ad8973011c9b3a2d8620df3c967dc6f3
+2026-01-31 00:43:33 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://svt.se/nyheter/utrikes/nu-slapps-filerna-ur-epstein-utredningen?inlagg=21b48f1571698ff1f0b841980f3b12a5
+2026-01-31 00:43:36 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://svt.se/nyheter/utrikes/nu-slapps-filerna-ur-epstein-utredningen?inlagg=0feadd6c2108c1383b82e7d0375bbb45
+2026-01-31 00:43:38 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://svt.se/nyheter/utrikes/nu-slapps-filerna-ur-epstein-utredningen?inlagg=cf5906b2fe62b8807ce2ac1c82dd2e5c
+2026-01-31 00:43:45 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://svt.se/nyheter/utrikes/nu-slapps-filerna-ur-epstein-utredningen?inlagg=17275208e3c0148658b14c710107991c
+2026-01-31 00:43:45 - kse.crawler.kse_http_client - WARNING - Connection error on https://svt.se/nyheter/utrikes/nu-slapps-filerna-ur-epstein-utredningen?inlagg=17275208e3c0148658b14c710107991c: ('Connection aborted.', ConnectionResetError(10054, 'En befintlig anslutning tvingades att stänga av fjärrvärddatorn', None, 10054, None))
+2026-01-31 00:43:50 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://svt.se/nyheter/inrikes/tva-tunga-avhopp-fran-liberalerna
+2026-01-31 00:43:52 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://svt.se/nyheter/inrikes/det-talar-for-att-liberalerna-klarar-sig
+2026-01-31 00:43:54 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://svt.se/nyheter/inrikes/senaste-nytt-om-val-2026?inlagg=c3d0d76601b7d4a9fe9061434d0d2c06
+2026-01-31 00:43:57 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://svt.se/nyheter/lokalt/vast/ballonglek-vid-inspark-bakom-dramatisk-polisinsats-i-goteborg
+2026-01-31 00:44:02 - kse.crawler.kse_http_client - WARNING - Connection error on https://svt.se/nyheter/lokalt/vast/ballonglek-vid-inspark-bakom-dramatisk-polisinsats-i-goteborg: ('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))
+2026-01-31 00:44:06 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svt.se: 10 pages, 0 failed
+2026-01-31 00:44:06 - kse.crawler.kse_crawler_core - INFO - Starting crawl of dn.se from https://dn.se
+2026-01-31 00:44:06 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://dn.se
+2026-01-31 00:44:09 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://dn.se/direkt/2026-01-30/tiotusentals-demonstrerar-i-minneapolis/
+2026-01-31 00:44:11 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://dn.se/varlden/tre-miljoner-epsteinfiler-slapps/
+2026-01-31 00:44:13 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://dn.se/varlden/musk-till-epstein-nar-ska-vi-aka-till-din-o/
+2026-01-31 00:44:16 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://dn.se/direkt/mellanostern/
+2026-01-31 00:44:19 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://dn.se/varlden/nar-drommen-om-frihet-krossades-sa-foll-shahens-iran/
+2026-01-31 00:44:22 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://dn.se/direkt/mellanostern/2026-01-30/organisation-delar-inte-personalinformation-till-israel/
+2026-01-31 00:44:24 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://dn.se/varlden/nathan-shachar-israel-forebereder-sig-pa-att-bli-attackerat-av-iran/
+2026-01-31 00:44:26 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://dn.se/direkt/
+2026-01-31 00:44:29 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://dn.se/direkt/2026-01-31/prinsessan-sofia-i-epsteindokument/
+2026-01-31 00:44:31 - kse.crawler.kse_crawler_core - INFO - Completed crawl of dn.se: 10 pages, 0 failed
+2026-01-31 00:44:31 - kse.crawler.kse_crawler_core - INFO - Starting crawl of aftonbladet.se from https://aftonbladet.se
+2026-01-31 00:44:31 - kse.crawler.kse_crawler_core - INFO - Completed crawl of aftonbladet.se: 0 pages, 0 failed
+2026-01-31 00:44:31 - kse.crawler.kse_crawler_core - INFO - Starting crawl of expressen.se from https://expressen.se
+2026-01-31 00:44:31 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://expressen.se
+2026-01-31 00:44:34 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://expressen.se/tv/nyheter/tvingades-skotta-sno-dog/
+2026-01-31 00:44:36 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://expressen.se/tv/politik/strommers-overraskningssang-for-dorsin-/
+2026-01-31 00:44:38 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://expressen.se/tv/nyheter/sverige/skjuter-blint-mitt-i-svenska-staden/
+2026-01-31 00:44:40 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://expressen.se/tv/nyheter/norska-nakenchocken-i-thailand/
+2026-01-31 00:44:43 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://expressen.se/tv/nyheter/varlden/trumps-forklaring-vill-bara-dra-fort-som-fan/
+2026-01-31 00:44:45 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://expressen.se/tv/noje/melodifestivalen/ateens-chockade-skratt-svaret-pa-sexfragan/
+2026-01-31 00:44:47 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://expressen.se/tv/sport/tennis/stonar-for-hogt-da-straffas-varldsettan-av-svenska-domaren/
+2026-01-31 00:44:50 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://expressen.se/tv/nyheter/sverige/lykochefens-tarar-70-personer-sparkas/
+2026-01-31 00:44:53 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://expressen.se/tv/nyheter/varlden/regionen-avskarmad-ilskan-mot-putin/
+2026-01-31 00:44:55 - kse.crawler.kse_crawler_core - INFO - Completed crawl of expressen.se: 10 pages, 0 failed
+2026-01-31 00:44:55 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svd.se from https://svd.se
+2026-01-31 00:44:55 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svd.se: 0 pages, 0 failed
+2026-01-31 00:44:55 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://regeringen.se
+2026-01-31 00:44:55 - kse.crawler.kse_crawler_core - INFO - Completed crawl of regeringen.se: 0 pages, 0 failed
+2026-01-31 00:44:55 - kse.crawler.kse_crawler_core - INFO - Starting crawl of riksdagen.se from https://riksdagen.se
+2026-01-31 00:44:56 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://riksdagen.se
+2026-01-31 00:44:59 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://www.riksdagen.se/sv/sok/?doktyp=sfs&dokstat=g%C3%A4llande+sfs
+2026-01-31 00:45:01 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://www.riksdagen.se/sv/sa-fungerar-riksdagen/demokrati/sveriges-grundlagar-och-riksdagsordningen/
+2026-01-31 00:45:04 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://www.riksdagen.se/sv/aktuellt/
+2026-01-31 00:45:06 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/_H6D1plan/
+2026-01-31 00:45:09 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.riksdagen.se/sv/sok/?avd=dokument
+2026-01-31 00:45:13 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://www.riksdagen.se/sv/aktuellt/aktuelltnotiser/2026/jan/30/usas-agerande-mot-gronland-diskuterades-vid_cmsfe0d5ac3-2c87-4fef-ad3c-6ea5b9f5dafesv/
+2026-01-31 00:45:16 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/arbetsprovning-med-bibehallen-sjukpenning_hd01sfu9/
+2026-01-31 00:45:18 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/utokade-registerkontroller-vid-anstallning-i_hd01juu22/
+2026-01-31 00:45:21 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://www.riksdagen.se/sv/webb-tv/video/sarskild-debatt/sarskild-debatt-om-euron_hdc120260127sd/
+2026-01-31 00:45:23 - kse.crawler.kse_crawler_core - INFO - Completed crawl of riksdagen.se: 10 pages, 0 failed
+2026-01-31 00:45:23 - kse.crawler.kse_crawler_core - INFO - Starting crawl of uu.se from https://uu.se
+2026-01-31 00:45:23 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://uu.se
+2026-01-31 00:45:26 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://uu.se/om-uu/doktorspromotion
+2026-01-31 00:45:28 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://uu.se/student
+2026-01-31 00:45:31 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://www.uu.se/nyheter/2026/2026-01-29-den-relativa-fattigdomen-i-sverige-har-fordubblats
+2026-01-31 00:45:33 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.uu.se/nyheter/2026/2026-01-29-fyra-av-fem-akademiforskare-inom-sprak-till-uppsala-universitet
+2026-01-31 00:45:35 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.uu.se/nyheter/2026/2026-01-28-okad-sjuklighet---men-lika-bra-livskvalitet-for-vuxna-som-fotts-for-tidigt
+2026-01-31 00:45:38 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://uu.se/nyheter/alla
+2026-01-31 00:45:40 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://uu.se/forskning/tema/existens
+2026-01-31 00:45:43 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://uu.se/forskning/tema/det-globala-universitetet
+2026-01-31 00:45:46 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://uu.se/forskning/tema/naturens-krafter
+2026-01-31 00:45:49 - kse.crawler.kse_crawler_core - INFO - Completed crawl of uu.se: 10 pages, 0 failed
+2026-01-31 00:45:49 - kse.crawler.kse_crawler_core - INFO - Starting crawl of lu.se from https://lu.se
+2026-01-31 00:45:49 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://lu.se
+2026-01-31 00:45:52 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://lu.se/studera/livet-som-student/ny-som-student
+2026-01-31 00:45:55 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://www.lu.se/lubas/courses-programmes/*/courseandprogram/1/undefined
+2026-01-31 00:45:58 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://lu.se/studera/anmalan-och-antagning/antagningspoang
+2026-01-31 00:46:00 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.lu.se/studera/kompetensutveckling-och-vidareutbildning-genom-hela-livet
+2026-01-31 00:46:02 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://lu.se/studera/valja-studier/att-studera-pa-universitetet
+2026-01-31 00:46:04 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://lu.se/studera/livet-som-student
+2026-01-31 00:46:07 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://www.lu.se/studera
+2026-01-31 00:46:09 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://lu.se/forskning/hitta-forskning-och-forskare
+2026-01-31 00:46:11 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://www.lu.se/forskning/fokusomraden/hallbar-planet
+2026-01-31 00:46:13 - kse.crawler.kse_crawler_core - INFO - Completed crawl of lu.se: 10 pages, 0 failed
+2026-01-31 00:46:13 - kse.crawler.kse_crawler_core - INFO - Starting crawl of su.se from https://su.se
+2026-01-31 00:46:13 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://su.se
+2026-01-31 00:46:16 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://su.se/utbildning/utbildningskatalog
+2026-01-31 00:46:18 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://su.se/forskning/forskningskatalog
+2026-01-31 00:46:21 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://su.se/forskning/forskningskatalog/forskningsprojekt
+2026-01-31 00:46:23 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://su.se/forskning/forskningskatalog/forskargrupper
+2026-01-31 00:46:25 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://su.se/utbildning
+2026-01-31 00:46:28 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://su.se/utbildning/studie--och-karriarvagledning/studie--och-karriarvagledning
+2026-01-31 00:46:30 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://su.se/utbildning/en-lyckad-start
+2026-01-31 00:46:33 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://su.se/enheter/stockholms-universitetsbibliotek
+2026-01-31 00:46:35 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://su.se/om-universitetet/samverkan-och-samarbeten
+2026-01-31 00:46:37 - kse.crawler.kse_crawler_core - INFO - Completed crawl of su.se: 10 pages, 0 failed
+2026-01-31 00:46:37 - kse.crawler.kse_crawler_core - INFO - Starting crawl of kth.se from https://kth.se
+2026-01-31 00:46:37 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://kth.se
+2026-01-31 00:46:39 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://www.kth.se/forskning/omraden
+2026-01-31 00:46:42 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://kth.se/om/nyheter
+2026-01-31 00:46:44 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://kth.se/om/nyheter/centrala-nyheter/sa-ska-mikroplaster-sparas-1.1452611
+2026-01-31 00:46:46 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://kth.se/om/nyheter/centrala-nyheter/toppuniversitet-startar-natverk-for-blivande-entreprenorer-1.1454132
+2026-01-31 00:46:48 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://kth.se/om/nyheter/centrala-nyheter/new-study-enables-safe-reuse-of-concrete-1.1453932
+2026-01-31 00:46:51 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://kth.se/om/nyheter/lokala-nyheter
+2026-01-31 00:46:53 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://www.kth.se/utbildning/hitta
+2026-01-31 00:46:56 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.kth.se/utbildning/hitta-kurs/?l=sv
+2026-01-31 00:46:58 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://kth.se/utbildning/kontakt/kths-studenter-1.354635
+2026-01-31 00:47:01 - kse.crawler.kse_crawler_core - INFO - Completed crawl of kth.se: 10 pages, 0 failed
+2026-01-31 00:47:01 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 00:47:01 - kse.crawler.kse_crawler_core - INFO - Completed crawl of wikipedia.org: 0 pages, 0 failed
+2026-01-31 19:40:48 - kse.crawler.kse_url_processor - INFO - Loaded 80 visited URLs
+2026-01-31 19:40:48 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 80 visited URLs
+2026-01-31 19:40:48 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 5 domains
+2026-01-31 19:40:48 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 19:40:48 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svt.se: 0 pages, 0 failed
+2026-01-31 19:40:48 - kse.crawler.kse_crawler_core - INFO - Starting crawl of dn.se from https://dn.se
+2026-01-31 19:40:48 - kse.crawler.kse_crawler_core - INFO - Completed crawl of dn.se: 0 pages, 0 failed
+2026-01-31 19:40:48 - kse.crawler.kse_crawler_core - INFO - Starting crawl of aftonbladet.se from https://aftonbladet.se
+2026-01-31 19:40:49 - kse.crawler.kse_crawler_core - INFO - Completed crawl of aftonbladet.se: 0 pages, 0 failed
+2026-01-31 19:40:49 - kse.crawler.kse_crawler_core - INFO - Starting crawl of expressen.se from https://expressen.se
+2026-01-31 19:40:49 - kse.crawler.kse_crawler_core - INFO - Completed crawl of expressen.se: 0 pages, 0 failed
+2026-01-31 19:40:49 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svd.se from https://svd.se
+2026-01-31 19:40:49 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svd.se: 0 pages, 0 failed
+2026-01-31 20:04:47 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 20:04:47 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 3 domains
+2026-01-31 20:04:47 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org
+2026-01-31 20:04:47 - kse.crawler.kse_crawler_core - INFO - Completed crawl of sv.wikipedia.org: 0 pages, 0 failed
+2026-01-31 20:04:47 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 20:04:47 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://svt.se
+2026-01-31 20:04:49 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://svt.se/nyheter/utrikes/domare-ice-far-fortsatta-arbeta-i-minnesota
+2026-01-31 20:04:52 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://svt.se/nyheter/snabbkollen/polisen-gangen-reducerade-efter-gripanden
+2026-01-31 20:04:54 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://svt.se/nyheter/snabbkollen/allt-fler-svenskar-nobbar-usa
+2026-01-31 20:04:56 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://svt.se/nyheter/snabbkollen/iran-varnar-usa-och-israel-attackera-inte
+2026-01-31 20:04:58 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://svt.se/nyheter/om/melodifestivalen-2026
+2026-01-31 20:05:00 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://svt.se/kultur/melodifestivalen-2026
+2026-01-31 20:05:03 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://svt.se/kultur/sa-mycket-far-artisterna-och-det-kostar-hela-melodifestivalen
+2026-01-31 20:05:05 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://svt.se/special/quiz-mello-vad-hander-sen-i-klippet/
+2026-01-31 20:05:07 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://svt.se/kultur/melodifestivalen-2026-artister-datum-och-final
+2026-01-31 20:05:09 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svt.se: 10 pages, 0 failed
+2026-01-31 20:05:09 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://regeringen.se
+2026-01-31 20:05:09 - kse.crawler.kse_crawler_core - INFO - Completed crawl of regeringen.se: 0 pages, 0 failed
+2026-01-31 20:07:54 - kse.crawler.kse_url_processor - INFO - Loaded 10 visited URLs
+2026-01-31 20:07:54 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 10 visited URLs
+2026-01-31 20:07:54 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 1 domains
+2026-01-31 20:07:54 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org
+2026-01-31 20:07:54 - kse.crawler.kse_crawler_core - INFO - Completed crawl of sv.wikipedia.org: 0 pages, 0 failed
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 6 domains
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Completed crawl of sv.wikipedia.org: 0 pages, 0 failed
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Completed crawl of wikipedia.org: 0 pages, 0 failed
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 20:12:28 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://svt.se
+2026-01-31 20:12:30 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://svt.se/nyheter/utrikes/domare-ice-far-fortsatta-arbeta-i-minnesota
+2026-01-31 20:12:33 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://svt.se/nyheter/snabbkollen/polisen-gangen-reducerade-efter-gripanden
+2026-01-31 20:12:35 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://svt.se/nyheter/snabbkollen/allt-fler-svenskar-nobbar-usa
+2026-01-31 20:12:37 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://svt.se/nyheter/snabbkollen/iran-varnar-usa-och-israel-attackera-inte
+2026-01-31 20:12:39 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://svt.se/nyheter/om/melodifestivalen-2026
+2026-01-31 20:12:41 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://svt.se/kultur/melodifestivalen-2026
+2026-01-31 20:12:43 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://svt.se/kultur/sa-mycket-far-artisterna-och-det-kostar-hela-melodifestivalen
+2026-01-31 20:12:46 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://svt.se/special/quiz-mello-vad-hander-sen-i-klippet/
+2026-01-31 20:12:48 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://svt.se/kultur/melodifestivalen-2026-artister-datum-och-final
+2026-01-31 20:12:50 - kse.crawler.kse_crawler_core - INFO - Completed crawl of svt.se: 10 pages, 0 failed
+2026-01-31 20:12:50 - kse.crawler.kse_crawler_core - INFO - Starting crawl of dn.se from https://dn.se
+2026-01-31 20:12:50 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://dn.se
+2026-01-31 20:12:52 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://dn.se/direkt/ukraina/2026-01-31/zelenskyj-vantar-pa-information-om-fredssamtal/
+2026-01-31 20:12:54 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://dn.se/direkt/2026-01-31/tv4-svensk-rekryterade-kvinnor-at-epstein/
+2026-01-31 20:12:57 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://dn.se/om/fordonsindustrin/
+2026-01-31 20:12:59 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://dn.se/varlden/kan-el-trabanten-radda-den-europeiska-bilindustrin/
+2026-01-31 20:13:01 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://dn.se/ekonomi/jonas-froberg-har-ar-biltrenderna-och-nya-modellerna-du-inte-far-missa/
+2026-01-31 20:13:03 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://dn.se/varlden/meloni-dok-upp-som-angel-pa-kyrkvagg/
+2026-01-31 20:13:06 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://dn.se/direkt/
+2026-01-31 20:13:08 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://dn.se/direkt/2026-01-31/hacken-saljer-mittfaltare/
+2026-01-31 20:13:11 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://dn.se/direkt/2026-01-31/mal-igen-av-gyokeres-for-arsenal/
+2026-01-31 20:13:13 - kse.crawler.kse_crawler_core - INFO - Completed crawl of dn.se: 10 pages, 0 failed
+2026-01-31 20:13:13 - kse.crawler.kse_crawler_core - INFO - Starting crawl of expressen.se from https://expressen.se
+2026-01-31 20:13:13 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://expressen.se
+2026-01-31 20:13:15 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://expressen.se/tv/nyheter/brak-i-vita-huset-du-ar-hogljudd/
+2026-01-31 20:13:17 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://expressen.se/tv/noje/melodifestivalen/jacqlines-kamp-mina-brost-ar-sprangfyllda/
+2026-01-31 20:13:20 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://expressen.se/tv/nyheter/patrik-och-jc-dog-i-gruvan/
+2026-01-31 20:13:23 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://expressen.se/tv/noje/melodifestivalen/a-teens-skrack-over-bilderna/
+2026-01-31 20:13:25 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://expressen.se/tv/nyheter/varlden/trumps-kryptiska-hotord-inatt/
+2026-01-31 20:13:27 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://expressen.se/tv/nyheter/varlden/ser-besten-pa-hall-sedan-stormar-den/
+2026-01-31 20:13:30 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://expressen.se/tv/nyheter/varlden/kaos-i-kiev-tunnelbanan-utslagen/
+2026-01-31 20:13:32 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://expressen.se/tv/nyheter/varlden/cnn-reportern-tvingas-avbryta-direkt/
+2026-01-31 20:13:34 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://expressen.se/tv/nyheter/tvingades-skotta-sno-dog/
+2026-01-31 20:13:36 - kse.crawler.kse_crawler_core - INFO - Completed crawl of expressen.se: 10 pages, 0 failed
+2026-01-31 20:13:36 - kse.crawler.kse_crawler_core - INFO - Starting crawl of aftonbladet.se from https://aftonbladet.se
+2026-01-31 20:13:36 - kse.crawler.kse_crawler_core - INFO - Completed crawl of aftonbladet.se: 0 pages, 0 failed
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 3 domains
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org
+2026-01-31 20:20:36 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 20:20:36 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 20:20:36 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 1, Failed: 1
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - WARNING -    Reason: 1 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 20:20:36 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svt.se/robots.txt
+2026-01-31 20:20:36 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://svt.se
+2026-01-31 20:20:38 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://svt.se/nyheter/utrikes/domare-ice-far-fortsatta-arbeta-i-minnesota
+2026-01-31 20:20:41 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://svt.se/nyheter/snabbkollen/polisen-gangen-reducerade-efter-gripanden
+2026-01-31 20:20:43 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://svt.se/nyheter/snabbkollen/allt-fler-svenskar-nobbar-usa
+2026-01-31 20:20:45 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://svt.se/nyheter/snabbkollen/iran-varnar-usa-och-israel-attackera-inte
+2026-01-31 20:20:47 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://svt.se/nyheter/om/melodifestivalen-2026
+2026-01-31 20:20:49 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://svt.se/kultur/melodifestivalen-2026
+2026-01-31 20:20:52 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://svt.se/kultur/sa-mycket-far-artisterna-och-det-kostar-hela-melodifestivalen
+2026-01-31 20:20:54 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://svt.se/special/quiz-mello-vad-hander-sen-i-klippet/
+2026-01-31 20:20:56 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://svt.se/kultur/melodifestivalen-2026-artister-datum-och-final
+2026-01-31 20:20:58 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svt.se: 10 pages, 0 failed
+2026-01-31 20:20:58 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://regeringen.se
+2026-01-31 20:20:58 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://regeringen.se/robots.txt
+2026-01-31 20:20:58 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://regeringen.se
+2026-01-31 20:20:58 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact regeringen.se for access
+2026-01-31 20:20:58 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://regeringen.se - Blocked by robots.txt
+2026-01-31 20:20:58 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from regeringen.se! Total URLs checked: 1, Failed: 1
+2026-01-31 20:20:58 - kse.crawler.kse_crawler_core - WARNING -    Reason: 1 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 13 domains
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 20:28:09 - kse.crawler.kse_robots_parser - INFO - No robots.txt at https://www.sv.wikipedia.org/robots.txt (allowing all): <urlopen error [Errno 11001] getaddrinfo failed>
+2026-01-31 20:28:09 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://www.sv.wikipedia.org
+2026-01-31 20:28:09 - kse.crawler.kse_http_client - WARNING - Connection error on https://www.sv.wikipedia.org: HTTPSConnectionPool(host='www.sv.wikipedia.org', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000023855DC9400>: Failed to resolve 'www.sv.wikipedia.org' ([Errno 11001] getaddrinfo failed)"))
+2026-01-31 20:28:11 - kse.crawler.kse_http_client - WARNING - Connection error on https://www.sv.wikipedia.org: HTTPSConnectionPool(host='www.sv.wikipedia.org', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000023855DC99A0>: Failed to resolve 'www.sv.wikipedia.org' ([Errno 11001] getaddrinfo failed)"))
+2026-01-31 20:28:13 - kse.crawler.kse_http_client - WARNING - Connection error on https://www.sv.wikipedia.org: HTTPSConnectionPool(host='www.sv.wikipedia.org', port=443): Max retries exceeded with url: / (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000023855DC9A60>: Failed to resolve 'www.sv.wikipedia.org' ([Errno 11001] getaddrinfo failed)"))
+2026-01-31 20:28:15 - kse.crawler.kse_crawler_core - ERROR - HTTP fetch failed for https://www.sv.wikipedia.org: Connection error: https://www.sv.wikipedia.org
+2026-01-31 20:28:15 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 5, Failed: 5
+2026-01-31 20:28:15 - kse.crawler.kse_crawler_core - WARNING -    Reason: 5 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:28:15 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:28:15 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:28:17 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 20:28:20 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://sv.wikipedia.org
+2026-01-31 20:28:22 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: http://sv.wikipedia.org
+2026-01-31 20:28:24 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://sv.wikipedia.org/wiki/Wikipedia
+2026-01-31 20:28:27 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://sv.wikipedia.org/wiki/Wikipedia:Upphovsr%C3%A4tt
+2026-01-31 20:28:29 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://sv.wikipedia.org/wiki/Wikipedia:Introduktion_till_redigering
+2026-01-31 20:28:31 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://sv.wikipedia.org/wiki/L%C3%B6rdag
+2026-01-31 20:28:33 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://sv.wikipedia.org/wiki/31_januari
+2026-01-31 20:28:35 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://sv.wikipedia.org/wiki/2026
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 10 pages, 0 failed
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org/
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://wikipedia.org/robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org/
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org/ - Blocked by robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org/wiki/Main_Page
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org/wiki/Main_Page - Blocked by robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org - Blocked by robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://wikipedia.org/robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://wikipedia.org
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://wikipedia.org - Blocked by robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.wikipedia.org/robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.wikipedia.org
+2026-01-31 20:28:38 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.wikipedia.org for access
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.wikipedia.org - Blocked by robots.txt
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 5, Failed: 5
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - WARNING -    Reason: 5 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org/
+2026-01-31 20:28:38 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://wikipedia.org/
+2026-01-31 20:28:40 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://wikipedia.org/wiki/Main_Page
+2026-01-31 20:28:43 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: http://wikipedia.org
+2026-01-31 20:28:45 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://wikipedia.org/wiki/Wikipedia
+2026-01-31 20:28:47 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://wikipedia.org/wiki/Free_content
+2026-01-31 20:28:50 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://wikipedia.org/wiki/Encyclopedia
+2026-01-31 20:28:52 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://wikipedia.org/wiki/Help:Introduction_to_Wikipedia
+2026-01-31 20:28:54 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://wikipedia.org/wiki/Special:Statistics
+2026-01-31 20:28:57 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://wikipedia.org/wiki/English_language
+2026-01-31 20:29:00 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://wikipedia.org/wiki/English_Wikipedia
+2026-01-31 20:29:02 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of wikipedia.org: 10 pages, 0 failed
+2026-01-31 20:29:02 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 20:29:02 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svt.se/robots.txt
+2026-01-31 20:29:02 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://svt.se
+2026-01-31 20:29:05 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svt.se/robots.txt
+2026-01-31 20:29:05 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://svt.se
+2026-01-31 20:29:07 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://svt.se/nyheter/utrikes/domare-ice-far-fortsatta-arbeta-i-minnesota
+2026-01-31 20:29:09 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://svt.se/nyheter/snabbkollen/polisen-gangen-reducerade-efter-gripanden
+2026-01-31 20:29:11 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://svt.se/nyheter/snabbkollen/allt-fler-svenskar-nobbar-usa
+2026-01-31 20:29:13 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://svt.se/nyheter/snabbkollen/iran-varnar-usa-och-israel-attackera-inte
+2026-01-31 20:29:15 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://svt.se/nyheter/om/melodifestivalen-2026
+2026-01-31 20:29:17 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://svt.se/kultur/melodifestivalen-2026
+2026-01-31 20:29:20 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://svt.se/kultur/sa-mycket-far-artisterna-och-det-kostar-hela-melodifestivalen
+2026-01-31 20:29:22 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://svt.se/special/quiz-mello-vad-hander-sen-i-klippet/
+2026-01-31 20:29:24 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svt.se: 10 pages, 0 failed
+2026-01-31 20:29:24 - kse.crawler.kse_crawler_core - INFO - Starting crawl of dn.se from https://dn.se
+2026-01-31 20:29:24 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://dn.se/robots.txt
+2026-01-31 20:29:24 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://dn.se
+2026-01-31 20:29:26 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://dn.se/robots.txt
+2026-01-31 20:29:26 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://dn.se
+2026-01-31 20:29:29 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://dn.se/direkt/2026-01-31/domare-ice-far-fortsatta-arbeta-i-minnesota/
+2026-01-31 20:29:31 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://dn.se/direkt/2026-01-31/norske-stjarnan-till-sjukhus-med-huvudskada/
+2026-01-31 20:29:33 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://dn.se/direkt/2026-01-31/tv4-svensk-rekryterade-kvinnor-at-epstein/
+2026-01-31 20:29:35 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://dn.se/om/fordonsindustrin/
+2026-01-31 20:29:38 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://dn.se/varlden/kan-el-trabanten-radda-den-europeiska-bilindustrin/
+2026-01-31 20:29:40 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://dn.se/ekonomi/jonas-froberg-har-ar-biltrenderna-och-nya-modellerna-du-inte-far-missa/
+2026-01-31 20:29:42 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://dn.se/varlden/meloni-dok-upp-som-angel-pa-kyrkvagg/
+2026-01-31 20:29:44 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://dn.se/direkt/
+2026-01-31 20:29:46 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of dn.se: 10 pages, 0 failed
+2026-01-31 20:29:46 - kse.crawler.kse_crawler_core - INFO - Starting crawl of aftonbladet.se from https://aftonbladet.se
+2026-01-31 20:29:47 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://aftonbladet.se/robots.txt
+2026-01-31 20:29:47 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://aftonbladet.se
+2026-01-31 20:29:47 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact aftonbladet.se for access
+2026-01-31 20:29:47 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://aftonbladet.se - Blocked by robots.txt
+2026-01-31 20:29:47 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://aftonbladet.se/robots.txt
+2026-01-31 20:29:47 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://aftonbladet.se
+2026-01-31 20:29:47 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact aftonbladet.se for access
+2026-01-31 20:29:47 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://aftonbladet.se - Blocked by robots.txt
+2026-01-31 20:29:47 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.aftonbladet.se/robots.txt
+2026-01-31 20:29:47 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://www.aftonbladet.se
+2026-01-31 20:29:49 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/8pBWPw/hampus-nessvold-skamtar-om-dermot-clemenger
+2026-01-31 20:29:51 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://www.aftonbladet.se/sportbladet/a/8pBzkx/paul-george-stangs-av-i-25-matcher
+2026-01-31 20:29:53 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/8pBWlr/chatta-med-aftonbladet-om-melodifestivaln-deltavling-1
+2026-01-31 20:29:55 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/5p62nW/melodifestivalen-2026-deltavling-1-alla-artister-och-startordning
+2026-01-31 20:29:57 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.aftonbladet.se/podcasts/ab/episode/395297
+2026-01-31 20:30:00 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://www.aftonbladet.se/nojesbladet
+2026-01-31 20:30:02 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://www.aftonbladet.se/nojesbladet/melodifestivalen
+2026-01-31 20:30:04 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.aftonbladet.se/tagg/melodifestivalen
+2026-01-31 20:30:06 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://www.aftonbladet.se/av/stina-dahlgren
+2026-01-31 20:30:08 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of aftonbladet.se: 10 pages, 2 failed
+2026-01-31 20:30:08 - kse.crawler.kse_crawler_core - INFO - Starting crawl of expressen.se from https://expressen.se
+2026-01-31 20:30:08 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://expressen.se/robots.txt
+2026-01-31 20:30:08 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://expressen.se
+2026-01-31 20:30:11 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://expressen.se/robots.txt
+2026-01-31 20:30:11 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://expressen.se
+2026-01-31 20:30:13 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://expressen.se/tv/nyheter/brak-i-vita-huset-du-ar-hogljudd/
+2026-01-31 20:30:15 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://expressen.se/tv/noje/melodifestivalen/jacqlines-kamp-mina-brost-ar-sprangfyllda/
+2026-01-31 20:30:17 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://expressen.se/tv/nyheter/patrik-och-jc-dog-i-gruvan/
+2026-01-31 20:30:19 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://expressen.se/tv/noje/melodifestivalen/a-teens-skrack-over-bilderna/
+2026-01-31 20:30:21 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://expressen.se/tv/nyheter/varlden/trumps-kryptiska-hotord-inatt/
+2026-01-31 20:30:24 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://expressen.se/tv/nyheter/varlden/ser-besten-pa-hall-sedan-stormar-den/
+2026-01-31 20:30:26 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://expressen.se/tv/nyheter/varlden/kaos-i-kiev-tunnelbanan-utslagen/
+2026-01-31 20:30:28 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://expressen.se/tv/nyheter/varlden/cnn-reportern-tvingas-avbryta-direkt/
+2026-01-31 20:30:30 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of expressen.se: 10 pages, 0 failed
+2026-01-31 20:30:30 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svd.se from https://svd.se
+2026-01-31 20:30:30 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svd.se/robots.txt
+2026-01-31 20:30:30 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://svd.se
+2026-01-31 20:30:30 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact svd.se for access
+2026-01-31 20:30:30 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://svd.se - Blocked by robots.txt
+2026-01-31 20:30:30 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svd.se/robots.txt
+2026-01-31 20:30:30 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://svd.se
+2026-01-31 20:30:30 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact svd.se for access
+2026-01-31 20:30:30 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://svd.se - Blocked by robots.txt
+2026-01-31 20:30:31 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.svd.se/robots.txt
+2026-01-31 20:30:31 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://www.svd.se
+2026-01-31 20:30:33 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://www.svd.se/naringsliv
+2026-01-31 20:30:35 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://www.svd.se/kultur
+2026-01-31 20:30:37 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://www.svd.se/ledare
+2026-01-31 20:30:39 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.svd.se/debatt
+2026-01-31 20:30:41 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.svd.se/livet
+2026-01-31 20:30:43 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69465
+2026-01-31 20:30:45 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://www.svd.se/a/3p677P/epsteinfilerna-mette-marit-stallde-olamplig-fraga-om-bonusprinsen
+2026-01-31 20:30:47 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.svd.se/a/RjyE3d/ukraina-30-minusgrader-vantas-i-kiev-manga-ar-utan-varme
+2026-01-31 20:30:49 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://www.svd.se/a/QJxKeq/arets-melodifestival-ar-i-gang
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svd.se: 10 pages, 2 failed
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://www.regeringen.se/
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.regeringen.se/robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se/
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se/ - Blocked by robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se/sveriges-regering/
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se/sveriges-regering/ - Blocked by robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://regeringen.se/robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://regeringen.se
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact regeringen.se for access
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://regeringen.se - Blocked by robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://regeringen.se/robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://regeringen.se
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact regeringen.se for access
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://regeringen.se - Blocked by robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se
+2026-01-31 20:30:51 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se - Blocked by robots.txt
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from regeringen.se! Total URLs checked: 5, Failed: 5
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - WARNING -    Reason: 5 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://www.regeringen.se/
+2026-01-31 20:30:51 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://www.regeringen.se/
+2026-01-31 20:30:54 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: https://www.regeringen.se/sveriges-regering/
+2026-01-31 20:30:56 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: http://regeringen.se
+2026-01-31 20:30:58 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://www.regeringen.se/uds-reseinformation/
+2026-01-31 20:31:00 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.regeringen.se/regeringens-politik/regeringens-prioriteringar/
+2026-01-31 20:31:02 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.regeringen.se/regeringens-politik/militart-forsvar/
+2026-01-31 20:31:05 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://www.regeringen.se/sveriges-regering/finansdepartementet/statens-budget/
+2026-01-31 20:31:07 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://www.regeringen.se/sverige-i-eu/
+2026-01-31 20:31:10 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.regeringen.se/regeringens-politik/sverige-i-nato/
+2026-01-31 20:31:12 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://www.regeringen.se/regeringens-politik/sveriges-stod-till-ukraina/
+2026-01-31 20:31:15 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of regeringen.se: 10 pages, 0 failed
+2026-01-31 20:31:15 - kse.crawler.kse_crawler_core - INFO - Starting crawl of riksdagen.se from https://riksdagen.se
+2026-01-31 20:31:15 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://riksdagen.se/robots.txt
+2026-01-31 20:31:15 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://riksdagen.se
+2026-01-31 20:31:17 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://riksdagen.se/robots.txt
+2026-01-31 20:31:17 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://riksdagen.se
+2026-01-31 20:31:20 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.riksdagen.se/robots.txt
+2026-01-31 20:31:20 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://www.riksdagen.se/sv/sok/?doktyp=sfs&dokstat=g%C3%A4llande+sfs
+2026-01-31 20:31:22 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://www.riksdagen.se/sv/sa-fungerar-riksdagen/demokrati/sveriges-grundlagar-och-riksdagsordningen/
+2026-01-31 20:31:24 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.riksdagen.se/sv/aktuellt/
+2026-01-31 20:31:27 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/_H6D1plan/
+2026-01-31 20:31:29 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://www.riksdagen.se/sv/sok/?avd=dokument
+2026-01-31 20:31:31 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://www.riksdagen.se/sv/aktuellt/aktuelltnotiser/2026/jan/30/usas-agerande-mot-gronland-diskuterades-vid_cmsfe0d5ac3-2c87-4fef-ad3c-6ea5b9f5dafesv/
+2026-01-31 20:31:34 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/arbetsprovning-med-bibehallen-sjukpenning_hd01sfu9/
+2026-01-31 20:31:36 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/utokade-registerkontroller-vid-anstallning-i_hd01juu22/
+2026-01-31 20:31:38 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of riksdagen.se: 10 pages, 0 failed
+2026-01-31 20:31:38 - kse.crawler.kse_crawler_core - INFO - Starting crawl of uu.se from https://uu.se
+2026-01-31 20:31:38 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://uu.se/robots.txt
+2026-01-31 20:31:38 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://uu.se
+2026-01-31 20:31:41 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://uu.se/robots.txt
+2026-01-31 20:31:41 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://uu.se
+2026-01-31 20:31:43 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://uu.se/om-uu/doktorspromotion
+2026-01-31 20:31:45 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://uu.se/student
+2026-01-31 20:31:47 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.uu.se/robots.txt
+2026-01-31 20:31:47 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://www.uu.se/nyheter/2026/2026-01-29-den-relativa-fattigdomen-i-sverige-har-fordubblats
+2026-01-31 20:31:50 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.uu.se/nyheter/2026/2026-01-29-fyra-av-fem-akademiforskare-inom-sprak-till-uppsala-universitet
+2026-01-31 20:31:52 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://www.uu.se/nyheter/2026/2026-01-28-okad-sjuklighet---men-lika-bra-livskvalitet-for-vuxna-som-fotts-for-tidigt
+2026-01-31 20:31:54 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://uu.se/nyheter/alla
+2026-01-31 20:31:57 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://uu.se/forskning/tema/existens
+2026-01-31 20:31:59 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://uu.se/forskning/tema/det-globala-universitetet
+2026-01-31 20:32:01 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of uu.se: 10 pages, 0 failed
+2026-01-31 20:32:01 - kse.crawler.kse_crawler_core - INFO - Starting crawl of lu.se from https://lu.se
+2026-01-31 20:32:02 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://lu.se/robots.txt
+2026-01-31 20:32:02 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://lu.se
+2026-01-31 20:32:04 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://lu.se/robots.txt
+2026-01-31 20:32:04 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://lu.se
+2026-01-31 20:32:06 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://lu.se/studera/livet-som-student/ny-som-student
+2026-01-31 20:32:08 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.lu.se/robots.txt
+2026-01-31 20:32:08 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://www.lu.se/lubas/courses-programmes/*/courseandprogram/1/undefined
+2026-01-31 20:32:10 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://lu.se/studera/anmalan-och-antagning/antagningspoang
+2026-01-31 20:32:13 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://www.lu.se/studera/kompetensutveckling-och-vidareutbildning-genom-hela-livet
+2026-01-31 20:32:15 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://lu.se/studera/valja-studier/att-studera-pa-universitetet
+2026-01-31 20:32:17 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://lu.se/studera/livet-som-student
+2026-01-31 20:32:19 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.lu.se/studera
+2026-01-31 20:32:21 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://lu.se/forskning/hitta-forskning-och-forskare
+2026-01-31 20:32:23 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of lu.se: 10 pages, 0 failed
+2026-01-31 20:32:23 - kse.crawler.kse_crawler_core - INFO - Starting crawl of su.se from https://su.se
+2026-01-31 20:32:23 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://su.se/robots.txt
+2026-01-31 20:32:23 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://su.se
+2026-01-31 20:32:26 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://su.se/robots.txt
+2026-01-31 20:32:26 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://su.se
+2026-01-31 20:32:28 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://su.se/utbildning/utbildningskatalog
+2026-01-31 20:32:30 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://su.se/forskning/forskningskatalog
+2026-01-31 20:32:32 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://su.se/forskning/forskningskatalog/forskningsprojekt
+2026-01-31 20:32:34 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://su.se/forskning/forskningskatalog/forskargrupper
+2026-01-31 20:32:36 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://su.se/utbildning
+2026-01-31 20:32:39 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://su.se/utbildning/studie--och-karriarvagledning/studie--och-karriarvagledning
+2026-01-31 20:32:41 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://su.se/utbildning/en-lyckad-start
+2026-01-31 20:32:43 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://su.se/enheter/stockholms-universitetsbibliotek
+2026-01-31 20:32:45 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of su.se: 10 pages, 0 failed
+2026-01-31 20:32:45 - kse.crawler.kse_crawler_core - INFO - Starting crawl of kth.se from https://kth.se
+2026-01-31 20:32:45 - kse.crawler.kse_robots_parser - INFO - No robots.txt at https://kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 20:32:45 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://kth.se
+2026-01-31 20:32:48 - kse.crawler.kse_robots_parser - INFO - No robots.txt at http://kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 20:32:48 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://kth.se
+2026-01-31 20:32:50 - kse.crawler.kse_robots_parser - INFO - No robots.txt at https://www.kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 20:32:50 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://www.kth.se/forskning/omraden
+2026-01-31 20:32:52 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://kth.se/om/nyheter
+2026-01-31 20:32:54 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://kth.se/om/nyheter/centrala-nyheter/sa-ska-mikroplaster-sparas-1.1452611
+2026-01-31 20:32:56 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://kth.se/om/nyheter/centrala-nyheter/toppuniversitet-startar-natverk-for-blivande-entreprenorer-1.1454132
+2026-01-31 20:32:58 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://kth.se/om/nyheter/centrala-nyheter/new-study-enables-safe-reuse-of-concrete-1.1453932
+2026-01-31 20:33:01 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://kth.se/om/nyheter/lokala-nyheter
+2026-01-31 20:33:03 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://www.kth.se/utbildning/hitta
+2026-01-31 20:33:06 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://www.kth.se/utbildning/hitta-kurs/?l=sv
+2026-01-31 20:33:08 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of kth.se: 10 pages, 0 failed
+2026-01-31 20:33:08 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 20:33:08 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 0, Failed: 0
+2026-01-31 20:33:08 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 20:33:08 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 0, Failed: 0
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 13 domains
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 20:40:32 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 4, Failed: 4
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - WARNING -    Reason: 4 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:40:32 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 20:40:35 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 20:40:37 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://sv.wikipedia.org
+2026-01-31 20:40:40 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: http://sv.wikipedia.org
+2026-01-31 20:40:42 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://sv.wikipedia.org/wiki/Wikipedia
+2026-01-31 20:40:44 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://sv.wikipedia.org/wiki/Wikipedia:Upphovsr%C3%A4tt
+2026-01-31 20:40:46 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://sv.wikipedia.org/wiki/Wikipedia:Introduktion_till_redigering
+2026-01-31 20:40:48 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://sv.wikipedia.org/wiki/L%C3%B6rdag
+2026-01-31 20:40:50 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://sv.wikipedia.org/wiki/31_januari
+2026-01-31 20:40:52 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://sv.wikipedia.org/wiki/2026
+2026-01-31 20:40:54 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://sv.wikipedia.org/wiki/Special:Statistik
+2026-01-31 20:40:57 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://sv.wikipedia.org/wiki/Svenska
+2026-01-31 20:40:59 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://sv.wikipedia.org/wiki/Portal:Utvalt_inneh%C3%A5ll
+2026-01-31 20:41:01 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://sv.wikipedia.org/wiki/Elvis%27_Christmas_Album
+2026-01-31 20:41:03 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://sv.wikipedia.org/wiki/Julmusik
+2026-01-31 20:41:06 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://sv.wikipedia.org/wiki/Elvis_Presley
+2026-01-31 20:41:08 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://sv.wikipedia.org/wiki/RCA_Records
+2026-01-31 20:41:10 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://sv.wikipedia.org/wiki/Monofoni_(ljudteknik)
+2026-01-31 20:41:12 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://sv.wikipedia.org/wiki/Musik%C3%A5ret_1957
+2026-01-31 20:41:15 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://sv.wikipedia.org/wiki/Hollywood
+2026-01-31 20:41:17 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 20 pages, 0 failed
+2026-01-31 20:41:17 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org/
+2026-01-31 20:41:17 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://wikipedia.org/robots.txt
+2026-01-31 20:41:17 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org/
+2026-01-31 20:41:17 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:41:17 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org/ - Blocked by robots.txt
+2026-01-31 20:41:17 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org/wiki/Main_Page
+2026-01-31 20:41:17 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:41:17 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org/wiki/Main_Page - Blocked by robots.txt
+2026-01-31 20:41:17 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org
+2026-01-31 20:41:17 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:41:17 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org - Blocked by robots.txt
+2026-01-31 20:41:18 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://wikipedia.org/robots.txt
+2026-01-31 20:41:18 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://wikipedia.org
+2026-01-31 20:41:18 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 20:41:18 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://wikipedia.org - Blocked by robots.txt
+2026-01-31 20:41:18 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.wikipedia.org/robots.txt
+2026-01-31 20:41:18 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.wikipedia.org
+2026-01-31 20:41:18 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.wikipedia.org for access
+2026-01-31 20:41:18 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.wikipedia.org - Blocked by robots.txt
+2026-01-31 20:41:18 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 5, Failed: 5
+2026-01-31 20:41:18 - kse.crawler.kse_crawler_core - WARNING -    Reason: 5 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:41:18 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org/
+2026-01-31 20:41:18 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://wikipedia.org/
+2026-01-31 20:41:20 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: https://wikipedia.org/wiki/Main_Page
+2026-01-31 20:41:22 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: http://wikipedia.org
+2026-01-31 20:41:25 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://wikipedia.org/wiki/Wikipedia
+2026-01-31 20:41:27 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://wikipedia.org/wiki/Free_content
+2026-01-31 20:41:29 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://wikipedia.org/wiki/Encyclopedia
+2026-01-31 20:41:32 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://wikipedia.org/wiki/Help:Introduction_to_Wikipedia
+2026-01-31 20:41:34 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://wikipedia.org/wiki/Special:Statistics
+2026-01-31 20:41:36 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://wikipedia.org/wiki/English_language
+2026-01-31 20:41:39 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://wikipedia.org/wiki/English_Wikipedia
+2026-01-31 20:41:41 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://wikipedia.org/wiki/Wikipedia:25th_anniversary
+2026-01-31 20:41:44 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://wikipedia.org/wiki/Ford_Foundation_Center_for_Social_Justice
+2026-01-31 20:41:46 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://wikipedia.org/wiki/Midtown_Manhattan
+2026-01-31 20:41:49 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://wikipedia.org/wiki/Modern_architecture
+2026-01-31 20:41:51 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://wikipedia.org/wiki/Kevin_Roche
+2026-01-31 20:41:53 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://wikipedia.org/wiki/John_Dinkeloo
+2026-01-31 20:41:56 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://wikipedia.org/wiki/Roche-Dinkeloo
+2026-01-31 20:41:58 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://wikipedia.org/wiki/Ford_Foundation
+2026-01-31 20:42:00 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://wikipedia.org/wiki/Pier_(architecture)
+2026-01-31 20:42:03 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://wikipedia.org/wiki/Concrete
+2026-01-31 20:42:06 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of wikipedia.org: 20 pages, 0 failed
+2026-01-31 20:42:06 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 20:42:06 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svt.se/robots.txt
+2026-01-31 20:42:06 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://svt.se
+2026-01-31 20:42:08 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svt.se/robots.txt
+2026-01-31 20:42:08 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://svt.se
+2026-01-31 20:42:10 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://svt.se/nyheter/utrikes/domare-ice-far-fortsatta-arbeta-i-minnesota
+2026-01-31 20:42:12 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://svt.se/nyheter/snabbkollen/polisen-gangen-reducerade-efter-gripanden
+2026-01-31 20:42:15 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://svt.se/nyheter/snabbkollen/allt-fler-svenskar-nobbar-usa
+2026-01-31 20:42:17 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://svt.se/nyheter/snabbkollen/iran-varnar-usa-och-israel-attackera-inte
+2026-01-31 20:42:19 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://svt.se/nyheter/om/melodifestivalen-2026
+2026-01-31 20:42:21 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://svt.se/kultur/melodifestivalen-2026
+2026-01-31 20:42:23 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://svt.se/kultur/sa-mycket-far-artisterna-och-det-kostar-hela-melodifestivalen
+2026-01-31 20:42:25 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://svt.se/special/quiz-mello-vad-hander-sen-i-klippet/
+2026-01-31 20:42:28 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://svt.se/kultur/melodifestivalen-2026-artister-datum-och-final
+2026-01-31 20:42:30 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://svt.se/nyheter/utrikes/oppositionen-i-exil-sa-vill-de-leda-ryssland-efter-putin
+2026-01-31 20:42:32 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://svt.se/nyheter/utrikes/direktrapport-forsamrat-sakerhetslage?inlagg=77ca3172dd42f7284c9b27004c56f13b
+2026-01-31 20:42:34 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://svt.se/nyheter/utrikes/hard-kyla-vantas-i-kiev-fruktansvart-svart
+2026-01-31 20:42:36 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://svt.se/nyheter/video/f2c1ecd2eab1bf10-julija-navalnaja/h9wb2w
+2026-01-31 20:42:38 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://svt.se/nyheter/video/c110a107ea0fc3af-vladimir-kara-murza/h9wb2w
+2026-01-31 20:42:40 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://svt.se/nyheter/video/f3c9f11424026f4c-michail-chodorkovskij/h9wb2w
+2026-01-31 20:42:42 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://svt.se/nyheter/om/30-minuter-8f51284c8e179f1d
+2026-01-31 20:42:45 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://svt.se/nyheter/inrikes/busch-kd-orealistiskt-med-karnvapen-pa-svensk-mark
+2026-01-31 20:42:47 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://svt.se/nyheter/inrikes/kd-oppnar-for-europeiskt-karnvapenprogram-men-inte-pa-svensk-mark
+2026-01-31 20:42:49 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svt.se: 20 pages, 0 failed
+2026-01-31 20:42:49 - kse.crawler.kse_crawler_core - INFO - Starting crawl of dn.se from https://dn.se
+2026-01-31 20:42:49 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://dn.se/robots.txt
+2026-01-31 20:42:49 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://dn.se
+2026-01-31 20:42:52 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://dn.se/robots.txt
+2026-01-31 20:42:52 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://dn.se
+2026-01-31 20:42:54 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://dn.se/direkt/2026-01-31/domare-ice-far-fortsatta-arbeta-i-minnesota/
+2026-01-31 20:42:56 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://dn.se/direkt/2026-01-31/norske-stjarnan-till-sjukhus-med-huvudskada/
+2026-01-31 20:42:58 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://dn.se/direkt/2026-01-31/tv4-svensk-rekryterade-kvinnor-at-epstein/
+2026-01-31 20:43:01 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://dn.se/om/det-norska-kungahuset/
+2026-01-31 20:43:03 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://dn.se/varlden/kungafamiljens-kris-kan-ha-en-styvson-i-fangelse/
+2026-01-31 20:43:05 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://dn.se/varlden/meloni-dok-upp-som-angel-pa-kyrkvagg/
+2026-01-31 20:43:07 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://dn.se/direkt/
+2026-01-31 20:43:10 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://dn.se/direkt/2026-01-31/hacken-saljer-mittfaltare/
+2026-01-31 20:43:12 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://dn.se/direkt/2026-01-31/mal-igen-av-gyokeres-for-arsenal/
+2026-01-31 20:43:14 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://dn.se/direkt/2026-01-31/dirty-dancing-far-uppfoljare/
+2026-01-31 20:43:16 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://dn.se/direkt/2026-01-31/bil-och-buss-i-krock-man-dod/
+2026-01-31 20:43:18 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://dn.se/direkt/2026-01-31/misstankt-foremal-orsakade-avsparrningar-utanfor-polishus/
+2026-01-31 20:43:21 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://dn.se/direkt/2026-01-31/svensk-skidakare-dod-i-lavinolycka-i-schweiz/
+2026-01-31 20:43:23 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://dn.se/direkt/2026-01-31/naslunds-miss-i-sista-tavlingen-infor-os/
+2026-01-31 20:43:25 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://dn.se/om/melodifestivalen/
+2026-01-31 20:43:27 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://dn.se/kultur/matilda-kallen-de-blir-melodifestivalens-forsta-finalister/
+2026-01-31 20:43:30 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://dn.se/kultur/dirawi-och-nessvold-om-mellosamarbetet-som-att-vi-var-pa-en-dejt/
+2026-01-31 20:43:32 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://dn.se/kultur/a-teens-tillbaka-i-mello-efter-aterforeningen-sjukt-stolta/
+2026-01-31 20:43:34 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of dn.se: 20 pages, 0 failed
+2026-01-31 20:43:34 - kse.crawler.kse_crawler_core - INFO - Starting crawl of aftonbladet.se from https://aftonbladet.se
+2026-01-31 20:43:34 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://aftonbladet.se/robots.txt
+2026-01-31 20:43:34 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://aftonbladet.se
+2026-01-31 20:43:34 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact aftonbladet.se for access
+2026-01-31 20:43:34 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://aftonbladet.se - Blocked by robots.txt
+2026-01-31 20:43:34 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://aftonbladet.se/robots.txt
+2026-01-31 20:43:34 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://aftonbladet.se
+2026-01-31 20:43:34 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact aftonbladet.se for access
+2026-01-31 20:43:34 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://aftonbladet.se - Blocked by robots.txt
+2026-01-31 20:43:35 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.aftonbladet.se/robots.txt
+2026-01-31 20:43:35 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://www.aftonbladet.se
+2026-01-31 20:43:37 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/8pBWPw/hampus-nessvold-skamtar-om-dermot-clemenger
+2026-01-31 20:43:39 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://www.aftonbladet.se/sportbladet/a/Pdyw80/chelsea-vande-mot-west-ham-kaosscener-pa-slutet
+2026-01-31 20:43:41 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/8pBWlr/chatta-med-aftonbladet-om-melodifestivaln-deltavling-1
+2026-01-31 20:43:43 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/7p5JrV/miss-under-greczulas-bidrag-st-beklagar
+2026-01-31 20:43:45 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/5p62nW/melodifestivalen-2026-deltavling-1-alla-artister-och-startordning
+2026-01-31 20:43:47 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://www.aftonbladet.se/brand-studio/postkodlotteriet/42-nya-miljonarer-i-grannyran/
+2026-01-31 20:43:49 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://www.aftonbladet.se/nojesbladet
+2026-01-31 20:43:51 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen
+2026-01-31 20:43:54 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://www.aftonbladet.se/tagg/melodifestivalen
+2026-01-31 20:43:56 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://www.aftonbladet.se/av/stina-dahlgren
+2026-01-31 20:43:58 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://www.aftonbladet.se/tagg/gina-dirawi
+2026-01-31 20:44:00 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://www.aftonbladet.se/tagg/hampus-nessvold
+2026-01-31 20:44:02 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/wrPxa4/dirawi-forsvarar-beslut-att-leda-melodifestivalen
+2026-01-31 20:44:04 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://www.aftonbladet.se/nyheter/a/GyzAWq/statsministerns-dotter-hade-kick-off-pa-harpsund
+2026-01-31 20:44:07 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://www.aftonbladet.se/nojesbladet/a/BxlnRg/uppgifter-dermot-clemenger-jobbar-pa-steakhouse-springer-ivag-igen
+2026-01-31 20:44:09 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/aJ1AA4/artisterna-i-mello-2026-har-ar-hela-listan
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/395523?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/395523?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/394406?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/394406?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/393037?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/393037?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/395496?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/395496?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/395494?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/395494?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/395484?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/395484?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/395465?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/395465?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/395463?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/395463?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/395060?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/395060?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.aftonbladet.se/stories/393042?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article
+2026-01-31 20:44:11 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.aftonbladet.se for access
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.aftonbladet.se/stories/393042?playlistId=GYZg73vCmdEe9yg0333JRPyJ&utm_source=article - Blocked by robots.txt
+2026-01-31 20:44:11 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/M715WB/greczula-melodifestivalen-2026-karriar-psykisk-ohalsa-flickvan-oddsfavorit
+2026-01-31 20:44:13 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/43dkoa/markus-larsson-mello
+2026-01-31 20:44:15 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/e7PykQ/dirawi-och-nessvold-mycket-sang-och-dans
+2026-01-31 20:44:17 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of aftonbladet.se: 20 pages, 12 failed
+2026-01-31 20:44:17 - kse.crawler.kse_crawler_core - INFO - Starting crawl of expressen.se from https://expressen.se
+2026-01-31 20:44:17 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://expressen.se/robots.txt
+2026-01-31 20:44:17 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://expressen.se
+2026-01-31 20:44:20 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://expressen.se/robots.txt
+2026-01-31 20:44:20 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://expressen.se
+2026-01-31 20:44:23 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://expressen.se/tv/nyheter/brak-i-vita-huset-du-ar-hogljudd/
+2026-01-31 20:44:26 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://expressen.se/tv/noje/melodifestivalen/jacqlines-kamp-mina-brost-ar-sprangfyllda/
+2026-01-31 20:44:29 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://expressen.se/tv/nyheter/patrik-och-jc-dog-i-gruvan/
+2026-01-31 20:44:31 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://expressen.se/tv/noje/melodifestivalen/a-teens-skrack-over-bilderna/
+2026-01-31 20:44:34 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://expressen.se/tv/nyheter/varlden/trumps-kryptiska-hotord-inatt/
+2026-01-31 20:44:36 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://expressen.se/tv/nyheter/varlden/ser-besten-pa-hall-sedan-stormar-den/
+2026-01-31 20:44:38 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://expressen.se/tv/nyheter/varlden/kaos-i-kiev-tunnelbanan-utslagen/
+2026-01-31 20:44:40 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://expressen.se/tv/nyheter/varlden/cnn-reportern-tvingas-avbryta-direkt/
+2026-01-31 20:44:42 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://expressen.se/tv/nyheter/tvingades-skotta-sno-dog/
+2026-01-31 20:44:45 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://expressen.se/sport/fotboll/premier-league/chelseas-sanslosa-comeback-vande-0-2-till-3-2/
+2026-01-31 20:44:47 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://expressen.se/nyheter/kungligt/mette-marits-ord-om-nakenbilder-till-epstein-ar-det-olampligt/
+2026-01-31 20:44:49 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://expressen.se/nyheter/kungligt/prinsessan-sofia-avvisar-bestamt-epsteinsallskap/
+2026-01-31 20:44:51 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://expressen.se/nyheter/varlden/stotande-bilderna-pa-andrew-i-nya-epstein-slappet/
+2026-01-31 20:44:53 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://expressen.se/noje/melodifestivalen/melodifestivalen-2026-direktrapport/
+2026-01-31 20:44:55 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://expressen.se/noje/melodifestivalen/marie-serneholts-keyyo-blinkning-till-greczula-i-mello/
+2026-01-31 20:44:58 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://expressen.se/noje/melodifestivalen/svts-svar-om-sexet-i-melodifestivalen-efter-forbudet-i-eurovision/
+2026-01-31 20:45:00 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://expressen.se/noje/melodifestivalen/melodifestivalen-2026-sa-bra-ar-latarna-i-forsta-deltavlingen/
+2026-01-31 20:45:02 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://expressen.se/tv/noje/melodifestivalen/mellofeber-i-linkoping-bast-copaca-paraboom/
+2026-01-31 20:45:04 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of expressen.se: 20 pages, 0 failed
+2026-01-31 20:45:04 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svd.se from https://svd.se
+2026-01-31 20:45:04 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svd.se/robots.txt
+2026-01-31 20:45:04 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://svd.se
+2026-01-31 20:45:04 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact svd.se for access
+2026-01-31 20:45:04 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://svd.se - Blocked by robots.txt
+2026-01-31 20:45:04 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svd.se/robots.txt
+2026-01-31 20:45:04 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://svd.se
+2026-01-31 20:45:04 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact svd.se for access
+2026-01-31 20:45:04 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://svd.se - Blocked by robots.txt
+2026-01-31 20:45:04 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.svd.se/robots.txt
+2026-01-31 20:45:04 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://www.svd.se
+2026-01-31 20:45:06 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: https://www.svd.se/naringsliv
+2026-01-31 20:45:08 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://www.svd.se/kultur
+2026-01-31 20:45:10 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://www.svd.se/ledare
+2026-01-31 20:45:12 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://www.svd.se/debatt
+2026-01-31 20:45:14 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://www.svd.se/livet
+2026-01-31 20:45:17 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69465
+2026-01-31 20:45:19 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://www.svd.se/a/3p677P/epsteinfilerna-mette-marit-stallde-olamplig-fraga-om-bonusprinsen
+2026-01-31 20:45:21 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://www.svd.se/a/RjyE3d/ukraina-30-minusgrader-vantas-i-kiev-manga-ar-utan-varme
+2026-01-31 20:45:23 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://www.svd.se/a/QJxKeq/arets-melodifestival-ar-i-gang
+2026-01-31 20:45:25 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://www.svd.se/a/JOElKX/karin-gunnarsson-om-melodifestivalen-2026-sa-svart-var-det-att-komma-med
+2026-01-31 20:45:27 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://www.svd.se/a/8pBp7x/melodifestivalen-2026-deltavling-1-sa-later-bidragen
+2026-01-31 20:45:29 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://www.svd.se/story/melodifestivalen-2026
+2026-01-31 20:45:31 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt
+2026-01-31 20:45:33 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69464
+2026-01-31 20:45:36 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69463
+2026-01-31 20:45:38 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69462
+2026-01-31 20:45:40 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69460
+2026-01-31 20:45:42 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69459
+2026-01-31 20:45:44 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://www.svd.se/a/wA9Gmd/senaste-nytt?pinnedEntry=69458
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svd.se: 20 pages, 2 failed
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://www.regeringen.se/
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.regeringen.se/robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se/
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se/ - Blocked by robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se/sveriges-regering/
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se/sveriges-regering/ - Blocked by robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://regeringen.se/robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://regeringen.se
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact regeringen.se for access
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://regeringen.se - Blocked by robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://regeringen.se/robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://regeringen.se
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact regeringen.se for access
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://regeringen.se - Blocked by robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se
+2026-01-31 20:45:46 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se - Blocked by robots.txt
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from regeringen.se! Total URLs checked: 5, Failed: 5
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - WARNING -    Reason: 5 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://www.regeringen.se/
+2026-01-31 20:45:46 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://www.regeringen.se/
+2026-01-31 20:45:49 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: https://www.regeringen.se/sveriges-regering/
+2026-01-31 20:45:51 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: http://regeringen.se
+2026-01-31 20:45:53 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://www.regeringen.se/uds-reseinformation/
+2026-01-31 20:45:55 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://www.regeringen.se/regeringens-politik/regeringens-prioriteringar/
+2026-01-31 20:45:57 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://www.regeringen.se/regeringens-politik/militart-forsvar/
+2026-01-31 20:46:00 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://www.regeringen.se/sveriges-regering/finansdepartementet/statens-budget/
+2026-01-31 20:46:02 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://www.regeringen.se/sverige-i-eu/
+2026-01-31 20:46:05 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://www.regeringen.se/regeringens-politik/sverige-i-nato/
+2026-01-31 20:46:07 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://www.regeringen.se/regeringens-politik/sveriges-stod-till-ukraina/
+2026-01-31 20:46:10 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://www.regeringen.se/informationsmaterial/2026/01/propositionsforteckning-varen-2026/
+2026-01-31 20:46:12 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://www.regeringen.se/regeringsarenden/regeringsarenden-vecka-5-2026/
+2026-01-31 20:46:14 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://www.regeringen.se/sa-styrs-sverige/sa-arbetar-regeringen-och-regeringskansliet/regeringsarende/
+2026-01-31 20:46:16 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.regeringen.se/kalendarium/2026/01/deltar-pa-galan-det-racker/
+2026-01-31 20:46:18 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://www.regeringen.se/tx/2608
+2026-01-31 20:46:21 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://www.regeringen.se/tx/2610
+2026-01-31 20:46:24 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://www.regeringen.se/tx/2612
+2026-01-31 20:46:27 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://www.regeringen.se/tx/2615
+2026-01-31 20:46:30 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://www.regeringen.se/tx/2616
+2026-01-31 20:46:33 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://www.regeringen.se/tx/2784
+2026-01-31 20:46:36 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of regeringen.se: 20 pages, 0 failed
+2026-01-31 20:46:36 - kse.crawler.kse_crawler_core - INFO - Starting crawl of riksdagen.se from https://riksdagen.se
+2026-01-31 20:46:36 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://riksdagen.se/robots.txt
+2026-01-31 20:46:36 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://riksdagen.se
+2026-01-31 20:46:39 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://riksdagen.se/robots.txt
+2026-01-31 20:46:39 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://riksdagen.se
+2026-01-31 20:46:41 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.riksdagen.se/robots.txt
+2026-01-31 20:46:41 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://www.riksdagen.se/sv/sok/?doktyp=sfs&dokstat=g%C3%A4llande+sfs
+2026-01-31 20:46:44 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://www.riksdagen.se/sv/sa-fungerar-riksdagen/demokrati/sveriges-grundlagar-och-riksdagsordningen/
+2026-01-31 20:46:46 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://www.riksdagen.se/sv/aktuellt/
+2026-01-31 20:46:48 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/_H6D1plan/
+2026-01-31 20:46:51 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://www.riksdagen.se/sv/sok/?avd=dokument
+2026-01-31 20:46:54 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://www.riksdagen.se/sv/aktuellt/aktuelltnotiser/2026/jan/30/usas-agerande-mot-gronland-diskuterades-vid_cmsfe0d5ac3-2c87-4fef-ad3c-6ea5b9f5dafesv/
+2026-01-31 20:46:56 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/arbetsprovning-med-bibehallen-sjukpenning_hd01sfu9/
+2026-01-31 20:46:58 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/utokade-registerkontroller-vid-anstallning-i_hd01juu22/
+2026-01-31 20:47:00 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://www.riksdagen.se/sv/webb-tv/video/sarskild-debatt/sarskild-debatt-om-euron_hdc120260127sd/
+2026-01-31 20:47:02 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://riksdagen.se/sv/?jm5Q2CmPMUOT1gkmXhpShw=from%3D2026-01-30
+2026-01-31 20:47:05 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://riksdagen.se/sv/?jm5Q2CmPMUOT1gkmXhpShw=from%3D2026-02-01
+2026-01-31 20:47:08 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/visning/2026/jan/31/guided-tour-of-the-riksdag_rdhdc420260110vi4/
+2026-01-31 20:47:10 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/visning/2026/jan/31/guided-tour-of-the-riksdag_rdhdc420260110vi5/
+2026-01-31 20:47:13 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/visning/2026/jan/31/visning-av-riksdagshuset_rdhdc420260110vi1/
+2026-01-31 20:47:16 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/visning/2026/jan/31/visning-av-riksdagshuset_rdhdc420260110vi2/
+2026-01-31 20:47:18 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/visning/2026/jan/31/guided-tour-of-the-riksdag_rdhdc420260110vi6/
+2026-01-31 20:47:21 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/visning/2026/jan/31/visning-av-konsten-i-riksdagshuset_rdhdc420260110vi3/
+2026-01-31 20:47:24 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://www.riksdagen.se/sv/aktuellt/kalendersida/
+2026-01-31 20:47:29 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of riksdagen.se: 20 pages, 0 failed
+2026-01-31 20:47:29 - kse.crawler.kse_crawler_core - INFO - Starting crawl of uu.se from https://uu.se
+2026-01-31 20:47:29 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://uu.se/robots.txt
+2026-01-31 20:47:29 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://uu.se
+2026-01-31 20:47:31 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://uu.se/robots.txt
+2026-01-31 20:47:31 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://uu.se
+2026-01-31 20:47:34 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://uu.se/om-uu/doktorspromotion
+2026-01-31 20:47:37 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://uu.se/student
+2026-01-31 20:47:39 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.uu.se/robots.txt
+2026-01-31 20:47:39 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://www.uu.se/nyheter/2026/2026-01-29-den-relativa-fattigdomen-i-sverige-har-fordubblats
+2026-01-31 20:47:42 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://www.uu.se/nyheter/2026/2026-01-29-fyra-av-fem-akademiforskare-inom-sprak-till-uppsala-universitet
+2026-01-31 20:47:44 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://www.uu.se/nyheter/2026/2026-01-28-okad-sjuklighet---men-lika-bra-livskvalitet-for-vuxna-som-fotts-for-tidigt
+2026-01-31 20:47:46 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://uu.se/nyheter/alla
+2026-01-31 20:47:49 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://uu.se/forskning/tema/existens
+2026-01-31 20:47:54 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://uu.se/forskning/tema/det-globala-universitetet
+2026-01-31 20:47:57 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://uu.se/forskning/tema/naturens-krafter
+2026-01-31 20:48:03 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://uu.se/forskning/tema
+2026-01-31 20:48:06 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://uu.se/nyheter/poddar/forskarpodden
+2026-01-31 20:48:08 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://uu.se/om-uu/jobba-hos-oss
+2026-01-31 20:48:11 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://www.uu.se/botaniska-tradgarden/utstallningar-och-evenemang/evenemang/arkiv/2026-02-14-sportlovskul-tropiska-nyttovaxter
+2026-01-31 20:48:13 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://uu.se/om-uu/kultur/museer
+2026-01-31 20:48:17 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://uu.se/bibliotek
+2026-01-31 20:48:19 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: http://uu.se/om-uu/doktorspromotion
+2026-01-31 20:48:22 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: http://uu.se/student
+2026-01-31 20:48:24 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: http://uu.se/nyheter/alla
+2026-01-31 20:48:27 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of uu.se: 20 pages, 0 failed
+2026-01-31 20:48:27 - kse.crawler.kse_crawler_core - INFO - Starting crawl of lu.se from https://lu.se
+2026-01-31 20:48:27 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://lu.se/robots.txt
+2026-01-31 20:48:27 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://lu.se
+2026-01-31 20:48:29 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://lu.se/robots.txt
+2026-01-31 20:48:29 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://lu.se
+2026-01-31 20:48:31 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://lu.se/studera/livet-som-student/ny-som-student
+2026-01-31 20:48:33 - kse.crawler.kse_http_client - WARNING - Connection error on https://lu.se/studera/livet-som-student/ny-som-student: ('Connection aborted.', ConnectionResetError(10054, 'En befintlig anslutning tvingades att stänga av fjärrvärddatorn', None, 10054, None))
+2026-01-31 20:48:37 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.lu.se/robots.txt
+2026-01-31 20:48:37 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://www.lu.se/lubas/courses-programmes/*/courseandprogram/1/undefined
+2026-01-31 20:48:39 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://lu.se/studera/anmalan-och-antagning/antagningspoang
+2026-01-31 20:48:41 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://www.lu.se/studera/kompetensutveckling-och-vidareutbildning-genom-hela-livet
+2026-01-31 20:48:43 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://lu.se/studera/valja-studier/att-studera-pa-universitetet
+2026-01-31 20:48:45 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://lu.se/studera/livet-som-student
+2026-01-31 20:48:47 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://www.lu.se/studera
+2026-01-31 20:48:49 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://lu.se/forskning/hitta-forskning-och-forskare
+2026-01-31 20:48:52 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://www.lu.se/forskning/fokusomraden/hallbar-planet
+2026-01-31 20:48:54 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://lu.se/forskning/utbildning-pa-forskarniva
+2026-01-31 20:48:56 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://www.lu.se/forskning/forskningsinfrastruktur/max-iv/
+2026-01-31 20:48:59 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.lu.se/forskning
+2026-01-31 20:49:01 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://www.lu.se/vacancies
+2026-01-31 20:49:03 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://www.lu.se/om-universitetet/jobba-hos-oss
+2026-01-31 20:49:05 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://lu.se/evenemang/crafoords-vetenskapsluncher-fred-utan-enighet
+2026-01-31 20:49:08 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://lu.se/evenemang/choir-contemporary-2026
+2026-01-31 20:49:11 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://lu.se/evenemang/hbg-live-11-februari-valaret-2026-och-den-lokala-demokratin
+2026-01-31 20:49:13 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://www.lu.se/calendar
+2026-01-31 20:49:15 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of lu.se: 20 pages, 0 failed
+2026-01-31 20:49:15 - kse.crawler.kse_crawler_core - INFO - Starting crawl of su.se from https://su.se
+2026-01-31 20:49:15 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://su.se/robots.txt
+2026-01-31 20:49:15 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://su.se
+2026-01-31 20:49:17 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://su.se/robots.txt
+2026-01-31 20:49:17 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://su.se
+2026-01-31 20:49:19 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://su.se/utbildning/utbildningskatalog
+2026-01-31 20:49:21 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://su.se/forskning/forskningskatalog
+2026-01-31 20:49:24 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://su.se/forskning/forskningskatalog/forskningsprojekt
+2026-01-31 20:49:26 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://su.se/forskning/forskningskatalog/forskargrupper
+2026-01-31 20:49:28 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://su.se/utbildning
+2026-01-31 20:49:30 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://su.se/utbildning/studie--och-karriarvagledning/studie--och-karriarvagledning
+2026-01-31 20:49:33 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://su.se/utbildning/en-lyckad-start
+2026-01-31 20:49:35 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://su.se/enheter/stockholms-universitetsbibliotek
+2026-01-31 20:49:37 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://su.se/om-universitetet/samverkan-och-samarbeten
+2026-01-31 20:49:39 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.su.se/robots.txt
+2026-01-31 20:49:39 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://www.su.se/forskning/%C3%B6ppna-f%C3%B6rel%C3%A4sningar
+2026-01-31 20:49:41 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://www.su.se/om-universitetet/kontakt/st%C3%B6d-forskning-och-samverkan
+2026-01-31 20:49:43 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.su.se/om-universitetet/jobba-p%C3%A5-su
+2026-01-31 20:49:46 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://su.se/om-universitetet/kontakt
+2026-01-31 20:49:48 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://su.se/forskning
+2026-01-31 20:49:50 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: http://su.se/utbildning/utbildningskatalog
+2026-01-31 20:49:52 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: http://su.se/forskning/forskningskatalog
+2026-01-31 20:49:54 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: http://su.se/forskning/forskningskatalog/forskningsprojekt
+2026-01-31 20:49:56 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: http://su.se/forskning/forskningskatalog/forskargrupper
+2026-01-31 20:49:58 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of su.se: 20 pages, 0 failed
+2026-01-31 20:49:58 - kse.crawler.kse_crawler_core - INFO - Starting crawl of kth.se from https://kth.se
+2026-01-31 20:49:58 - kse.crawler.kse_robots_parser - INFO - No robots.txt at https://kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 20:49:58 - kse.crawler.kse_crawler_core - INFO - Crawling [1/20]: https://kth.se
+2026-01-31 20:50:01 - kse.crawler.kse_robots_parser - INFO - No robots.txt at http://kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 20:50:01 - kse.crawler.kse_crawler_core - INFO - Crawling [2/20]: http://kth.se
+2026-01-31 20:50:03 - kse.crawler.kse_robots_parser - INFO - No robots.txt at https://www.kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 20:50:03 - kse.crawler.kse_crawler_core - INFO - Crawling [3/20]: https://www.kth.se/forskning/omraden
+2026-01-31 20:50:05 - kse.crawler.kse_crawler_core - INFO - Crawling [4/20]: https://kth.se/om/nyheter
+2026-01-31 20:50:07 - kse.crawler.kse_crawler_core - INFO - Crawling [5/20]: https://kth.se/om/nyheter/centrala-nyheter/sa-ska-mikroplaster-sparas-1.1452611
+2026-01-31 20:50:10 - kse.crawler.kse_crawler_core - INFO - Crawling [6/20]: https://kth.se/om/nyheter/centrala-nyheter/toppuniversitet-startar-natverk-for-blivande-entreprenorer-1.1454132
+2026-01-31 20:50:12 - kse.crawler.kse_crawler_core - INFO - Crawling [7/20]: https://kth.se/om/nyheter/centrala-nyheter/new-study-enables-safe-reuse-of-concrete-1.1453932
+2026-01-31 20:50:14 - kse.crawler.kse_crawler_core - INFO - Crawling [8/20]: https://kth.se/om/nyheter/lokala-nyheter
+2026-01-31 20:50:16 - kse.crawler.kse_crawler_core - INFO - Crawling [9/20]: https://www.kth.se/utbildning/hitta
+2026-01-31 20:50:19 - kse.crawler.kse_crawler_core - INFO - Crawling [10/20]: https://www.kth.se/utbildning/hitta-kurs/?l=sv
+2026-01-31 20:50:21 - kse.crawler.kse_crawler_core - INFO - Crawling [11/20]: https://kth.se/utbildning/kontakt/kths-studenter-1.354635
+2026-01-31 20:50:24 - kse.crawler.kse_crawler_core - INFO - Crawling [12/20]: https://kth.se/utbildning/traffa-kth/besok-kth/campusbesok-for-dig-som-elev-1.852357
+2026-01-31 20:50:26 - kse.crawler.kse_crawler_core - INFO - Crawling [13/20]: https://kth.se/utbildning/studier/olika-vagar-in-till-kth-1.1040643
+2026-01-31 20:50:28 - kse.crawler.kse_crawler_core - INFO - Crawling [14/20]: https://www.kth.se/utbildning/hitta-kurs?startTerm=V%C3%A5r+2026
+2026-01-31 20:50:30 - kse.crawler.kse_crawler_core - INFO - Crawling [15/20]: https://kth.se/om/upptack
+2026-01-31 20:50:33 - kse.crawler.kse_crawler_core - INFO - Crawling [16/20]: https://www.kth.se/blogs/rektor/2026/01/organisationsformen-en-verksamhetskritisk-fraga-om-sjalvstandighet/
+2026-01-31 20:50:36 - kse.crawler.kse_crawler_core - INFO - Crawling [17/20]: https://kth.se/om/stod-kth
+2026-01-31 20:50:38 - kse.crawler.kse_crawler_core - INFO - Crawling [18/20]: https://kth.se/alumni
+2026-01-31 20:50:40 - kse.crawler.kse_crawler_core - INFO - Crawling [19/20]: https://kth.se/om/jobba-pa-kth
+2026-01-31 20:50:42 - kse.crawler.kse_crawler_core - INFO - Crawling [20/20]: https://kth.se/om/jobba-pa-kth/arbeta-och-utvecklas/eucc-1.921210
+2026-01-31 20:50:45 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of kth.se: 20 pages, 0 failed
+2026-01-31 20:50:45 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 20:50:45 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 0, Failed: 0
+2026-01-31 20:50:45 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 20:50:45 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 0, Failed: 0
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 13 domains
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 21:12:07 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 4, Failed: 4
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - WARNING -    Reason: 4 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:12:07 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:12:09 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 2 pages, 0 failed
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org/
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://wikipedia.org/robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org/
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org/ - Blocked by robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org/wiki/Main_Page
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org/wiki/Main_Page - Blocked by robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://wikipedia.org
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://wikipedia.org - Blocked by robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://wikipedia.org/robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://wikipedia.org
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact wikipedia.org for access
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://wikipedia.org - Blocked by robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.wikipedia.org/robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.wikipedia.org
+2026-01-31 21:12:12 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.wikipedia.org for access
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.wikipedia.org - Blocked by robots.txt
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 5, Failed: 5
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - WARNING -    Reason: 5 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org/
+2026-01-31 21:12:12 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://wikipedia.org/
+2026-01-31 21:12:15 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://wikipedia.org/wiki/Main_Page
+2026-01-31 21:12:17 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of wikipedia.org: 2 pages, 0 failed
+2026-01-31 21:12:17 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 21:12:17 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svt.se/robots.txt
+2026-01-31 21:12:17 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://svt.se
+2026-01-31 21:12:19 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svt.se/robots.txt
+2026-01-31 21:12:19 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://svt.se
+2026-01-31 21:12:21 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svt.se: 2 pages, 0 failed
+2026-01-31 21:12:21 - kse.crawler.kse_crawler_core - INFO - Starting crawl of dn.se from https://dn.se
+2026-01-31 21:12:22 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://dn.se/robots.txt
+2026-01-31 21:12:22 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://dn.se
+2026-01-31 21:12:24 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://dn.se/robots.txt
+2026-01-31 21:12:24 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://dn.se
+2026-01-31 21:12:26 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of dn.se: 2 pages, 0 failed
+2026-01-31 21:12:26 - kse.crawler.kse_crawler_core - INFO - Starting crawl of aftonbladet.se from https://aftonbladet.se
+2026-01-31 21:12:26 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://aftonbladet.se/robots.txt
+2026-01-31 21:12:26 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://aftonbladet.se
+2026-01-31 21:12:26 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact aftonbladet.se for access
+2026-01-31 21:12:26 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://aftonbladet.se - Blocked by robots.txt
+2026-01-31 21:12:26 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://aftonbladet.se/robots.txt
+2026-01-31 21:12:26 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://aftonbladet.se
+2026-01-31 21:12:26 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact aftonbladet.se for access
+2026-01-31 21:12:26 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://aftonbladet.se - Blocked by robots.txt
+2026-01-31 21:12:27 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.aftonbladet.se/robots.txt
+2026-01-31 21:12:27 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://www.aftonbladet.se
+2026-01-31 21:12:29 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://www.aftonbladet.se/nojesbladet/melodifestivalen/a/Ar3W1M/de-gar-vidare-i-melodifestivalen-deltavling-1-i-linkoping
+2026-01-31 21:12:31 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of aftonbladet.se: 2 pages, 2 failed
+2026-01-31 21:12:31 - kse.crawler.kse_crawler_core - INFO - Starting crawl of expressen.se from https://expressen.se
+2026-01-31 21:12:31 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://expressen.se/robots.txt
+2026-01-31 21:12:31 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://expressen.se
+2026-01-31 21:12:33 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://expressen.se/robots.txt
+2026-01-31 21:12:33 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://expressen.se
+2026-01-31 21:12:35 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of expressen.se: 2 pages, 0 failed
+2026-01-31 21:12:35 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svd.se from https://svd.se
+2026-01-31 21:12:35 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svd.se/robots.txt
+2026-01-31 21:12:35 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://svd.se
+2026-01-31 21:12:35 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact svd.se for access
+2026-01-31 21:12:35 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://svd.se - Blocked by robots.txt
+2026-01-31 21:12:36 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svd.se/robots.txt
+2026-01-31 21:12:36 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://svd.se
+2026-01-31 21:12:36 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact svd.se for access
+2026-01-31 21:12:36 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://svd.se - Blocked by robots.txt
+2026-01-31 21:12:36 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.svd.se/robots.txt
+2026-01-31 21:12:36 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://www.svd.se
+2026-01-31 21:12:38 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://www.svd.se/naringsliv
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svd.se: 2 pages, 2 failed
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://www.regeringen.se/
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://www.regeringen.se/robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se/
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se/ - Blocked by robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se/sveriges-regering/
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se/sveriges-regering/ - Blocked by robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://regeringen.se/robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://regeringen.se
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact regeringen.se for access
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://regeringen.se - Blocked by robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://regeringen.se/robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://regeringen.se
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact regeringen.se for access
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://regeringen.se - Blocked by robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://www.regeringen.se
+2026-01-31 21:12:40 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact www.regeringen.se for access
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://www.regeringen.se - Blocked by robots.txt
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from regeringen.se! Total URLs checked: 5, Failed: 5
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - WARNING -    Reason: 5 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - INFO - Starting crawl of regeringen.se from https://www.regeringen.se/
+2026-01-31 21:12:40 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://www.regeringen.se/
+2026-01-31 21:12:42 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://www.regeringen.se/sveriges-regering/
+2026-01-31 21:12:44 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of regeringen.se: 2 pages, 0 failed
+2026-01-31 21:12:44 - kse.crawler.kse_crawler_core - INFO - Starting crawl of riksdagen.se from https://riksdagen.se
+2026-01-31 21:12:44 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://riksdagen.se/robots.txt
+2026-01-31 21:12:44 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://riksdagen.se
+2026-01-31 21:12:47 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://riksdagen.se/robots.txt
+2026-01-31 21:12:47 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://riksdagen.se
+2026-01-31 21:12:50 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of riksdagen.se: 2 pages, 0 failed
+2026-01-31 21:12:50 - kse.crawler.kse_crawler_core - INFO - Starting crawl of uu.se from https://uu.se
+2026-01-31 21:12:50 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://uu.se/robots.txt
+2026-01-31 21:12:50 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://uu.se
+2026-01-31 21:12:52 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://uu.se/robots.txt
+2026-01-31 21:12:52 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://uu.se
+2026-01-31 21:12:54 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of uu.se: 2 pages, 0 failed
+2026-01-31 21:12:54 - kse.crawler.kse_crawler_core - INFO - Starting crawl of lu.se from https://lu.se
+2026-01-31 21:12:55 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://lu.se/robots.txt
+2026-01-31 21:12:55 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://lu.se
+2026-01-31 21:12:57 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://lu.se/robots.txt
+2026-01-31 21:12:57 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://lu.se
+2026-01-31 21:12:59 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of lu.se: 2 pages, 0 failed
+2026-01-31 21:12:59 - kse.crawler.kse_crawler_core - INFO - Starting crawl of su.se from https://su.se
+2026-01-31 21:12:59 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://su.se/robots.txt
+2026-01-31 21:12:59 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://su.se
+2026-01-31 21:13:02 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://su.se/robots.txt
+2026-01-31 21:13:02 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://su.se
+2026-01-31 21:13:04 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of su.se: 2 pages, 0 failed
+2026-01-31 21:13:04 - kse.crawler.kse_crawler_core - INFO - Starting crawl of kth.se from https://kth.se
+2026-01-31 21:13:04 - kse.crawler.kse_robots_parser - INFO - No robots.txt at https://kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 21:13:04 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://kth.se
+2026-01-31 21:13:06 - kse.crawler.kse_robots_parser - INFO - No robots.txt at http://kth.se/robots.txt (allowing all): <urlopen error [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1108)>
+2026-01-31 21:13:06 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://kth.se
+2026-01-31 21:13:08 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of kth.se: 2 pages, 0 failed
+2026-01-31 21:13:08 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 21:13:08 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://wikipedia.org - Blocked by robots.txt
+2026-01-31 21:13:08 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from wikipedia.org! Total URLs checked: 1, Failed: 1
+2026-01-31 21:13:08 - kse.crawler.kse_crawler_core - WARNING -    Reason: 1 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 21:13:08 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
+2026-01-31 21:13:08 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: http://wikipedia.org
+2026-01-31 21:13:10 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of wikipedia.org: 1 pages, 0 failed
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 1 domains
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 21:22:26 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 4, Failed: 4
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - WARNING -    Reason: 4 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:22:26 - kse.crawler.kse_crawler_core - INFO - Crawling [1/5]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:22:28 - kse.crawler.kse_crawler_core - INFO - Crawling [2/5]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 21:22:31 - kse.crawler.kse_crawler_core - INFO - Crawling [3/5]: https://sv.wikipedia.org
+2026-01-31 21:22:33 - kse.crawler.kse_crawler_core - INFO - Crawling [4/5]: http://sv.wikipedia.org
+2026-01-31 21:22:36 - kse.crawler.kse_crawler_core - INFO - Crawling [5/5]: https://sv.wikipedia.org/wiki/Wikipedia
+2026-01-31 21:22:38 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 5 pages, 0 failed
+2026-01-31 21:26:42 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 21:26:42 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 1 domains
+2026-01-31 21:26:42 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:26:42 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 21:26:42 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:26:42 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:26:42 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 21:26:42 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 21:26:42 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:26:42 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 21:26:42 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 21:26:42 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:26:42 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 21:26:43 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 21:26:43 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 21:26:43 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 21:26:43 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 21:26:43 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 4, Failed: 4
+2026-01-31 21:26:43 - kse.crawler.kse_crawler_core - WARNING -    Reason: 4 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 21:26:43 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:26:43 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 21:26:45 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 21:26:48 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 2 pages, 0 failed
+2026-01-31 22:29:30 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 22:29:30 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 2 domains
+2026-01-31 22:29:30 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 22:29:31 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 4, Failed: 4
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - WARNING -    Reason: 4 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:29:31 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:29:33 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 22:29:35 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 2 pages, 0 failed
+2026-01-31 22:29:35 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 22:29:36 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svt.se/robots.txt
+2026-01-31 22:29:36 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://svt.se
+2026-01-31 22:29:38 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svt.se/robots.txt
+2026-01-31 22:29:38 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://svt.se
+2026-01-31 22:29:40 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svt.se: 2 pages, 0 failed
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 1 domains
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 22:32:04 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 4, Failed: 4
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - WARNING -    Reason: 4 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:32:04 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:32:06 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 22:32:09 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 2 pages, 0 failed
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 2 domains
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://sv.wikipedia.org/robots.txt
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Portal:Huvudsida - Blocked by robots.txt
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org/wiki/Special:Random - Blocked by robots.txt
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: https://sv.wikipedia.org
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: https://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://sv.wikipedia.org/robots.txt
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - WARNING - robots.txt blocks: http://sv.wikipedia.org
+2026-01-31 22:59:00 - kse.crawler.kse_robots_parser - INFO -   You may need to configure a custom user agent or contact sv.wikipedia.org for access
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - WARNING - ⚠️  SKIPPED: http://sv.wikipedia.org - Blocked by robots.txt
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - WARNING - ⚠️  NO PAGES CRAWLED from sv.wikipedia.org! Total URLs checked: 4, Failed: 4
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - WARNING -    Reason: 4 URLs were blocked by robots.txt or failed to fetch
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - INFO - Starting crawl of sv.wikipedia.org from https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:59:00 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://sv.wikipedia.org/wiki/Portal:Huvudsida
+2026-01-31 22:59:02 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: https://sv.wikipedia.org/wiki/Special:Random
+2026-01-31 22:59:05 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of sv.wikipedia.org: 2 pages, 0 failed
+2026-01-31 22:59:05 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 22:59:05 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svt.se/robots.txt
+2026-01-31 22:59:05 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: https://svt.se
+2026-01-31 22:59:07 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svt.se/robots.txt
+2026-01-31 22:59:07 - kse.crawler.kse_crawler_core - INFO - Crawling [2/2]: http://svt.se
+2026-01-31 22:59:09 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svt.se: 2 pages, 0 failed
+2026-01-31 23:03:57 - kse.crawler.kse_crawler_core - INFO - Loaded crawl state: 0 visited URLs
+2026-01-31 23:03:57 - kse.crawler.kse_crawler_core - INFO - Crawler initialized for 1 domains
+2026-01-31 23:03:57 - kse.crawler.kse_crawler_core - INFO - Starting crawl of svt.se from https://svt.se
+2026-01-31 23:03:57 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from https://svt.se/robots.txt
+2026-01-31 23:03:57 - kse.crawler.kse_crawler_core - INFO - Crawling [1/10]: https://svt.se
+2026-01-31 23:03:59 - kse.crawler.kse_robots_parser - INFO - ✓ Loaded robots.txt from http://svt.se/robots.txt
+2026-01-31 23:03:59 - kse.crawler.kse_crawler_core - INFO - Crawling [2/10]: http://svt.se
+2026-01-31 23:04:01 - kse.crawler.kse_crawler_core - INFO - Crawling [3/10]: https://svt.se/nyheter/lokalt/skane/misstankt-farligt-foremal-i-malmo-boende-inryms-e8sluc
+2026-01-31 23:04:03 - kse.crawler.kse_crawler_core - INFO - Crawling [4/10]: https://svt.se/nyheter/lokalt/ost/brand-i-flerbostadshus-i-skaggetorp-i-linkoping-rokdykning-pagar
+2026-01-31 23:04:05 - kse.crawler.kse_crawler_core - INFO - Crawling [5/10]: https://svt.se/nyheter/snabbkollen/polisen-gangen-reducerade-efter-gripanden
+2026-01-31 23:04:07 - kse.crawler.kse_crawler_core - INFO - Crawling [6/10]: https://svt.se/nyheter/snabbkollen/allt-fler-svenskar-nobbar-usa
+2026-01-31 23:04:10 - kse.crawler.kse_crawler_core - INFO - Crawling [7/10]: https://svt.se/nyheter/snabbkollen/iran-varnar-usa-och-israel-attackera-inte
+2026-01-31 23:04:12 - kse.crawler.kse_crawler_core - INFO - Crawling [8/10]: https://svt.se/nyheter/utrikes/svar-balansakt-for-venezuelas-delcy-rodriguez
+2026-01-31 23:04:14 - kse.crawler.kse_crawler_core - INFO - Crawling [9/10]: https://svt.se/nyheter/om/melodifestivalen-2026
+2026-01-31 23:04:16 - kse.crawler.kse_crawler_core - INFO - Crawling [10/10]: https://svt.se/kultur/greczula-och-a-teens-vidare-till-final-i-melodifestivalen
+2026-01-31 23:04:18 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of svt.se: 10 pages, 0 failed

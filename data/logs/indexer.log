@@ -1,0 +1,215 @@
+2026-01-30 09:21:00 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-30 09:21:00 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 10 pages
+2026-01-30 09:21:00 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 10 documents
+2026-01-30 09:21:00 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 10 pages successfully
+2026-01-30 09:21:05 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-30 09:21:05 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-30 09:21:53 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-30 09:21:53 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: svt
+2026-01-30 09:22:14 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: polisa används vårdtaxi -> ['polisa', 'används', 'vårdtaxi']
+2026-01-30 09:22:14 - kse.indexing.kse_indexer_pipeline - INFO - Found 4 results for query: polisa används vårdtaxi
+2026-01-30 09:24:53 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: riksdag -> ['riksdag']
+2026-01-30 09:24:53 - kse.indexing.kse_indexer_pipeline - INFO - Found 1 results for query: riksdag
+2026-01-30 09:25:16 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: vara trump -> ['vara', 'trump']
+2026-01-30 09:25:16 - kse.indexing.kse_indexer_pipeline - INFO - Found 9 results for query: vara trump
+2026-01-30 09:25:24 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: trump -> ['trump']
+2026-01-30 09:25:24 - kse.indexing.kse_indexer_pipeline - INFO - Found 3 results for query: trump
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 20 pages
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://riksdagen.se: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/sok/?doktyp=sfs&dokstat=g%C3%A4llande+sfs: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/sa-fungerar-riksdagen/demokrati/sveriges-grundlagar-och-riksdagsordningen/: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/aktuellt/: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/dokument-och-lagar/dokument/_H6D1plan/: 'ärend'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/sok/?avd=dokument: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/arbetsprovning-med-bibehallen-sjukpenning_hd01sfu9/: 'arbetsprövning'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/dokument-och-lagar/dokument/betankande/utokade-registerkontroller-vid-anstallning-i_hd01juu22/: 'utöka'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/aktuellt/aktuelltnotiser/2026/jan/28/talmannen-gor-officiellt-besok-i-portugal_cmsd312c603-dbe6-4d25-8400-e90c1a0ef5b8sv/: 'talmann'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://riksdagen.se/sv/?jm5Q2CmPMUOT1gkmXhpShw=from%3D2026-01-29: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://riksdagen.se/sv/?jm5Q2CmPMUOT1gkmXhpShw=from%3D2026-01-31: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/aktuellt/kalendersida/kalenderhandelse/session/2026/jan/30/paces-session-i-strasbourg_rdhdc220260126ss1/: 'pac'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/aktuellt/kalendersida/: 'kalendersid'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/sa-fungerar-riksdagen/utskotten-och-eu-namnden/: 'utskott'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - ERROR - Failed to index page https://www.riksdagen.se/sv/sok/?avd=webbtv: 'sveriges'
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 15 documents
+2026-01-30 10:58:39 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 5 pages successfully
+2026-01-30 10:58:46 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 15 documents
+2026-01-30 10:58:46 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 00:37:42 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 15 documents
+2026-01-31 00:37:42 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 00:38:36 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 00:38:36 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: svt
+2026-01-31 00:39:07 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: polisa används taxi -> ['polisa', 'används', 'taxi']
+2026-01-31 00:39:07 - kse.indexing.kse_indexer_pipeline - INFO - Found 4 results for query: polisa används taxi
+2026-01-31 00:39:13 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: nyheta -> ['nyheta']
+2026-01-31 00:39:13 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: nyheta
+2026-01-31 00:39:23 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: nyhetsmorgo -> ['nyhetsmorgo']
+2026-01-31 00:39:23 - kse.indexing.kse_indexer_pipeline - INFO - Found 0 results for query: nyhetsmorgo
+2026-01-31 00:39:29 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: kristi -> ['kristi']
+2026-01-31 00:39:29 - kse.indexing.kse_indexer_pipeline - INFO - Found 2 results for query: kristi
+2026-01-31 00:39:48 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: ukrai -> ['ukrai']
+2026-01-31 00:39:48 - kse.indexing.kse_indexer_pipeline - INFO - Found 2 results for query: ukrai
+2026-01-31 00:40:13 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: file epstei utredning släppt -> ['file', 'epstei', 'utredning', 'släppt']
+2026-01-31 00:40:13 - kse.indexing.kse_indexer_pipeline - INFO - Found 1 results for query: file epstei utredning släppt
+2026-01-31 00:47:01 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 00:47:01 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 80 pages
+2026-01-31 00:47:02 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 80 documents
+2026-01-31 00:47:02 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 80 pages successfully
+2026-01-31 00:58:42 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 80 documents
+2026-01-31 00:58:42 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 01:02:48 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 01:02:51 - kse.indexing.kse_indexer_pipeline - INFO - Found 15 results for query: svt
+2026-01-31 01:03:13 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: epstei video -> ['epstei', 'video']
+2026-01-31 01:03:16 - kse.indexing.kse_indexer_pipeline - INFO - Found 19 results for query: epstei video
+2026-01-31 01:03:32 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: liberale -> ['liberale']
+2026-01-31 01:03:35 - kse.indexing.kse_indexer_pipeline - INFO - Found 11 results for query: liberale
+2026-01-31 01:09:26 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: tung avhopp liberale svt nyheta -> ['tung', 'avhopp', 'liberale', 'svt', 'nyheta']
+2026-01-31 01:09:30 - kse.indexing.kse_indexer_pipeline - INFO - Found 30 results for query: tung avhopp liberale svt nyheta
+2026-01-31 01:11:11 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: dagens nyheta -> ['dagens', 'nyheta']
+2026-01-31 01:11:16 - kse.indexing.kse_indexer_pipeline - INFO - Found 30 results for query: dagens nyheta
+2026-01-31 13:43:31 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 13:43:34 - kse.indexing.kse_indexer_pipeline - INFO - Found 15 results for query: svt
+2026-01-31 19:25:14 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 19:25:17 - kse.indexing.kse_indexer_pipeline - INFO - Found 15 results for query: svt
+2026-01-31 19:40:59 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 80 documents
+2026-01-31 19:40:59 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 19:41:28 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 19:41:32 - kse.indexing.kse_indexer_pipeline - INFO - Found 15 results for query: svt
+2026-01-31 19:42:47 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: sverig -> ['sverig']
+2026-01-31 19:42:54 - kse.indexing.kse_indexer_pipeline - INFO - Found 30 results for query: sverig
+2026-01-31 20:05:09 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:05:09 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 10 pages
+2026-01-31 20:05:09 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 10 documents
+2026-01-31 20:05:09 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 10 pages successfully
+2026-01-31 20:05:50 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-31 20:05:50 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:13:36 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:13:36 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 30 pages
+2026-01-31 20:13:36 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 30 documents
+2026-01-31 20:13:36 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 30 pages successfully
+2026-01-31 20:13:59 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 30 documents
+2026-01-31 20:13:59 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:20:58 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:20:58 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 10 pages
+2026-01-31 20:20:58 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 10 documents
+2026-01-31 20:20:58 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 10 pages successfully
+2026-01-31 20:21:58 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-31 20:21:58 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:33:08 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:33:08 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 130 pages
+2026-01-31 20:33:09 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 130 documents
+2026-01-31 20:33:09 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 130 pages successfully
+2026-01-31 20:33:21 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 130 documents
+2026-01-31 20:33:21 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:50:45 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 20:50:45 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 260 pages
+2026-01-31 20:50:47 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 260 documents
+2026-01-31 20:50:47 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 260 pages successfully
+2026-01-31 20:51:58 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 260 documents
+2026-01-31 20:51:58 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 21:13:10 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 21:13:10 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 27 pages
+2026-01-31 21:13:10 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 27 documents
+2026-01-31 21:13:10 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 27 pages successfully
+2026-01-31 21:13:15 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 27 documents
+2026-01-31 21:13:15 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 21:13:30 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 21:13:31 - kse.indexing.kse_indexer_pipeline - INFO - Found 9 results for query: svt
+2026-01-31 21:15:22 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: wikipedi -> ['wikipedi']
+2026-01-31 21:15:23 - kse.indexing.kse_indexer_pipeline - INFO - Found 5 results for query: wikipedi
+2026-01-31 21:22:38 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 21:22:38 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 5 pages
+2026-01-31 21:22:38 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 5 documents
+2026-01-31 21:22:38 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 5 pages successfully
+2026-01-31 21:22:42 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 5 documents
+2026-01-31 21:22:42 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 21:22:59 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 21:22:59 - kse.indexing.kse_indexer_pipeline - INFO - Found 0 results for query: svt
+2026-01-31 21:23:04 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: wikipedi -> ['wikipedi']
+2026-01-31 21:23:05 - kse.indexing.kse_indexer_pipeline - INFO - Found 5 results for query: wikipedi
+2026-01-31 21:26:48 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 21:26:48 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 2 pages
+2026-01-31 21:26:48 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 2 documents
+2026-01-31 21:26:48 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 2 pages successfully
+2026-01-31 21:26:53 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 2 documents
+2026-01-31 21:26:53 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 21:27:32 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: wikipedi -> ['wikipedi']
+2026-01-31 21:27:32 - kse.indexing.kse_indexer_pipeline - INFO - Found 2 results for query: wikipedi
+2026-01-31 22:29:40 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:29:40 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 4 pages
+2026-01-31 22:29:40 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 4 documents
+2026-01-31 22:29:40 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 4 pages successfully
+2026-01-31 22:29:44 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 4 documents
+2026-01-31 22:29:44 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:32:09 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:32:09 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 2 pages
+2026-01-31 22:32:09 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 2 documents
+2026-01-31 22:32:09 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 2 pages successfully
+2026-01-31 22:32:22 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 2 documents
+2026-01-31 22:32:22 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:58:25 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:59:09 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:59:09 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 4 pages
+2026-01-31 22:59:10 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 4 documents
+2026-01-31 22:59:10 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 4 pages successfully
+2026-01-31 22:59:13 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 4 documents
+2026-01-31 22:59:13 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:59:34 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 4 documents
+2026-01-31 22:59:34 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 22:59:49 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 22:59:49 - kse.indexing.kse_indexer_pipeline - INFO - Found 2 results for query: svt
+2026-01-31 22:59:53 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: wikipedi -> ['wikipedi']
+2026-01-31 22:59:53 - kse.indexing.kse_indexer_pipeline - INFO - Found 2 results for query: wikipedi
+2026-01-31 23:00:20 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 4 documents
+2026-01-31 23:00:20 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:00:26 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 23:00:26 - kse.indexing.kse_indexer_pipeline - INFO - Found 2 results for query: svt
+2026-01-31 23:01:43 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:03:46 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:04:18 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:04:18 - kse.indexing.kse_indexer_pipeline - INFO - Starting indexing of 10 pages
+2026-01-31 23:04:18 - kse.indexing.kse_indexer_pipeline - INFO - Saved index with 10 documents
+2026-01-31 23:04:18 - kse.indexing.kse_indexer_pipeline - INFO - Indexed 10 pages successfully
+2026-01-31 23:04:23 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-31 23:04:23 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:04:46 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 23:04:46 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: svt
+2026-01-31 23:04:52 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: senas nyt -> ['senas', 'nyt']
+2026-01-31 23:04:52 - kse.indexing.kse_indexer_pipeline - INFO - Found 6 results for query: senas nyt
+2026-01-31 23:05:01 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: väda -> ['väda']
+2026-01-31 23:05:01 - kse.indexing.kse_indexer_pipeline - INFO - Found 2 results for query: väda
+2026-01-31 23:05:16 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: senas nyt -> ['senas', 'nyt']
+2026-01-31 23:05:16 - kse.indexing.kse_indexer_pipeline - INFO - Found 6 results for query: senas nyt
+2026-01-31 23:14:06 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-31 23:14:06 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:14:16 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: kla -> ['kla']
+2026-01-31 23:14:16 - kse.indexing.kse_indexer_pipeline - INFO - Found 0 results for query: kla
+2026-01-31 23:14:19 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 23:14:19 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: svt
+2026-01-31 23:14:37 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: dagens nyheta -> ['dagens', 'nyheta']
+2026-01-31 23:14:37 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: dagens nyheta
+2026-01-31 23:14:49 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: mello -> ['mello']
+2026-01-31 23:14:49 - kse.indexing.kse_indexer_pipeline - INFO - Found 3 results for query: mello
+2026-01-31 23:14:54 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: me -> ['me']
+2026-01-31 23:14:54 - kse.indexing.kse_indexer_pipeline - INFO - Found 1 results for query: me
+2026-01-31 23:15:05 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: final teens -> ['final', 'teens']
+2026-01-31 23:15:05 - kse.indexing.kse_indexer_pipeline - INFO - Found 4 results for query: final teens
+2026-01-31 23:15:10 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: final -> ['final']
+2026-01-31 23:15:10 - kse.indexing.kse_indexer_pipeline - INFO - Found 4 results for query: final
+2026-01-31 23:15:22 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: teens -> ['teens']
+2026-01-31 23:15:22 - kse.indexing.kse_indexer_pipeline - INFO - Found 4 results for query: teens
+2026-01-31 23:18:45 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-31 23:18:45 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:18:57 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 23:18:57 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: svt
+2026-01-31 23:46:21 - kse.indexing.kse_indexer_pipeline - INFO - Loaded existing index with 10 documents
+2026-01-31 23:46:21 - kse.indexing.kse_indexer_pipeline - INFO - Indexer pipeline initialized
+2026-01-31 23:46:28 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: svt -> ['svt']
+2026-01-31 23:46:28 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: svt
+2026-01-31 23:47:00 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: vara -> ['vara']
+2026-01-31 23:47:00 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: vara
+2026-01-31 23:47:09 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: idag skäggetorp brand -> ['idag', 'skäggetorp', 'brand']
+2026-01-31 23:47:09 - kse.indexing.kse_indexer_pipeline - INFO - Found 3 results for query: idag skäggetorp brand
+2026-02-01 00:02:21 - kse.indexing.kse_indexer_pipeline - INFO - Searching for: nyheta dagens senaste aktuellt nyhet nyheter news -> ['nyheta', 'dagens', 'senaste', 'aktuellt', 'nyhet', 'nyheter', 'news']
+2026-02-01 00:02:21 - kse.indexing.kse_indexer_pipeline - INFO - Found 10 results for query: nyheta dagens senaste aktuellt nyhet nyheter news
