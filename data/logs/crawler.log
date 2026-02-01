@@ -5791,3 +5791,4 @@
 2026-02-01 21:58:40 - kse.crawler.kse_crawler_core - INFO - Starting crawl of wikipedia.org from https://wikipedia.org
 2026-02-01 21:58:40 - kse.crawler.kse_crawler_core - INFO - Crawling [1/2]: http://wikipedia.org
 2026-02-01 21:58:43 - kse.crawler.kse_crawler_core - INFO - ✓ Completed crawl of wikipedia.org: 1 pages, 0 failed
+2026-02-01 21:55:54 - kse.crawler.kse_robots_parser - INFO - No robots.txt at https://nonexistent-test-domain-12345.com/robots.txt (allowing all): <urlopen error [Errno -5] No address associated with hostname>
