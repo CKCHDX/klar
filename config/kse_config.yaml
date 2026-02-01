@@ -1,5 +1,5 @@
-base_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server
-config_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\config
+base_dir: C:\Users\akoj2\Desktop\klar\V1\1.0\backup
+config_dir: C:\Users\akoj2\Desktop\klar\V1\1.0\backup\config
 crawler:
   crawl_delay: 1.0
   crawl_depth: 50
@@ -8,11 +8,11 @@ crawler:
   respect_robots_txt: true
   timeout: 10
   user_agent: KlarBot/3.0 (+https://oscyra.solutions/klar)
-data_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\data
+data_dir: C:\Users\akoj2\Desktop\klar\V1\1.0\backup\data
 enable_console_logging: true
 gui:
   setup_completed: true
-log_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\data\logs
+log_dir: C:\Users\akoj2\Desktop\klar\V1\1.0\backup\data\logs
 log_level: INFO
 nlp:
   enable_compound_splitting: true
@@ -39,9 +39,9 @@ server:
   enable_cors: true
   host: 0.0.0.0
   port: 5000
-  public_url: http://klar.oscyra.solutions:5000
+  public_url: http://188.149.136.91:5000
 storage:
   backup_enabled: true
   compression_enabled: true
   max_backups: 5
-storage_dir: C:\Users\akoj2\Downloads\klar-klar-browser (1)\klar-klar-browser\server\data\storage
+storage_dir: C:\Users\akoj2\Desktop\klar\V1\1.0\backup\data\storage

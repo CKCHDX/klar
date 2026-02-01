@@ -1,0 +1,119 @@
+{
+  "sv.wikipedia.org": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979460.2505546,
+    "last_crawl": 1769979465.159979,
+    "crawl_delay": 2.0,
+    "end_time": 1769979465.159979
+  },
+  "wikipedia.org": {
+    "status": "completed",
+    "pages_crawled": 1,
+    "pages_failed": 0,
+    "start_time": 1769979520.8802836,
+    "last_crawl": 1769979523.216149,
+    "crawl_delay": 2.0,
+    "end_time": 1769979523.216149
+  },
+  "svt.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979470.0887086,
+    "last_crawl": 1769979474.4463472,
+    "crawl_delay": 2.0,
+    "end_time": 1769979474.4463472
+  },
+  "dn.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979474.4498565,
+    "last_crawl": 1769979479.1911647,
+    "crawl_delay": 2.0,
+    "end_time": 1769979479.1911647
+  },
+  "aftonbladet.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 2,
+    "start_time": 1769979479.194166,
+    "last_crawl": 1769979483.8212595,
+    "crawl_delay": 2.0,
+    "end_time": 1769979483.8212595
+  },
+  "expressen.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979483.82426,
+    "last_crawl": 1769979488.515545,
+    "crawl_delay": 2.0,
+    "end_time": 1769979488.515545
+  },
+  "svd.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 2,
+    "start_time": 1769979488.5175486,
+    "last_crawl": 1769979492.7838116,
+    "crawl_delay": 2.0,
+    "end_time": 1769979492.7838116
+  },
+  "regeringen.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979492.9737875,
+    "last_crawl": 1769979497.4315405,
+    "crawl_delay": 2.0,
+    "end_time": 1769979497.4315405
+  },
+  "riksdagen.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979497.4345412,
+    "last_crawl": 1769979502.3381019,
+    "crawl_delay": 2.0,
+    "end_time": 1769979502.3381019
+  },
+  "uu.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979502.3411067,
+    "last_crawl": 1769979507.3681853,
+    "crawl_delay": 2.0,
+    "end_time": 1769979507.3681853
+  },
+  "lu.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979507.3711932,
+    "last_crawl": 1769979512.0521736,
+    "crawl_delay": 2.0,
+    "end_time": 1769979512.0521736
+  },
+  "su.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979512.056678,
+    "last_crawl": 1769979516.598437,
+    "crawl_delay": 2.0,
+    "end_time": 1769979516.598437
+  },
+  "kth.se": {
+    "status": "completed",
+    "pages_crawled": 2,
+    "pages_failed": 0,
+    "start_time": 1769979516.601441,
+    "last_crawl": 1769979520.8767705,
+    "crawl_delay": 2.0,
+    "end_time": 1769979520.8767705
+  }
+}

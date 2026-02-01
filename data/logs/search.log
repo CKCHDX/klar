@@ -363,3 +363,212 @@
 2026-02-01 00:09:39 - kse.search.kse_search_pipeline - INFO - Cache hit for query: 'svt'
 2026-02-01 00:12:04 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
 2026-02-01 00:12:04 - kse.search.kse_search_pipeline - INFO - Cache hit for query: 'svt'
+2026-02-01 14:27:12 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 14:27:12 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 14:27:12 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 15:35:27 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 15:35:27 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 15:35:27 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 15:39:55 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 15:39:55 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 15:39:55 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:05:53 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:05:53 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:05:53 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:06:18 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:06:18 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:06:18 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:09:20 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:09:20 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:09:20 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:10:06 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:10:06 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:10:06 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:14:19 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:14:19 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:14:19 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:18:45 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:18:45 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:18:45 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:20:05 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:20:05 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:20:05 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:20:20 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:20:20 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:20:20 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:21:57 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:21:57 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:21:57 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:23:55 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:23:55 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:23:55 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:26:09 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:26:09 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:26:09 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:38:17 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:38:17 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:38:17 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:38:38 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 16:38:38 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 16:38:38 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 16:38:38 - kse.search.kse_search_executor - INFO - Search returned 0 results
+2026-02-01 16:38:38 - kse.search.kse_search_pipeline - INFO - Search completed: 0 results in 0.001s
+2026-02-01 16:38:55 - kse.search.kse_search_pipeline - INFO - Search request: 'wikipedia'
+2026-02-01 16:38:55 - kse.search.kse_search_pipeline - INFO - Search terms: ['wikipedi', 'wikipedia']
+2026-02-01 16:38:55 - kse.search.kse_search_executor - INFO - Executing search for terms: ['wikipedi', 'wikipedia']
+2026-02-01 16:38:55 - kse.search.kse_search_executor - INFO - Search returned 0 results
+2026-02-01 16:38:55 - kse.search.kse_search_pipeline - INFO - Search completed: 0 results in 0.001s
+2026-02-01 16:38:58 - kse.search.kse_search_pipeline - INFO - Search request: 'nyheter'
+2026-02-01 16:38:58 - kse.search.kse_search_pipeline - INFO - Search terms: ['nyheter', 'senaste', 'nyheta', 'nyhet', 'news', 'aktuellt']
+2026-02-01 16:38:58 - kse.search.kse_search_executor - INFO - Executing search for terms: ['nyheter', 'senaste', 'nyheta', 'nyhet', 'news', 'aktuellt']
+2026-02-01 16:38:58 - kse.search.kse_search_executor - INFO - Search returned 0 results
+2026-02-01 16:38:58 - kse.search.kse_search_pipeline - INFO - Search completed: 0 results in 0.001s
+2026-02-01 16:39:31 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:39:31 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:39:31 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:39:46 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:39:46 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:39:46 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:40:38 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:40:38 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:40:38 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:41:06 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:41:06 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:41:06 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:43:45 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:43:45 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:43:45 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:45:45 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:45:45 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:45:45 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 16:46:04 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 16:46:04 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 16:46:04 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 16:46:04 - kse.search.kse_search_executor - INFO - Search returned 2 results
+2026-02-01 16:46:04 - kse.search.kse_search_pipeline - INFO - Search completed: 2 results in 0.046s
+2026-02-01 16:48:07 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 16:48:07 - kse.search.kse_search_pipeline - INFO - Cache hit for query: 'svt'
+2026-02-01 16:51:41 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 16:51:41 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 16:51:41 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 19:10:15 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 19:10:15 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 19:10:15 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 19:12:01 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 19:12:01 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 19:12:01 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 19:12:25 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 19:12:25 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 19:12:25 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 19:12:26 - kse.search.kse_search_executor - INFO - Search returned 7 results
+2026-02-01 19:12:26 - kse.search.kse_search_pipeline - INFO - Search completed: 7 results in 0.614s
+2026-02-01 19:12:32 - kse.search.kse_search_pipeline - INFO - Search request: 'nyheter'
+2026-02-01 19:12:32 - kse.search.kse_search_pipeline - INFO - Search terms: ['nyheta', 'nyheter', 'senaste', 'nyhet', 'aktuellt', 'news']
+2026-02-01 19:12:32 - kse.search.kse_search_executor - INFO - Executing search for terms: ['nyheta', 'nyheter', 'senaste', 'nyhet', 'aktuellt', 'news']
+2026-02-01 19:12:33 - kse.search.kse_search_executor - INFO - Search returned 19 results
+2026-02-01 19:12:33 - kse.search.kse_search_pipeline - INFO - Search completed: 10 results in 0.949s
+2026-02-01 19:16:20 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 19:16:20 - kse.search.kse_search_pipeline - INFO - Cache hit for query: 'svt'
+2026-02-01 19:19:33 - kse.search.kse_search_pipeline - INFO - Search request: 'aftonbladet'
+2026-02-01 19:19:33 - kse.search.kse_search_pipeline - INFO - Search terms: ['aftonblad', 'aftonbladet']
+2026-02-01 19:19:33 - kse.search.kse_search_executor - INFO - Executing search for terms: ['aftonblad', 'aftonbladet']
+2026-02-01 19:19:33 - kse.search.kse_search_executor - INFO - Search returned 2 results
+2026-02-01 19:19:33 - kse.search.kse_search_pipeline - INFO - Search completed: 2 results in 0.053s
+2026-02-01 19:20:32 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 19:20:32 - kse.search.kse_search_pipeline - INFO - Cache hit for query: 'svt'
+2026-02-01 19:20:47 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 19:20:47 - kse.search.kse_search_pipeline - INFO - Cache hit for query: 'svt'
+2026-02-01 19:38:00 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 19:38:00 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 19:38:00 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:17:41 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:17:41 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:17:41 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:17:41 - kse.search.kse_search_executor - INFO - Search returned 0 results
+2026-02-01 21:17:41 - kse.search.kse_search_pipeline - INFO - Search completed: 0 results in 0.001s
+2026-02-01 21:17:48 - kse.search.kse_search_pipeline - INFO - Search request: 'dagens nyheter'
+2026-02-01 21:17:48 - kse.search.kse_search_pipeline - INFO - Search terms: ['news', 'dagens', 'aktuellt', 'nyheter', 'nyheta', 'senaste', 'nyhet']
+2026-02-01 21:17:48 - kse.search.kse_search_executor - INFO - Executing search for terms: ['news', 'dagens', 'aktuellt', 'nyheter', 'nyheta', 'senaste', 'nyhet']
+2026-02-01 21:17:48 - kse.search.kse_search_executor - INFO - Search returned 0 results
+2026-02-01 21:17:48 - kse.search.kse_search_pipeline - INFO - Search completed: 0 results in 0.001s
+2026-02-01 21:18:13 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:18:13 - kse.search.kse_search_pipeline - INFO - Cache hit for query: 'svt'
+2026-02-01 21:23:03 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:23:03 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:23:03 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:24:32 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:24:32 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:24:32 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:25:02 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:25:02 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:25:02 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:25:34 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:25:34 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:25:34 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:25:47 - kse.search.kse_search_pipeline - INFO - Search request: 'dagens nyheter'
+2026-02-01 21:25:47 - kse.search.kse_search_pipeline - INFO - Search terms: ['news', 'senaste', 'nyheta', 'nyheter', 'nyhet', 'dagens', 'aktuellt']
+2026-02-01 21:25:47 - kse.search.kse_search_executor - INFO - Executing search for terms: ['news', 'senaste', 'nyheta', 'nyheter', 'nyhet', 'dagens', 'aktuellt']
+2026-02-01 21:27:23 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:27:23 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:27:23 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:28:58 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:28:58 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:28:58 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:29:32 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:29:32 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:29:32 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:32:03 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:32:03 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:32:03 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:33:00 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:33:00 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:33:00 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:37:05 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:37:05 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:37:05 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:37:37 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:37:37 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:37:37 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:37:57 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:37:57 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:37:57 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:40:44 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:40:44 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:40:44 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:42:36 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:42:36 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:42:36 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:42:36 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:42:36 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:42:36 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:42:36 - kse.search.kse_search_executor - INFO - Search returned 0 results
+2026-02-01 21:42:36 - kse.search.kse_search_pipeline - INFO - Search completed: 0 results in 0.002s
+2026-02-01 21:43:27 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:43:27 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:43:27 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:43:49 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:43:49 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:43:49 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:43:49 - kse.search.kse_search_executor - INFO - Search returned 0 results
+2026-02-01 21:43:49 - kse.search.kse_search_pipeline - INFO - Search completed: 0 results in 0.001s
+2026-02-01 21:57:34 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:57:34 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:57:34 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:58:52 - kse.search.kse_search_pipeline - INFO - Advanced ranking enabled
+2026-02-01 21:58:52 - kse.search.kse_search_pipeline - INFO - Search cache enabled
+2026-02-01 21:58:52 - kse.search.kse_search_pipeline - INFO - Search pipeline initialized
+2026-02-01 21:58:58 - kse.search.kse_search_pipeline - INFO - Search request: 'svt'
+2026-02-01 21:58:58 - kse.search.kse_search_pipeline - INFO - Search terms: ['svt']
+2026-02-01 21:58:58 - kse.search.kse_search_executor - INFO - Executing search for terms: ['svt']
+2026-02-01 21:58:59 - kse.search.kse_search_executor - INFO - Search returned 7 results
+2026-02-01 21:58:59 - kse.search.kse_search_pipeline - INFO - Search completed: 7 results in 0.665s
+2026-02-01 21:59:11 - kse.search.kse_search_pipeline - INFO - Search request: 'fakta'
+2026-02-01 21:59:11 - kse.search.kse_search_pipeline - INFO - Search terms: ['fakta', 'fakt']
+2026-02-01 21:59:11 - kse.search.kse_search_executor - INFO - Executing search for terms: ['fakta', 'fakt']
+2026-02-01 21:59:11 - kse.search.kse_search_executor - INFO - Search returned 1 results
+2026-02-01 21:59:11 - kse.search.kse_search_pipeline - INFO - Search completed: 1 results in 0.017s
+2026-02-01 21:59:20 - kse.search.kse_search_pipeline - INFO - Search request: 'villosus'
+2026-02-01 21:59:20 - kse.search.kse_search_pipeline - INFO - Search terms: ['villosus']
+2026-02-01 21:59:20 - kse.search.kse_search_executor - INFO - Executing search for terms: ['villosus']
+2026-02-01 21:59:20 - kse.search.kse_search_executor - INFO - Search returned 1 results
+2026-02-01 21:59:20 - kse.search.kse_search_pipeline - INFO - Search completed: 1 results in 0.018s
