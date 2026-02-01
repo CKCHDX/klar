@@ -22,6 +22,7 @@ class KSEConfig(metaclass=Singleton):
             config_file: Path to YAML configuration file
         """
         self._config: Dict[str, Any] = {}
+        config_file_exists = False
         
         # Auto-discover config file if not specified
         if config_file is None:
@@ -29,15 +30,53 @@ class KSEConfig(metaclass=Singleton):
             potential_config = DEFAULT_CONFIG_DIR / "kse_config.yaml"
             if potential_config.exists():
                 config_file = potential_config
+                config_file_exists = True
                 logger.info(f"Auto-discovered config file: {config_file}")
+        else:
+            if config_file.exists():
+                config_file_exists = True
         
         self._config_file = config_file
         self._load_defaults()
         
         if config_file and config_file.exists():
             self._load_config_file(config_file)
+        elif not config_file_exists:
+            # No config file (e.g., after clean/reset). Auto-detect server network defaults.
+            self._auto_configure_server_defaults()
         
         logger.info("Configuration loaded successfully")
+
+    def _auto_configure_server_defaults(self) -> None:
+        """
+        Auto-configure server defaults when no config file exists.
+        Sets public_url (and host) based on detected public/local IP.
+        """
+        try:
+            from kse.core.kse_network_info import get_network_info
+
+            network_info = get_network_info()
+            public_ip = network_info.get("public_ip")
+            local_ip = network_info.get("local_ip")
+            port = self.get("server.port", 5000)
+            current_host = self.get("server.host")
+            current_public_url = self.get("server.public_url")
+
+            if current_public_url:
+                return
+
+            if public_ip:
+                self.set("server.public_url", f"http://{public_ip}:{port}")
+                if current_host in ("127.0.0.1", "localhost"):
+                    self.set("server.host", "0.0.0.0")
+                logger.info(f"Auto-configured public_url using public IP: {public_ip}")
+            elif local_ip and local_ip != "127.0.0.1":
+                self.set("server.public_url", f"http://{local_ip}:{port}")
+                if current_host in ("127.0.0.1", "localhost"):
+                    self.set("server.host", "0.0.0.0")
+                logger.info(f"Auto-configured public_url using local IP: {local_ip}")
+        except Exception as e:
+            logger.debug(f"Auto-configure server defaults failed: {e}")
     
     def _load_defaults(self) -> None:
         """Load default configuration values"""
