@@ -18,6 +18,9 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# Configuration constants
+DEFAULT_USER_AGENT = 'KlarBot/3.0 (Enterprise Swedish Search Engine)'
+
 
 class ReCrawlWorker(QThread):
     """Worker thread for re-crawling domains"""
@@ -54,7 +57,7 @@ class ReCrawlWorker(QThread):
             crawler = CrawlerCore(
                 storage_manager=storage_manager,
                 allowed_domains=self.domains,
-                user_agent=self.crawl_config.get('user_agent', 'KlarBot/3.0'),
+                user_agent=self.crawl_config.get('user_agent', DEFAULT_USER_AGENT),
                 crawl_delay=self.crawl_config.get('crawl_delay', 1.0),
                 crawl_depth=self.crawl_config.get('crawl_depth', 100),
                 respect_robots=self.crawl_config.get('respect_robots', True),
@@ -596,7 +599,7 @@ class DomainManagementDialog(QDialog):
             'max_workers': self.max_workers_spin.value(),
             'respect_robots': self.respect_robots_check.isChecked(),
             'dynamic_speed': self.dynamic_speed_check.isChecked(),
-            'user_agent': 'KlarBot/3.0 (Enterprise Swedish Search Engine)'
+            'user_agent': DEFAULT_USER_AGENT
         }
         
         # Create and start worker

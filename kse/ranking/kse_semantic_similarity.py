@@ -19,6 +19,9 @@ class SemanticSimilarity:
     def __init__(self):
         """Initialize semantic similarity module"""
         
+        # Configuration constants
+        self.MAX_CLUSTER_TERMS = 3  # Maximum terms to add from concept clusters
+        
         # Swedish question word to intent mapping
         self.question_intents = {
             'vad': 'definition',  # What is
@@ -229,8 +232,8 @@ class SemanticSimilarity:
         # Add concept cluster terms
         for concept_name, terms in self.concept_clusters.items():
             if any(term in query.lower() for term in terms):
-                # Add 2-3 most relevant terms from cluster
-                enhanced_terms.update(terms[:3])
+                # Add most relevant terms from cluster
+                enhanced_terms.update(terms[:self.MAX_CLUSTER_TERMS])
         
         return list(enhanced_terms)
     
