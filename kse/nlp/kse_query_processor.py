@@ -19,28 +19,41 @@ class QueryProcessor:
             'finns', 'funkar', 'fungerar', 'betyder', 'handlar', 'innebär'
         }
         
-        # Swedish synonyms for common terms
+        # Swedish synonyms for common terms (expanded for better natural language understanding)
         self.synonyms = {
-            'nyheter': ['nyhet', 'news', 'aktuellt', 'senaste'],
-            'väder': ['vädret', 'temperatur', 'progn', 'forecast'],
-            'sport': ['idrott', 'fotboll', 'hockey', 'matcher'],
-            'politik': ['politisk', 'regering', 'riksdag', 'minister'],
-            'ekonomi': ['ekonomisk', 'aktie', 'börs', 'finans', 'pengar'],
-            'kultur': ['kulturell', 'konst', 'musik', 'film', 'teater'],
-            'teknologi': ['teknik', 'innovation', 'digital', 'dator'],
-            'vetenskap': ['vetenskaplig', 'forskning', 'studie', 'forskare'],
-            'hälsa': ['sjukvård', 'läkare', 'medicin', 'sjukdom'],
-            'utbildning': ['skola', 'universitet', 'studera', 'kurs']
+            'nyheter': ['nyhet', 'news', 'aktuellt', 'senaste', 'notiser', 'rapporter'],
+            'väder': ['vädret', 'temperatur', 'prognos', 'forecast', 'klimat', 'väderlek'],
+            'sport': ['idrott', 'fotboll', 'hockey', 'matcher', 'tävling', 'spel'],
+            'politik': ['politisk', 'regering', 'riksdag', 'minister', 'parti', 'val'],
+            'ekonomi': ['ekonomisk', 'aktie', 'börs', 'finans', 'pengar', 'marknad'],
+            'kultur': ['kulturell', 'konst', 'musik', 'film', 'teater', 'litteratur'],
+            'teknologi': ['teknik', 'innovation', 'digital', 'dator', 'it', 'programvara'],
+            'vetenskap': ['vetenskaplig', 'forskning', 'studie', 'forskare', 'experiment'],
+            'hälsa': ['sjukvård', 'läkare', 'medicin', 'sjukdom', 'vård', 'hälsovård'],
+            'utbildning': ['skola', 'universitet', 'studera', 'kurs', 'lära', 'undervisning'],
+            'restaurang': ['restauranger', 'mat', 'äta', 'krog', 'matställe', 'cafè'],
+            'resa': ['resor', 'turism', 'semester', 'flygning', 'hotell'],
+            'arbete': ['jobb', 'anställning', 'karriär', 'lön', 'tjänst'],
+            'bostad': ['lägenhet', 'hus', 'hem', 'villa', 'boende'],
+            'transport': ['kollektivtrafik', 'buss', 'tåg', 'tunnelbana', 'resa'],
+            'shopping': ['köpa', 'butik', 'affär', 'handel', 'inköp'],
+            'underhållning': ['nöje', 'roligt', 'fritid', 'event', 'evenemang'],
         }
         
-        # Common phrase patterns
+        # Common phrase patterns (expanded for natural Swedish language)
         self.phrase_patterns = [
-            (r'hur (fungerar|funkar)', 'guide tutorial'),
-            (r'vad (är|betyder)', 'definition explanation'),
-            (r'var (finns|ligger)', 'location'),
-            (r'när (ska|kommer)', 'schedule date time'),
-            (r'bästa? (.*)', r'\1 review top'),
-            (r'köpa (.*)', r'\1 shop store buy'),
+            (r'hur (fungerar|funkar)', 'guide tutorial anvisning'),
+            (r'vad (är|betyder)', 'definition förklaring betydelse'),
+            (r'var (finns|ligger)', 'plats location adress karta'),
+            (r'när (ska|kommer|öppnar)', 'tid datum öppettider schema'),
+            (r'bästa? (.*)', r'\1 recension topp rekommendation'),
+            (r'köpa (.*)', r'\1 butik affär köp handla'),
+            (r'hitta (.*)', r'\1 sök leta plats'),
+            (r'(billig|billigaste) (.*)', r'\1 pris låg kostnad jämför'),
+            (r'nära (mig|här)', 'närhet lokalt område'),
+            (r'öppettider (.*)', r'\1 tid öppet stängt'),
+            (r'recension (.*)', r'\1 omdöme betyg kvalitet'),
+            (r'jämföra? (.*)', r'\1 skillnad kontrast test'),
         ]
         
         logger.info("QueryProcessor initialized with synonym expansion")

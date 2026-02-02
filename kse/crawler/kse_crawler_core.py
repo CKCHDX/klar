@@ -2,6 +2,8 @@
 KSE Crawler Core - Main crawler orchestrator for Klar Search Engine
 """
 import time
+import threading
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Optional, Set
 from pathlib import Path
 from kse.core.kse_logger import get_logger
@@ -29,7 +31,8 @@ class CrawlerCore:
         max_retries: int = 3,
         crawl_depth: int = 50,
         respect_robots: bool = True,
-        dynamic_speed: bool = False
+        dynamic_speed: bool = False,
+        max_workers: int = 5
     ):
         """
         Initialize crawler
@@ -44,6 +47,7 @@ class CrawlerCore:
             crawl_depth: Maximum pages to crawl per domain
             respect_robots: Whether to respect robots.txt
             dynamic_speed: Whether to dynamically adjust crawl speed from robots.txt
+            max_workers: Maximum number of concurrent threads for parallel crawling
         """
         self.storage = storage_manager
         self.allowed_domains = set(allowed_domains)
@@ -51,6 +55,7 @@ class CrawlerCore:
         self.crawl_depth = crawl_depth
         self.respect_robots = respect_robots
         self.dynamic_speed = dynamic_speed
+        self.max_workers = max_workers
         
         # Initialize components
         self.http_client = HTTPClient(user_agent, timeout, max_retries)
@@ -58,9 +63,10 @@ class CrawlerCore:
         self.url_processor = URLProcessor()
         self.robots_parser = RobotsParser(user_agent)
         
-        # Crawl state
+        # Thread-safe crawl state
         self.crawled_pages: List[Dict] = []
         self.domain_status: Dict[str, Dict] = {}
+        self._state_lock = threading.Lock()  # Lock for thread-safe state updates
         
         # Load previous state if exists
         self._load_crawl_state()
@@ -68,6 +74,8 @@ class CrawlerCore:
         logger.info(f"Crawler initialized for {len(self.allowed_domains)} domains")
         if dynamic_speed:
             logger.info("Dynamic speed adjustment enabled")
+        if max_workers > 1:
+            logger.info(f"Multi-threaded crawling enabled with {max_workers} workers")
     
     def _load_crawl_state(self) -> None:
         """Load previous crawl state from storage"""
@@ -218,7 +226,7 @@ class CrawlerCore:
                         failed_count += 1
                         continue
                     
-                    # Store page data
+                    # Store page data (thread-safe)
                     page_data = {
                         'url': current_url,
                         'domain': domain,
@@ -231,7 +239,8 @@ class CrawlerCore:
                         'crawl_time': time.time()
                     }
                     
-                    self.crawled_pages.append(page_data)
+                    with self._state_lock:
+                        self.crawled_pages.append(page_data)
                     
                     # Mark as visited
                     self.url_processor.mark_visited(current_url)
@@ -255,14 +264,15 @@ class CrawlerCore:
                     failed_count += 1
                     continue
             
-            # Update domain status
-            self.domain_status[domain].update({
-                "status": CrawlStatus.COMPLETED.value,
-                "pages_crawled": crawled_count,
-                "pages_failed": failed_count,
-                "last_crawl": time.time(),
-                "end_time": time.time()
-            })
+            # Update domain status (thread-safe)
+            with self._state_lock:
+                self.domain_status[domain].update({
+                    "status": CrawlStatus.COMPLETED.value,
+                    "pages_crawled": crawled_count,
+                    "pages_failed": failed_count,
+                    "last_crawl": time.time(),
+                    "end_time": time.time()
+                })
             
             # Save final state
             self._save_crawl_state()
@@ -282,15 +292,26 @@ class CrawlerCore:
             self._save_crawl_state()
             raise CrawlerError(f"Failed to crawl {domain}: {e}")
     
-    def crawl_all_domains(self) -> Dict[str, Dict]:
+    def crawl_all_domains(self, use_threading: bool = True) -> Dict[str, Dict]:
         """
-        Crawl all allowed domains
+        Crawl all allowed domains with optional multi-threading
+        
+        Args:
+            use_threading: If True and max_workers > 1, crawl domains in parallel
         
         Returns:
             Dictionary of domain crawl results
         """
         logger.info(f"Starting crawl of {len(self.allowed_domains)} domains")
         
+        # Use multi-threading if enabled and multiple workers configured
+        if use_threading and self.max_workers > 1:
+            return self._crawl_all_domains_threaded()
+        else:
+            return self._crawl_all_domains_sequential()
+    
+    def _crawl_all_domains_sequential(self) -> Dict[str, Dict]:
+        """Crawl all domains sequentially (original behavior)"""
         results = {}
         
         for domain in self.allowed_domains:
@@ -305,6 +326,35 @@ class CrawlerCore:
                 }
         
         logger.info(f"Completed crawl of all domains")
+        return results
+    
+    def _crawl_all_domains_threaded(self) -> Dict[str, Dict]:
+        """Crawl all domains in parallel using thread pool"""
+        logger.info(f"Starting parallel crawl with {self.max_workers} workers")
+        results = {}
+        
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # Submit all domain crawl tasks
+            future_to_domain = {
+                executor.submit(self.crawl_domain, domain): domain
+                for domain in self.allowed_domains
+            }
+            
+            # Process completed tasks
+            for future in as_completed(future_to_domain):
+                domain = future_to_domain[future]
+                try:
+                    result = future.result()
+                    results[domain] = result
+                    logger.info(f"✓ Completed parallel crawl of {domain}")
+                except Exception as e:
+                    logger.error(f"Failed to crawl {domain}: {e}")
+                    results[domain] = {
+                        "status": CrawlStatus.FAILED.value,
+                        "error": str(e)
+                    }
+        
+        logger.info(f"Completed parallel crawl of all domains")
         return results
     
     def get_crawled_pages(self) -> List[Dict]:

@@ -133,7 +133,9 @@ class SearchPipeline:
             if self.enable_ranking:
                 results = self.ranking_core.rank_results(
                     results,
-                    preprocessed['processed_terms']
+                    preprocessed['processed_terms'],
+                    original_query=query,
+                    query_intent=enhanced_query.get('intent')
                 )
                 logger.debug(f"Applied advanced ranking to {len(results)} results")
             
