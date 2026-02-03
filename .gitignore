@@ -71,3 +71,8 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Prevent Windows absolute paths
+C:\*
+*/backup/data/*
+
