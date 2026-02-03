@@ -65,7 +65,15 @@ class DataSerializer:
         try:
             file_path.parent.mkdir(parents=True, exist_ok=True)
             with open(file_path, 'wb') as f:
-                pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
+                # Use highest protocol for efficiency and set recursion limit high
+                import sys
+                old_limit = sys.getrecursionlimit()
+                try:
+                    # Increase recursion limit for deeply nested structures
+                    sys.setrecursionlimit(10000)
+                    pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
+                finally:
+                    sys.setrecursionlimit(old_limit)
             logger.debug(f"Pickle saved to {file_path}")
         except Exception as e:
             raise SerializationError(f"Failed to save pickle to {file_path}: {e}")
@@ -83,7 +91,14 @@ class DataSerializer:
         """
         try:
             with open(file_path, 'rb') as f:
-                data = pickle.load(f)
+                # Increase recursion limit for deeply nested structures
+                import sys
+                old_limit = sys.getrecursionlimit()
+                try:
+                    sys.setrecursionlimit(10000)
+                    data = pickle.load(f)
+                finally:
+                    sys.setrecursionlimit(old_limit)
             logger.debug(f"Pickle loaded from {file_path}")
             return data
         except FileNotFoundError:

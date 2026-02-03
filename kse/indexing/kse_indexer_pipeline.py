@@ -42,7 +42,14 @@ class IndexerPipeline:
             # Load inverted index
             index_data = self.storage.load_index("inverted")
             if index_data:
-                self.inverted_index.index = index_data.get('index', {})
+                # Convert loaded dict back to defaultdict
+                from collections import defaultdict
+                loaded_index = index_data.get('index', {})
+                
+                # Rebuild defaultdict structure
+                for term, docs in loaded_index.items():
+                    self.inverted_index.index[term] = defaultdict(list, docs)
+                
                 self.inverted_index.documents = index_data.get('documents', {})
                 self.inverted_index.total_documents = index_data.get('total_documents', 0)
                 logger.info(f"Loaded existing index with {self.inverted_index.total_documents} documents")
@@ -52,8 +59,14 @@ class IndexerPipeline:
     def _save_index(self) -> None:
         """Save index to storage"""
         try:
+            # Convert defaultdict to regular dict for serialization
+            # Also convert nested defaultdicts
+            regular_index = {}
+            for term, docs in self.inverted_index.index.items():
+                regular_index[term] = dict(docs)
+            
             index_data = {
-                'index': dict(self.inverted_index.index),
+                'index': regular_index,
                 'documents': self.inverted_index.documents,
                 'total_documents': self.inverted_index.total_documents
             }
@@ -63,9 +76,10 @@ class IndexerPipeline:
             stats = self.inverted_index.get_statistics()
             self.storage.save_metadata(stats, "index")
             
-            logger.info(f"Saved index with {self.inverted_index.total_documents} documents")
+            logger.info(f"Saved index with {self.inverted_index.total_documents} documents, size: {stats.get('index_size_mb', 0)} MB")
         except Exception as e:
             logger.error(f"Failed to save index: {e}")
+            raise
     
     def index_pages(self, pages: List[Dict]) -> Dict:
         """
@@ -79,33 +93,48 @@ class IndexerPipeline:
         """
         logger.info(f"Starting indexing of {len(pages)} pages")
         
-        # Process pages
-        processed_pages = self.page_processor.process_pages(pages)
+        # Process pages in batches to avoid memory overflow
+        batch_size = 100
+        total_indexed = 0
         
-        # Index pages
-        indexed_count = 0
-        for page in processed_pages:
-            try:
-                doc_id = page['doc_id']
-                tokens = page['tokens']
-                
-                # Metadata for document
-                metadata = {
-                    'url': page['url'],
-                    'domain': page['domain'],
-                    'title': page['title'],
-                    'description': page['description'],
-                    'keywords': page['keywords'],
-                    'content_length': page['content_length'],
-                    'token_count': page['token_count']
-                }
-                
-                # Add to inverted index
-                self.inverted_index.add_document(doc_id, tokens, metadata)
-                indexed_count += 1
-                
-            except Exception as e:
-                logger.error(f"Failed to index page {page.get('url', 'unknown')}: {e}")
+        for batch_start in range(0, len(pages), batch_size):
+            batch_end = min(batch_start + batch_size, len(pages))
+            batch = pages[batch_start:batch_end]
+            
+            logger.info(f"Processing batch {batch_start//batch_size + 1}/{(len(pages)-1)//batch_size + 1}")
+            
+            # Process pages
+            processed_pages = self.page_processor.process_pages(batch)
+            
+            # Index pages
+            for page in processed_pages:
+                try:
+                    doc_id = page['doc_id']
+                    tokens = page['tokens']
+                    
+                    # Metadata for document
+                    metadata = {
+                        'url': page['url'],
+                        'domain': page['domain'],
+                        'title': page['title'],
+                        'description': page['description'],
+                        'keywords': page['keywords'],
+                        'content_length': page['content_length'],
+                        'token_count': page['token_count']
+                    }
+                    
+                    # Add to inverted index
+                    self.inverted_index.add_document(doc_id, tokens, metadata)
+                    total_indexed += 1
+                    
+                except Exception as e:
+                    logger.error(f"Failed to index page {page.get('url', 'unknown')}: {e}")
+            
+            # Periodic garbage collection to free memory
+            if batch_start > 0 and batch_start % 500 == 0:
+                import gc
+                gc.collect()
+                logger.debug(f"Garbage collection performed after {batch_start} pages")
         
         # Initialize TF-IDF calculator
         self.tfidf_calculator = TFIDFCalculator(self.inverted_index)
@@ -113,11 +142,11 @@ class IndexerPipeline:
         # Save index
         self._save_index()
         
-        logger.info(f"Indexed {indexed_count} pages successfully")
+        logger.info(f"Indexed {total_indexed} pages successfully")
         
         return {
-            'pages_processed': len(processed_pages),
-            'pages_indexed': indexed_count,
+            'pages_processed': len(pages),
+            'pages_indexed': total_indexed,
             'total_documents': self.inverted_index.total_documents,
             'total_terms': len(self.inverted_index.index)
         }
