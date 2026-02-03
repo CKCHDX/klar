@@ -197,12 +197,12 @@ class InvertedIndex:
         }
     
     def _estimate_size(self) -> int:
-        """Estimate memory size of index"""
-        import sys
-        import gc
+        """
+        Estimate memory size of index
         
-        # Force garbage collection to get accurate estimate
-        gc.collect()
+        Note: This is an approximation and may not account for all Python overhead
+        """
+        import sys
         
         # Calculate actual size including nested structures
         size = sys.getsizeof(self.index)

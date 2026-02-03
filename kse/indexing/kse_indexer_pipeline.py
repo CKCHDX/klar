@@ -15,16 +15,22 @@ logger = get_logger(__name__, "indexer.log")
 class IndexerPipeline:
     """Main indexing pipeline orchestrator"""
     
-    def __init__(self, storage_manager: StorageManager, nlp_core: NLPCore = None):
+    # Configuration constants
+    DEFAULT_INDEX_BATCH_SIZE = 100  # Process pages in batches to avoid memory overflow
+    GC_INTERVAL = 500  # Run garbage collection every N pages
+    
+    def __init__(self, storage_manager: StorageManager, nlp_core: NLPCore = None, batch_size: int = None):
         """
         Initialize indexer pipeline
         
         Args:
             storage_manager: Storage manager instance
             nlp_core: NLP core instance (creates default if None)
+            batch_size: Number of pages to process per batch (defaults to DEFAULT_INDEX_BATCH_SIZE)
         """
         self.storage = storage_manager
         self.nlp = nlp_core or NLPCore(enable_lemmatization=True, enable_stopword_removal=True)
+        self.batch_size = batch_size or self.DEFAULT_INDEX_BATCH_SIZE
         
         # Initialize components
         self.inverted_index = InvertedIndex()
@@ -34,7 +40,7 @@ class IndexerPipeline:
         # Try to load existing index
         self._load_index()
         
-        logger.info("Indexer pipeline initialized")
+        logger.info(f"Indexer pipeline initialized (batch_size={self.batch_size})")
     
     def _load_index(self) -> None:
         """Load existing index from storage"""
@@ -94,14 +100,13 @@ class IndexerPipeline:
         logger.info(f"Starting indexing of {len(pages)} pages")
         
         # Process pages in batches to avoid memory overflow
-        batch_size = 100
         total_indexed = 0
         
-        for batch_start in range(0, len(pages), batch_size):
-            batch_end = min(batch_start + batch_size, len(pages))
+        for batch_start in range(0, len(pages), self.batch_size):
+            batch_end = min(batch_start + self.batch_size, len(pages))
             batch = pages[batch_start:batch_end]
             
-            logger.info(f"Processing batch {batch_start//batch_size + 1}/{(len(pages)-1)//batch_size + 1}")
+            logger.info(f"Processing batch {batch_start//self.batch_size + 1}/{(len(pages)-1)//self.batch_size + 1}")
             
             # Process pages
             processed_pages = self.page_processor.process_pages(batch)
@@ -131,7 +136,7 @@ class IndexerPipeline:
                     logger.error(f"Failed to index page {page.get('url', 'unknown')}: {e}")
             
             # Periodic garbage collection to free memory
-            if batch_start > 0 and batch_start % 500 == 0:
+            if batch_start > 0 and batch_start % self.GC_INTERVAL == 0:
                 import gc
                 gc.collect()
                 logger.debug(f"Garbage collection performed after {batch_start} pages")

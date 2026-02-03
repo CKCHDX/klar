@@ -10,6 +10,9 @@ from kse.core.kse_logger import get_logger
 
 logger = get_logger(__name__)
 
+# Configuration constants
+DEFAULT_RECURSION_LIMIT = 10000  # For deeply nested pickle structures
+
 
 class DataSerializer:
     """Handles serialization and deserialization of data"""
@@ -70,7 +73,7 @@ class DataSerializer:
                 old_limit = sys.getrecursionlimit()
                 try:
                     # Increase recursion limit for deeply nested structures
-                    sys.setrecursionlimit(10000)
+                    sys.setrecursionlimit(DEFAULT_RECURSION_LIMIT)
                     pickle.dump(data, f, protocol=pickle.HIGHEST_PROTOCOL)
                 finally:
                     sys.setrecursionlimit(old_limit)
@@ -95,7 +98,7 @@ class DataSerializer:
                 import sys
                 old_limit = sys.getrecursionlimit()
                 try:
-                    sys.setrecursionlimit(10000)
+                    sys.setrecursionlimit(DEFAULT_RECURSION_LIMIT)
                     data = pickle.load(f)
                 finally:
                     sys.setrecursionlimit(old_limit)
