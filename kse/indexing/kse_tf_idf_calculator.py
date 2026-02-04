@@ -47,13 +47,20 @@ class TFIDFCalculator:
     
     def calculate_idf(self, term: str) -> float:
         """
-        Calculate inverse document frequency (IDF)
+        Calculate inverse document frequency (IDF) with proper smoothing
+        
+        Uses log-scaled normalization to prevent score collapse at scale.
+        The formula: log((N - df + 0.5) / (df + 0.5)) + 1
+        This ensures:
+        - IDF never becomes 0 or negative
+        - Scores don't shrink proportionally with document count
+        - Smoothing prevents division issues
         
         Args:
             term: Term to calculate IDF for
         
         Returns:
-            IDF score
+            IDF score (always positive)
         """
         # Check cache
         if term in self.idf_cache:
@@ -63,13 +70,28 @@ class TFIDFCalculator:
         df = self.index.get_document_frequency(term)
         
         if df == 0:
-            return 0.0
+            # Term doesn't exist - return very high IDF (rare term bonus)
+            return 10.0
         
-        # Calculate IDF: log(N / df) + 1
-        # Adding 1 ensures IDF is never 0, even when df == N
-        # This modification is important for small corpora
+        # Calculate IDF with smoothing to prevent score collapse
+        # Using BM25-style smoothing: log((N - df + 0.5) / (df + 0.5)) + 1
+        # This prevents issues when:
+        # - df is very small (rare terms)
+        # - df approaches N (common terms)
+        # - N grows large (scale issue)
         total_docs = self.index.total_documents
-        idf = math.log((total_docs + 1) / (df + 1)) + 1
+        
+        # Ensure we have documents
+        if total_docs == 0:
+            return 1.0
+        
+        # Smoothed IDF calculation
+        numerator = max(total_docs - df + 0.5, 1.0)
+        denominator = max(df + 0.5, 1.0)
+        idf = math.log(numerator / denominator) + 1
+        
+        # Ensure IDF is always positive
+        idf = max(idf, 0.1)
         
         # Cache result
         self.idf_cache[term] = idf
@@ -167,13 +189,16 @@ class TFIDFCalculator:
         
         return similarity
     
-    def rank_documents(self, query_terms: List[str], doc_ids: List[str] = None) -> List[tuple]:
+    def rank_documents(self, query_terms: List[str], doc_ids: List[str] = None, max_candidates: int = 1000) -> List[tuple]:
         """
         Rank documents by TF-IDF similarity to query
         
+        Limits scoring to top candidates to prevent expensive full-corpus ranking.
+        
         Args:
             query_terms: List of query terms
-            doc_ids: List of document IDs to rank (None = all documents)
+            doc_ids: List of document IDs to rank (None = retrieve from index)
+            max_candidates: Maximum candidate documents to score (prevents O(N) explosion)
         
         Returns:
             List of (doc_id, score) tuples, sorted by score descending
@@ -184,6 +209,26 @@ class TFIDFCalculator:
         
         if not doc_ids:
             return []
+        
+        # Convert to list if it's a set
+        if isinstance(doc_ids, set):
+            doc_ids = list(doc_ids)
+        
+        # Cap candidates to prevent excessive computation
+        # This implements: "Cap work per query, not data size"
+        if len(doc_ids) > max_candidates:
+            # Use a simple heuristic: prioritize documents with more query terms
+            doc_term_counts = {}
+            for doc_id in doc_ids:
+                count = sum(1 for term in query_terms 
+                          if self.index.get_term_frequency(term, doc_id) > 0)
+                doc_term_counts[doc_id] = count
+            
+            # Sort by term count and take top candidates
+            sorted_docs = sorted(doc_term_counts.items(), key=lambda x: x[1], reverse=True)
+            doc_ids = [doc_id for doc_id, _ in sorted_docs[:max_candidates]]
+            
+            logger.info(f"Limited candidate documents from {len(doc_ids)} to {max_candidates} for ranking")
         
         # Calculate similarity scores
         scores = []
