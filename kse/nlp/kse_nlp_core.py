@@ -56,6 +56,7 @@ class NLPCore:
             tokens = self.lemmatizer.lemmatize_tokens(tokens)
         
         # Remove duplicates while preserving order
+        # Use set for O(1) lookup
         seen = set()
         unique_tokens = []
         for token in tokens:

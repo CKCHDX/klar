@@ -2,7 +2,7 @@
 KSE Storage Manager - File I/O orchestration for Klar Search Engine
 """
 from pathlib import Path
-from typing import Any, Dict, Optional, Set
+from typing import Any, Dict, Optional, Set, List
 from kse.core.kse_exceptions import StorageError
 from kse.core.kse_logger import get_logger
 from kse.storage.kse_data_serializer import DataSerializer
@@ -32,6 +32,7 @@ class StorageManager:
             self.base_path / "storage" / "cache",
             self.base_path / "storage" / "crawl_state",
             self.base_path / "storage" / "snapshots",
+            self.base_path / "storage" / "pages",  # For incremental page storage
             self.base_path / "logs",
             self.base_path / "exports",
         ]
@@ -200,6 +201,7 @@ class StorageManager:
             "index_files": [],
             "cache_files": [],
             "crawl_state_files": [],
+            "page_batches": 0,
         }
         
         try:
@@ -219,8 +221,71 @@ class StorageManager:
             crawl_dir = self.base_path / "storage" / "crawl_state"
             if crawl_dir.exists():
                 stats["crawl_state_files"] = [f.name for f in crawl_dir.iterdir() if f.is_file()]
+            
+            # Count page batches
+            pages_dir = self.base_path / "storage" / "pages"
+            if pages_dir.exists():
+                stats["page_batches"] = len([f for f in pages_dir.iterdir() if f.is_file() and f.suffix == '.pkl'])
         
         except Exception as e:
             logger.error(f"Failed to get storage stats: {e}")
         
         return stats
+    
+    # Page batch operations
+    def save_pages_batch(self, pages: List[Dict[str, Any]]) -> None:
+        """
+        Save a batch of pages incrementally
+        
+        Args:
+            pages: List of page data to save
+        """
+        try:
+            pages_dir = self.base_path / "storage" / "pages"
+            
+            # Find next batch number
+            existing_batches = list(pages_dir.glob("pages_batch_*.pkl"))
+            next_batch = len(existing_batches)
+            
+            file_path = pages_dir / f"pages_batch_{next_batch:04d}.pkl"
+            self._serializer.save_pickle(pages, file_path)
+            logger.debug(f"Saved pages batch {next_batch} with {len(pages)} pages")
+        except Exception as e:
+            raise StorageError(f"Failed to save pages batch: {e}")
+    
+    def load_all_pages(self) -> List[Dict[str, Any]]:
+        """
+        Load all pages from all batches
+        
+        Returns:
+            List of all page data
+        """
+        try:
+            pages_dir = self.base_path / "storage" / "pages"
+            if not pages_dir.exists():
+                return []
+            
+            all_pages = []
+            batch_files = sorted(pages_dir.glob("pages_batch_*.pkl"))
+            
+            for batch_file in batch_files:
+                batch_pages = self._serializer.load_pickle(batch_file)
+                if batch_pages:
+                    all_pages.extend(batch_pages)
+            
+            logger.info(f"Loaded {len(all_pages)} pages from {len(batch_files)} batches")
+            return all_pages
+        except Exception as e:
+            logger.error(f"Failed to load all pages: {e}")
+            return []
+    
+    def clear_pages_batches(self) -> None:
+        """Clear all page batch files"""
+        try:
+            pages_dir = self.base_path / "storage" / "pages"
+            if pages_dir.exists():
+                for batch_file in pages_dir.glob("pages_batch_*.pkl"):
+                    batch_file.unlink()
+                logger.info("Cleared all page batches")
+        except Exception as e:
+            logger.error(f"Failed to clear page batches: {e}")

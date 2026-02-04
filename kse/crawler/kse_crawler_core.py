@@ -21,6 +21,9 @@ logger = get_logger(__name__, "crawler.log")
 class CrawlerCore:
     """Main web crawler orchestrator"""
     
+    # Configuration constants
+    DEFAULT_PAGE_BATCH_SIZE = 50  # Save pages every N pages to avoid memory overflow
+    
     def __init__(
         self,
         storage_manager: StorageManager,
@@ -32,7 +35,8 @@ class CrawlerCore:
         crawl_depth: int = 50,
         respect_robots: bool = True,
         dynamic_speed: bool = False,
-        max_workers: int = 5
+        max_workers: int = 5,
+        page_batch_size: int = None
     ):
         """
         Initialize crawler
@@ -48,6 +52,7 @@ class CrawlerCore:
             respect_robots: Whether to respect robots.txt
             dynamic_speed: Whether to dynamically adjust crawl speed from robots.txt
             max_workers: Maximum number of concurrent threads for parallel crawling
+            page_batch_size: Number of pages to accumulate before saving (defaults to DEFAULT_PAGE_BATCH_SIZE)
         """
         self.storage = storage_manager
         self.allowed_domains = set(allowed_domains)
@@ -67,6 +72,8 @@ class CrawlerCore:
         self.crawled_pages: List[Dict] = []
         self.domain_status: Dict[str, Dict] = {}
         self._state_lock = threading.Lock()  # Lock for thread-safe state updates
+        self._page_batch_size = page_batch_size or self.DEFAULT_PAGE_BATCH_SIZE
+        self._pages_since_last_save = 0
         
         # Load previous state if exists
         self._load_crawl_state()
@@ -107,6 +114,19 @@ class CrawlerCore:
             logger.debug("Crawl state saved")
         except Exception as e:
             logger.error(f"Failed to save crawl state: {e}")
+    
+    def _save_pages_batch(self) -> None:
+        """Save a batch of pages to storage"""
+        try:
+            with self._state_lock:
+                if self.crawled_pages:
+                    # Save pages incrementally
+                    self.storage.save_pages_batch(self.crawled_pages)
+                    logger.info(f"Saved batch of {len(self.crawled_pages)} pages to storage")
+                    # Note: Keep pages in memory for get_crawled_pages() during active crawl
+                    # Pages are only cleared when loading from storage after crawl completion
+        except Exception as e:
+            logger.error(f"Failed to save pages batch: {e}")
     
     def crawl_domain(
         self,
@@ -241,6 +261,7 @@ class CrawlerCore:
                     
                     with self._state_lock:
                         self.crawled_pages.append(page_data)
+                        self._pages_since_last_save += 1
                     
                     # Mark as visited
                     self.url_processor.mark_visited(current_url)
@@ -251,6 +272,11 @@ class CrawlerCore:
                         link_domain = self.url_processor.get_domain(link)
                         if link_domain == domain and not self.url_processor.is_duplicate(link):
                             url_queue.append(link)
+                    
+                    # Save pages incrementally to avoid memory overflow
+                    if self._pages_since_last_save >= self._page_batch_size:
+                        self._save_pages_batch()
+                        self._pages_since_last_save = 0
                     
                     # Save state periodically
                     if crawled_count % 10 == 0:
@@ -273,6 +299,11 @@ class CrawlerCore:
                     "last_crawl": time.time(),
                     "end_time": time.time()
                 })
+            
+            # Save any remaining pages
+            if self._pages_since_last_save > 0:
+                self._save_pages_batch()
+                self._pages_since_last_save = 0
             
             # Save final state
             self._save_crawl_state()
@@ -362,9 +393,21 @@ class CrawlerCore:
         Get all crawled pages
         
         Returns:
-            List of crawled page data
+            List of crawled page data (in-memory during active crawl)
         """
-        return self.crawled_pages.copy()
+        with self._state_lock:
+            return self.crawled_pages.copy()
+    
+    def load_all_crawled_pages(self) -> List[Dict]:
+        """
+        Load all crawled pages from storage
+        
+        This is useful for post-crawl processing when pages were saved in batches
+        
+        Returns:
+            List of all crawled page data from storage
+        """
+        return self.storage.load_all_pages()
     
     def get_crawl_stats(self) -> Dict:
         """

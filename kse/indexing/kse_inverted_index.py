@@ -184,18 +184,45 @@ class InvertedIndex:
         Returns:
             Dictionary with statistics
         """
+        total_postings = sum(len(docs) for docs in self.index.values())
+        avg_terms = total_postings / max(self.total_documents, 1)
+        
         return {
             "total_documents": self.total_documents,
             "total_terms": len(self.index),
-            "average_terms_per_document": sum(len(docs) for docs in self.index.values()) / max(self.total_documents, 1),
-            "index_size_bytes": self._estimate_size()
+            "total_postings": total_postings,
+            "average_terms_per_document": round(avg_terms, 2),
+            "index_size_bytes": self._estimate_size(),
+            "index_size_mb": round(self._estimate_size() / (1024 * 1024), 2)
         }
     
     def _estimate_size(self) -> int:
-        """Estimate memory size of index"""
+        """
+        Estimate memory size of index
+        
+        Note: This is an approximation and may not account for all Python overhead
+        """
         import sys
+        
+        # Calculate actual size including nested structures
         size = sys.getsizeof(self.index)
+        
+        # Add size of nested dicts and lists
+        for term, docs in self.index.items():
+            size += sys.getsizeof(term)
+            size += sys.getsizeof(docs)
+            for doc_id, positions in docs.items():
+                size += sys.getsizeof(doc_id)
+                size += sys.getsizeof(positions)
+        
+        # Add documents metadata size
         size += sys.getsizeof(self.documents)
+        for doc_id, metadata in self.documents.items():
+            size += sys.getsizeof(doc_id)
+            size += sys.getsizeof(metadata)
+            for key, value in metadata.items():
+                size += sys.getsizeof(key) + sys.getsizeof(value)
+        
         return size
     
     def clear(self) -> None:
