@@ -31,8 +31,11 @@ def test_index_validation() -> None:
     print("TEST 1: Index Validation")
     print(f"{'='*70}")
     
-    # Create test directory
+    # Create test directory (clean)
     test_dir = Path('/tmp/kse_validation_test')
+    if test_dir.exists():
+        import shutil
+        shutil.rmtree(test_dir)
     test_dir.mkdir(exist_ok=True)
     
     log_dir = test_dir / 'logs'
@@ -43,6 +46,9 @@ def test_index_validation() -> None:
     storage = StorageManager(test_dir)
     nlp = NLPCore(enable_lemmatization=True, enable_stopword_removal=True)
     indexer = IndexerPipeline(storage, nlp)
+    
+    # Ensure truly empty index
+    indexer.inverted_index.clear()
     
     # Test validation on empty index
     validation = indexer.inverted_index.validate_index_integrity()
@@ -85,8 +91,11 @@ def test_graceful_degradation() -> None:
     print("TEST 2: Graceful Degradation")
     print(f"{'='*70}")
     
-    # Create test directory
+    # Create test directory (clean)
     test_dir = Path('/tmp/kse_graceful_test')
+    if test_dir.exists():
+        import shutil
+        shutil.rmtree(test_dir)
     test_dir.mkdir(exist_ok=True)
     
     log_dir = test_dir / 'logs'
@@ -97,6 +106,9 @@ def test_graceful_degradation() -> None:
     storage = StorageManager(test_dir)
     nlp = NLPCore(enable_lemmatization=True, enable_stopword_removal=True)
     indexer = IndexerPipeline(storage, nlp)
+    
+    # Ensure truly empty index
+    indexer.inverted_index.clear()
     
     # Test search on empty index - should return informative result, not empty
     results = indexer.search("test query")
@@ -144,8 +156,11 @@ def test_improved_scoring() -> None:
     print("TEST 3: Improved Scoring (TF-IDF with smoothing)")
     print(f"{'='*70}")
     
-    # Create test directory
+    # Create test directory (clean)
     test_dir = Path('/tmp/kse_scoring_test')
+    if test_dir.exists():
+        import shutil
+        shutil.rmtree(test_dir)
     test_dir.mkdir(exist_ok=True)
     
     log_dir = test_dir / 'logs'
@@ -232,8 +247,11 @@ def test_pagination() -> None:
     print("TEST 4: Pagination Support")
     print(f"{'='*70}")
     
-    # Create test directory
+    # Create test directory (clean)
     test_dir = Path('/tmp/kse_pagination_test')
+    if test_dir.exists():
+        import shutil
+        shutil.rmtree(test_dir)
     test_dir.mkdir(exist_ok=True)
     
     log_dir = test_dir / 'logs'
@@ -305,8 +323,11 @@ def test_candidate_limiting() -> None:
     print("TEST 5: Candidate Limiting for Performance")
     print(f"{'='*70}")
     
-    # Create test directory
+    # Create test directory (clean)
     test_dir = Path('/tmp/kse_candidate_test')
+    if test_dir.exists():
+        import shutil
+        shutil.rmtree(test_dir)
     test_dir.mkdir(exist_ok=True)
     
     log_dir = test_dir / 'logs'
@@ -342,7 +363,7 @@ def test_candidate_limiting() -> None:
     elapsed = time.time() - start
     
     print(f"Search completed in {elapsed*1000:.2f}ms")
-    assert elapsed < 1.0, f"Search should complete in < 1s, took {elapsed:.2f}s"
+    assert elapsed < 0.1, f"Search should complete in < 100ms, took {elapsed*1000:.2f}ms"
     print(f"✓ Candidate limiting keeps search fast even with 500 matches")
     
     print("✓ Candidate limiting test PASSED")
