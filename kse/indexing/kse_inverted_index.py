@@ -177,6 +177,64 @@ class InvertedIndex:
             result |= docs
         return result
     
+    def validate_index_integrity(self) -> Dict:
+        """
+        Validate index integrity to ensure it's ready for searching
+        
+        Returns:
+            Dictionary with validation results
+        """
+        issues = []
+        warnings = []
+        
+        # Check if index is empty
+        if self.total_documents == 0:
+            issues.append("Index is empty - no documents indexed")
+        
+        # Check if index has terms
+        if len(self.index) == 0:
+            issues.append("Index has no terms - indexing may have failed")
+        
+        # Check for consistency
+        if self.total_documents > 0 and len(self.index) == 0:
+            issues.append("Documents exist but no terms indexed - data corruption possible")
+        
+        # Check for orphaned documents
+        indexed_doc_ids = set()
+        for term, docs in self.index.items():
+            indexed_doc_ids.update(docs.keys())
+        
+        metadata_doc_ids = set(self.documents.keys())
+        
+        orphaned_in_index = indexed_doc_ids - metadata_doc_ids
+        orphaned_in_metadata = metadata_doc_ids - indexed_doc_ids
+        
+        if orphaned_in_index:
+            warnings.append(f"{len(orphaned_in_index)} documents in index but missing metadata")
+        
+        if orphaned_in_metadata:
+            warnings.append(f"{len(orphaned_in_metadata)} documents have metadata but not indexed")
+        
+        # Check for reasonable term distribution
+        if len(self.index) > 0:
+            total_postings = sum(len(docs) for docs in self.index.values())
+            avg_postings = total_postings / len(self.index)
+            
+            if avg_postings < 0.1:
+                warnings.append(f"Very low average postings per term ({avg_postings:.2f}) - may indicate indexing issues")
+        
+        is_valid = len(issues) == 0
+        
+        return {
+            'is_valid': is_valid,
+            'issues': issues,
+            'warnings': warnings,
+            'total_documents': self.total_documents,
+            'total_terms': len(self.index),
+            'indexed_documents': len(indexed_doc_ids),
+            'metadata_documents': len(metadata_doc_ids)
+        }
+    
     def get_statistics(self) -> Dict:
         """
         Get index statistics

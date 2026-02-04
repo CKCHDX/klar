@@ -158,7 +158,7 @@ class IndexerPipeline:
     
     def search(self, query: Union[str, List[str]], max_results: int = 10) -> List[Dict]:
         """
-        Search the index
+        Search the index with validation and graceful degradation
         
         Args:
             query: Search query. Can be either:
@@ -167,8 +167,27 @@ class IndexerPipeline:
             max_results: Maximum number of results
         
         Returns:
-            List of search results
+            List of search results (returns partial results on errors, never fails silently)
         """
+        # Validate index before searching (fail loudly if broken)
+        validation = self.inverted_index.validate_index_integrity()
+        if not validation['is_valid']:
+            logger.error(f"Index validation failed: {validation['issues']}")
+            # Return error message instead of empty results
+            return [{
+                'url': '',
+                'title': 'Search Error',
+                'description': f"Index validation failed: {'; '.join(validation['issues'])}",
+                'domain': '',
+                'score': 0,
+                'error': True
+            }]
+        
+        # Log warnings but continue
+        if validation['warnings']:
+            for warning in validation['warnings']:
+                logger.warning(f"Index warning: {warning}")
+        
         # Handle pre-processed terms (list) or raw query (string)
         if isinstance(query, list):
             query_terms = query
@@ -179,32 +198,90 @@ class IndexerPipeline:
         
         if not query_terms:
             logger.warning(f"No valid terms in query: {query_str if query_str else '(empty)'}")
-            return []
+            # Return informative message instead of empty
+            return [{
+                'url': '',
+                'title': 'No Results',
+                'description': 'Your query did not contain any valid search terms. Please try different keywords.',
+                'domain': '',
+                'score': 0,
+                'info': True
+            }]
         
         logger.info(f"Searching for: {query_str} -> {query_terms}")
+        
+        # Validate query tokens exist in index (catch tokenization mismatches)
+        terms_in_index = sum(1 for term in query_terms 
+                            if self.inverted_index.get_document_frequency(term) > 0)
+        
+        if terms_in_index == 0:
+            logger.warning(f"None of the query terms found in index: {query_terms}")
+            # Return partial result with explanation instead of empty
+            return [{
+                'url': '',
+                'title': 'No Matching Documents',
+                'description': f'None of your search terms were found in the indexed documents. Searched for: {", ".join(query_terms)}',
+                'domain': '',
+                'score': 0,
+                'info': True
+            }]
+        
+        if terms_in_index < len(query_terms):
+            missing_terms = [term for term in query_terms 
+                           if self.inverted_index.get_document_frequency(term) == 0]
+            logger.info(f"Some query terms not in index: {missing_terms}")
         
         # Initialize TF-IDF if not already done
         if not self.tfidf_calculator:
             self.tfidf_calculator = TFIDFCalculator(self.inverted_index)
         
-        # Rank documents
-        ranked_docs = self.tfidf_calculator.rank_documents(query_terms)
-        
-        # Get top results
-        results = []
-        for doc_id, score in ranked_docs[:max_results]:
-            metadata = self.inverted_index.documents.get(doc_id, {})
-            results.append({
-                'url': doc_id,
-                'title': metadata.get('title', ''),
-                'description': metadata.get('description', ''),
-                'domain': metadata.get('domain', ''),
-                'score': round(score * 100, 2)  # Convert to 0-100 scale
-            })
-        
-        logger.info(f"Found {len(results)} results for query: {query_str}")
-        
-        return results
+        try:
+            # Rank documents with candidate limiting to prevent expensive computation
+            # This prevents query timeout at scale
+            ranked_docs = self.tfidf_calculator.rank_documents(
+                query_terms,
+                max_candidates=1000  # Cap scoring work per query
+            )
+            
+            # Graceful degradation: return partial results even if full ranking couldn't complete
+            if not ranked_docs:
+                logger.info(f"No documents matched query: {query_str}")
+                return [{
+                    'url': '',
+                    'title': 'No Results Found',
+                    'description': f'No documents matched your search terms: {", ".join(query_terms)}',
+                    'domain': '',
+                    'score': 0,
+                    'info': True
+                }]
+            
+            # Get top results (paginated)
+            results = []
+            for doc_id, score in ranked_docs[:max_results]:
+                metadata = self.inverted_index.documents.get(doc_id, {})
+                results.append({
+                    'url': doc_id,
+                    'title': metadata.get('title', ''),
+                    'description': metadata.get('description', ''),
+                    'domain': metadata.get('domain', ''),
+                    'score': round(score * 100, 2)  # Convert to 0-100 scale
+                })
+            
+            logger.info(f"Found {len(results)} results for query: {query_str}")
+            
+            return results
+            
+        except Exception as e:
+            # Never fail silently - return error information
+            logger.error(f"Search execution error: {e}", exc_info=True)
+            return [{
+                'url': '',
+                'title': 'Search Error',
+                'description': f'An error occurred during search: {str(e)}',
+                'domain': '',
+                'score': 0,
+                'error': True
+            }]
     
     def get_statistics(self) -> Dict:
         """

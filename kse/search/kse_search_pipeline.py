@@ -68,31 +68,47 @@ class SearchPipeline:
         query: str,
         max_results: int = 10,
         diversify: bool = True,
-        max_per_domain: int = 3
+        max_per_domain: int = 3,
+        offset: int = 0,
+        page_size: int = None
     ) -> Dict:
         """
-        Execute search query with advanced ranking and caching
+        Execute search query with pagination, advanced ranking and caching
         
         Args:
             query: Search query
-            max_results: Maximum number of results
+            max_results: Maximum number of results (for backward compatibility)
             diversify: Whether to diversify results by domain
             max_per_domain: Maximum results per domain when diversifying
+            offset: Starting position for pagination (0-based)
+            page_size: Number of results per page (overrides max_results if set)
         
         Returns:
-            Dictionary with search results and metadata
+            Dictionary with search results and pagination metadata
         """
         start_time = time.time()
         
-        logger.info(f"Search request: '{query}'")
+        # Determine actual page size
+        if page_size is None:
+            page_size = max_results
+        
+        # Validate pagination parameters
+        if offset < 0:
+            offset = 0
+        if page_size < 1:
+            page_size = 10
+        if page_size > 100:
+            page_size = 100  # Cap at 100 for performance
+        
+        logger.info(f"Search request: '{query}' (offset={offset}, page_size={page_size})")
         
         # Enhanced query processing for natural language
         enhanced_query = self.query_processor.process_query(query)
         logger.debug(f"Enhanced query: {enhanced_query['expanded_terms']}")
         
-        # Check cache if enabled
+        # Check cache if enabled (include pagination in cache key)
         if self.enable_cache:
-            cache_key = f"{query}_{max_results}_{diversify}"
+            cache_key = f"{query}_{page_size}_{diversify}_{offset}"
             cached_result = self.cache_manager.get('search', cache_key)
             if cached_result:
                 logger.info(f"Cache hit for query: '{query}'")
@@ -113,19 +129,61 @@ class SearchPipeline:
                 'results': [],
                 'total_results': 0,
                 'search_time': time.time() - start_time,
-                'error': 'Invalid query'
+                'error': 'Invalid query',
+                'pagination': {
+                    'offset': offset,
+                    'page_size': page_size,
+                    'has_more': False,
+                    'total_pages': 0
+                }
             }
         
         logger.info(f"Search terms: {search_terms}")
         
-        # Execute search with expanded terms
-        results = self.search_executor.execute_search(
-            search_terms,
-            max_results * 3  # Get more results for ranking
-        )
+        # Execute search with more results for pagination
+        # Request offset + page_size * 3 to have enough after filtering
+        total_to_fetch = offset + page_size * 3
+        
+        try:
+            results = self.search_executor.execute_search(
+                search_terms,
+                total_to_fetch
+            )
+        except Exception as e:
+            # Graceful degradation - return error info instead of failing
+            logger.error(f"Search execution failed: {e}", exc_info=True)
+            return {
+                'query': query,
+                'results': [],
+                'total_results': 0,
+                'search_time': time.time() - start_time,
+                'error': f'Search execution failed: {str(e)}',
+                'pagination': {
+                    'offset': offset,
+                    'page_size': page_size,
+                    'has_more': False,
+                    'total_pages': 0
+                }
+            }
         
         # Process results
         if results:
+            # Check for error/info messages from indexer
+            if len(results) == 1 and results[0].get('error') or results[0].get('info'):
+                # Pass through error/info messages
+                return {
+                    'query': query,
+                    'results': results,
+                    'total_results': 0,
+                    'search_time': time.time() - start_time,
+                    'pagination': {
+                        'offset': offset,
+                        'page_size': page_size,
+                        'has_more': False,
+                        'total_pages': 0
+                    }
+                }
+            
             # Deduplicate
             results = self.result_processor.deduplicate_results(results)
             
@@ -151,40 +209,62 @@ class SearchPipeline:
                         max_per_domain
                     )
             
-            # Limit to max_results
-            results = results[:max_results]
+            # Apply pagination
+            total_available = len(results)
+            end_index = offset + page_size
+            paginated_results = results[offset:end_index]
             
             # Format results
-            results = self.result_processor.format_results(
-                results,
+            paginated_results = self.result_processor.format_results(
+                paginated_results,
                 query,
-                max_results
+                page_size
             )
+            
+            # Calculate pagination metadata
+            has_more = end_index < total_available
+            total_pages = (total_available + page_size - 1) // page_size  # Ceiling division
+            current_page = offset // page_size + 1
+        else:
+            paginated_results = []
+            total_available = 0
+            has_more = False
+            total_pages = 0
+            current_page = 1
         
         search_time = time.time() - start_time
         
-        # Create response
+        # Create response with pagination metadata
         response = {
             'query': query,
             'processed_terms': preprocessed['processed_terms'],
-            'results': results,
-            'total_results': len(results),
+            'results': paginated_results,
+            'total_results': len(paginated_results),
+            'total_available': total_available,
             'search_time': round(search_time, 3),
             'timestamp': time.time(),
             'from_cache': False,
             'ranking_enabled': self.enable_ranking,
-            'cache_enabled': self.enable_cache
+            'cache_enabled': self.enable_cache,
+            'pagination': {
+                'offset': offset,
+                'page_size': page_size,
+                'current_page': current_page,
+                'total_pages': total_pages,
+                'has_more': has_more,
+                'next_offset': end_index if has_more else None
+            }
         }
         
         # Cache result if enabled
         if self.enable_cache:
-            cache_key = f"{query}_{max_results}_{diversify}"
+            cache_key = f"{query}_{page_size}_{diversify}_{offset}"
             self.cache_manager.set('search', cache_key, response)
         
         # Log search
         self._log_search(response)
         
-        logger.info(f"Search completed: {len(results)} results in {search_time:.3f}s")
+        logger.info(f"Search completed: {len(paginated_results)} results (page {current_page}/{total_pages}) in {search_time:.3f}s")
         
         return response
     

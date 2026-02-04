@@ -137,17 +137,30 @@ def register_routes():
     
     @app.route('/api/search', methods=['GET'])
     def search():
-        """Search endpoint"""
+        """Search endpoint with pagination support"""
         query = request.args.get('q', '')
         max_results = request.args.get('max', 10, type=int)
+        offset = request.args.get('offset', 0, type=int)
+        page_size = request.args.get('page_size', type=int)
         
         if not query:
             return jsonify({
                 'error': 'Query parameter "q" is required'
             }), 400
         
-        # Execute search
-        results = search_pipeline.search(query, max_results)
+        # Validate parameters
+        if offset < 0:
+            return jsonify({
+                'error': 'Offset must be non-negative'
+            }), 400
+        
+        # Execute search with pagination
+        results = search_pipeline.search(
+            query, 
+            max_results=max_results,
+            offset=offset,
+            page_size=page_size
+        )
         
         return jsonify(results)
     
